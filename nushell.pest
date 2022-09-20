@@ -28,7 +28,11 @@ double_quote_string_char = {
     | "\\" ~ ("u" ~ ASCII_HEX_DIGIT{4})
 }
 
-unit = @{ dec_int ~ (^"b" | ^"kb" | ^"kib" | ^"mb" | ^"mib" | "gb" | ^"gib" | "tb" | ^"tib")}
+filesize = @{ dec_int ~ (^"b" | ^"kb" | ^"kib" | ^"mb" | ^"mib" | ^"gb" | ^"gib" | ^"tb" | ^"tib" | ^"pb" | ^"pib" | ^"eb" | ^"eib" | ^"zb" | ^"zib") }
+duration = @{ dec_int ~ (^"ns" | ^"us" | ^"ms" | ^"sec" | ^"min" | ^"hr" | ^"day" | ^"wk" | ^"month" | ^"yr" | ^"dec")}
+
+unit = { filesize | duration }
+
 
 interpolation_string = ${ "$\"" ~ double_quote_string_inner ~ "\"" }
 
