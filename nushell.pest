@@ -116,7 +116,7 @@ paren_expr = { "(" ~ pipeline ~ ")" }
 
 pathed_value = { (record | table | array | variable | closure | block | paren_expr | traditional_call) ~ ("." ~ ident)* }
 
-value = _{unit | float | int | string | pathed_value | "true" | "false" | "null" }
+value = _{filesize | duration | float | int | string | pathed_value | "true" | "false" | "null" }
 
 
 // Code blocks
