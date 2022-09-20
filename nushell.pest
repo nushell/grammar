@@ -1,0 +1,168 @@
+// Primitives
+
+hex_int = @{ "0x" ~ ASCII_HEX_DIGIT+ }
+oct_int = @{ "0o" ~ ASCII_OCT_DIGIT+ }
+bin_int = @{ "0b" ~ ASCII_BIN_DIGIT+ }
+dec_int = @{ "-"? ~ ("0" | ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*) }
+int = { hex_int | oct_int | bin_int | dec_int }
+
+float = @{
+    "-"?
+    ~ ("0" | ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*)
+    ~ "."
+    ~ ASCII_DIGIT*
+    ~ (^"e" ~ ("+" | "-")? ~ ASCII_DIGIT+)?
+}
+
+array = {
+    "[" ~ "]" |
+    "[" ~ nl? ~ bare_value ~ (","? ~ bare_value)* ~ nl? ~ "]"
+}
+
+string = { double_quote_string | single_quote_string | backtick_string | interpolation_string }
+double_quote_string = ${ "\"" ~ double_quote_string_inner ~ "\"" }
+double_quote_string_inner = @{ double_quote_string_char* }
+double_quote_string_char = {
+    !("\"" | "\\") ~ ANY
+    | "\\" ~ ("\"" | "\\" | "/" | "b" | "f" | "n" | "r" | "t")
+    | "\\" ~ ("u" ~ ASCII_HEX_DIGIT{4})
+}
+
+unit = @{ dec_int ~ (^"b" | ^"kb" | ^"kib" | ^"mb" | ^"mib" | "gb" | ^"gib" | "tb" | ^"tib")}
+
+interpolation_string = ${ "$\"" ~ double_quote_string_inner ~ "\"" }
+
+single_quote_string = ${ "'" ~ single_quote_string_inner ~ "'" }
+single_quote_string_inner = @{ single_quote_string_char* }
+single_quote_string_char = {
+    !("'") ~ ANY
+}
+
+backtick_string = ${ "`" ~ backtick_string_inner ~ "`" }
+backtick_string_inner = @{ backtick_string_char* }
+backtick_string_char = {
+    !("`") ~ ANY
+}
+
+// Compound values
+
+table = {
+    "["~ nl? ~ array ~ nl? ~ ";" ~ nl? ~ (array | nl)+ ~ "]"
+}
+record = {
+    "{" ~ "}" |
+    "{" ~ pair ~ ("," ~ pair)* ~ "}"
+}
+pair = { label ~ ":" ~ value }
+label = { string | ident }
+
+
+// Bare word forms
+
+bare_char = _{!(" " | "\t" | "|" | "$" | "{" | "}" | "(" | ")" | "\r" | "\n") ~ ANY}
+bare_string = @{ bare_char+ }
+bare_word = @{ (ASCII_ALPHANUMERIC | "-" | "." | "_")+ }
+bare_value = { value | bare_word }
+
+
+// Variables
+
+ident_char = {!(" " | "\t" | "|" | "$" | "{" | "}" | "(" | ")" | "[" | "]" | "\r" | "\n" | "." | ":") ~ ANY}
+ident = @{ ident_char+ }
+variable = { "$" ~ ident }
+variable_path = { variable ~ ("." ~ ident)* }
+
+
+// Math expression
+
+or_expr = { value ~ (("or" | "||") ~ value)* }
+and_expr = { or_expr ~ (("and" | "&&") ~ or_expr)* }
+bitor_expr = { and_expr ~ ("bit-or" ~ and_expr)* }
+bitxor_expr = { bitor_expr ~ ("bit-xor" ~ bitor_expr)* }
+bitand_expr = { bitxor_expr ~ ("bit-and" ~ bitxor_expr)* }
+comp_expr = { bitand_expr ~ (("!~" | "=~" | "starts-with" | "ends-with" | "<" | "<=" | ">" | ">=" | "==" | "!-" | "in" | "not-in") ~ bitand_expr)* }
+shift_expr = { comp_expr ~ (("bit-shl" | "bit-shr") ~ comp_expr)* }
+plus_expr = { shift_expr ~ (("+" | "-") ~ shift_expr)* }
+mul_expr = { plus_expr ~ (("*" | "/" | "mod" | "//")  ~ plus_expr)* }
+pow_expr = { mul_expr ~ ("**" ~ mul_expr)* }
+
+expr = { pow_expr }
+
+
+// Row conditions
+
+row_value = { value | ident }
+row_or_expr = { row_value ~ (("or" | "||") ~ value)* }
+row_and_expr = { row_or_expr ~ (("and" | "&&") ~ or_expr)* }
+row_bitor_expr = { row_and_expr ~ ("bit-or" ~ and_expr)* }
+row_bitxor_expr = { row_bitor_expr ~ ("bit-xor" ~ bitor_expr)* }
+row_bitand_expr = { row_bitxor_expr ~ ("bit-and" ~ bitxor_expr)* }
+row_comp_expr = { row_bitand_expr ~ (("!~" | "=~" | "starts-with" | "ends-with" | "<" | "<=" | ">" | ">=" | "==" | "!-" | "in" | "not-in") ~ bitand_expr)* }
+row_shift_expr = { row_comp_expr ~ (("bit-shl" | "bit-shr") ~ comp_expr)* }
+row_plus_expr = { row_shift_expr ~ (("+" | "-") ~ shift_expr)* }
+row_mul_expr = { row_plus_expr ~ (("*" | "/" | "mod" | "//")  ~ plus_expr)* }
+row_pow_expr = { row_mul_expr ~ ("**" ~ mul_expr)* }
+
+row_condition = { row_pow_expr }
+
+
+// Expression values
+
+paren_expr = { "(" ~ pipeline ~ ")" }
+
+pathed_value = { (record | table | array | variable | closure | block | paren_expr | traditional_call) ~ ("." ~ ident)* }
+
+value = _{unit | float | int | string | pathed_value | "true" | "false" | "null" }
+
+
+// Code blocks
+
+block = { "{" ~ nl? ~ toplevel* ~ nl? ~ "}" }
+
+closure_args = { "|" ~ param* ~ "|"}
+closure = { "{" ~ closure_args ~ ("\r" | "\n")? ~ toplevel* ~ "}" }
+
+param = { ident ~ (":" ~ ident)? ~ ("=" ~ value)? }
+params = { ("(" ~ param* ~ ")") | ("[" ~ param* ~ "]") }
+
+
+// Reserved word builtins
+
+where_command = { "where" ~ row_condition }
+def_command = { "def" ~ ident ~ params ~ block }
+def_env_command = { "def-env" ~ ident ~ params ~ block }
+if_command = { "if" ~ expr ~ block ~ ("else" ~ if_command)* ~ ("else" ~ block)? }
+let_command = { "let" ~ ident ~ "=" ~ pipeline }
+
+// Commands
+
+long_flag = @{ "--" ~ ASCII_ALPHANUMERIC+ ~ ("=" ~ value)? }
+short_flag = @{ "-" ~ ASCII_ALPHANUMERIC+ }
+flag = { short_flag | long_flag }
+
+user_command = { ident ~ (flag | value | bare_string )* }
+
+command = { !("def" | "def-env") ~ (if_command | where_command | expr | user_command) }
+
+unnamed_arg = !{ value }
+named_arg = !{ label ~ ":" ~ value }
+traditional_call_arg = !{ named_arg | unnamed_arg }
+arg_list = !{ traditional_call_arg ~ ("," ~ traditional_call_arg)* }
+traditional_call = ${ (ident ~ "(" ~ arg_list? ~ ")") }
+
+// Pipeline
+
+pipeline = { command ~ ((!"||" ~ "|") ~ command)* }
+
+
+// Program
+
+toplevel = _{ nl* ~ (def_command | def_env_command | let_command | pipeline) ~ nl* }
+program = _{ SOI ~ toplevel* ~ EOI }
+
+
+// Trivia
+
+WHITESPACE = _{ " " | "\t"  }
+COMMENT = _{ "#" ~ (!"\n" ~ ANY)* ~ "\n" }
+nl = _{ "\r" | "\n" }
