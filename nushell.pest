@@ -33,6 +33,10 @@ duration = @{ dec_int ~ (^"ns" | ^"us" | ^"ms" | ^"sec" | ^"min" | ^"hr" | ^"day
 
 unit = { filesize | duration }
 
+binary_data = { binary_data_hex | binary_data_oct | binary_data_bin }
+binary_data_hex = @{ "0x[" ~ ASCII_HEX_DIGIT+ ~ "]" }
+binary_data_oct = @{ "0o[" ~ ASCII_OCT_DIGIT+ ~ "]" }
+binary_data_bin = @{ "0b[" ~ ASCII_BIN_DIGIT+ ~ "]" }
 
 interpolation_string = ${ "$\"" ~ double_quote_string_inner ~ "\"" }
 
@@ -60,6 +64,8 @@ record = {
 pair = { label ~ ":" ~ value }
 label = { string | ident }
 
+range_value = ${ int | float | variable | paren_expr }
+range = @{ range_value ~ ".." ~ range_value }
 
 // Bare word forms
 
@@ -116,7 +122,7 @@ paren_expr = { "(" ~ pipeline ~ ")" }
 
 pathed_value = { (record | table | array | variable | closure | block | paren_expr | traditional_call) ~ ("." ~ ident)* }
 
-value = _{unit | float | int | string | pathed_value | "true" | "false" | "null" }
+value = _{ binary_data | range | unit | float | int | string | pathed_value | "true" | "false" | "null" }
 
 
 // Code blocks
