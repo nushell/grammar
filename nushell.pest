@@ -24,7 +24,7 @@ double_quote_string = ${ "\"" ~ double_quote_string_inner ~ "\"" }
 double_quote_string_inner = @{ double_quote_string_char* }
 double_quote_string_char = {
     !("\"" | "\\") ~ ANY
-    | "\\" ~ ("\"" | "\\" | "/" | "b" | "f" | "n" | "r" | "t")
+    | "\\" ~ ("\"" | "\\" | "/" | "a" | "b" | "e" | "f" | "n" | "r" | "t" | "(" | ")" | "{" | "}" | "[" | "]" | "$" | "^" | "#" | "|" | "~")
     | "\\" ~ ("u" ~ ASCII_HEX_DIGIT{4})
 }
 
