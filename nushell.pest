@@ -14,11 +14,6 @@ float = @{
     ~ (^"e" ~ ("+" | "-")? ~ ASCII_DIGIT+)?
 }
 
-array = {
-    "[" ~ "]" |
-    "[" ~ nl? ~ bare_value ~ (","? ~ bare_value)* ~ nl? ~ "]"
-}
-
 string = { double_quote_string | single_quote_string | backtick_string | interpolation_string }
 double_quote_string = ${ "\"" ~ double_quote_string_inner ~ "\"" }
 double_quote_string_inner = @{ double_quote_string_char* }
@@ -54,8 +49,13 @@ backtick_string_char = {
 
 // Compound values
 
+array = {
+    "[" ~ "]" |
+    "[" ~ nl* ~ bare_value ~ (nl* ~ ","? ~ nl* ~ bare_value)* ~ nl* ~ "]"
+}
+
 table = {
-    "["~ nl? ~ array ~ nl? ~ ";" ~ nl? ~ (array | nl)+ ~ "]"
+    "["~ nl* ~ array ~ nl* ~ ";" ~ (array | nl)+ ~ "]"
 }
 record = {
     "{" ~ "}" |
@@ -166,7 +166,7 @@ traditional_call = ${ (ident ~ "(" ~ arg_list? ~ ")") }
 
 // Pipeline
 
-pipeline = { command ~ ((!"||" ~ "|") ~ command)* }
+pipeline = { command ~ ((!"||" ~ nl? ~ "|") ~ command)* }
 
 
 // Program
