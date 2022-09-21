@@ -83,7 +83,6 @@ bare_value = { value | bare_word }
 variable_char = {!(" " | "\t" | "|" | "$" | "{" | "}" | "(" | ")" | "[" | "]" | "\r" | "\n" | "." | ":" | "+" | "-" | "/" | "*") ~ ANY}
 variable_name = @{ variable_char+ }
 variable = { "$" ~ variable_name }
-variable_path = { variable ~ ("." ~ ident)* }
 
 
 // Math expression
@@ -123,7 +122,7 @@ row_condition = { row_pow_expr }
 
 paren_expr = { "(" ~ pipeline ~ ")" }
 
-pathed_value = { (record | table | array | variable | closure | block | paren_expr | traditional_call) ~ ("." ~ ident)* }
+pathed_value = { (record | table | array | variable | closure | block | paren_expr | traditional_call) ~ (("." ~ ident) | ("[" ~ expr ~ "]"))* }
 
 value = _{ binary_data | range | unit | float | int | string | pathed_value | "true" | "false" | "null" }
 
