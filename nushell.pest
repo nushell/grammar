@@ -64,6 +64,9 @@ record = {
 pair = { label ~ ":" ~ value }
 label = { string | ident }
 
+ident_char = {!(" " | "\t" | "|" | "$" | "{" | "}" | "(" | ")" | "[" | "]" | "\r" | "\n" | "." | ":") ~ ANY}
+ident = @{ ident_char+ }
+
 range_value = ${ int | float | variable | paren_expr }
 range = @{ range_value ~ ".." ~ range_value }
 
@@ -77,9 +80,9 @@ bare_value = { value | bare_word }
 
 // Variables
 
-ident_char = {!(" " | "\t" | "|" | "$" | "{" | "}" | "(" | ")" | "[" | "]" | "\r" | "\n" | "." | ":") ~ ANY}
-ident = @{ ident_char+ }
-variable = { "$" ~ ident }
+variable_char = {!(" " | "\t" | "|" | "$" | "{" | "}" | "(" | ")" | "[" | "]" | "\r" | "\n" | "." | ":" | "+" | "-" | "/" | "*") ~ ANY}
+variable_name = @{ variable_char+ }
+variable = { "$" ~ variable_name }
 variable_path = { variable ~ ("." ~ ident)* }
 
 
@@ -152,7 +155,9 @@ flag = { short_flag | long_flag }
 
 user_command = { ident ~ (flag | value | bare_string )* }
 
-command = { !("def" | "def-env") ~ (if_command | where_command | expr | user_command) }
+break_command = { "break" }
+
+command = { !("def" | "def-env") ~ (if_command | where_command | break_command | expr | user_command) }
 
 unnamed_arg = !{ value }
 named_arg = !{ label ~ ":" ~ value }
