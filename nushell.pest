@@ -129,10 +129,11 @@ value = _{ binary_data | range | unit | float | int | string | pathed_value | "t
 
 // Code blocks
 
-block = { "{" ~ nl? ~ toplevel* ~ nl? ~ "}" }
+out_type_block = { "->" ~ ident ~ ";" }
+block = { "{" ~ out_type_block? ~ nl? ~ toplevel* ~ nl? ~ "}" }
 
 closure_args = { "|" ~ param* ~ "|"}
-closure = { "{" ~ closure_args ~ ("\r" | "\n")? ~ toplevel* ~ "}" }
+closure = { "{" ~ closure_args ~ out_type_block? ~ ("\r" | "\n")? ~ toplevel* ~ "}" }
 
 param = { ident ~ (":" ~ ident)? ~ ("=" ~ value)? }
 params = { ("(" ~ param* ~ ")") | ("[" ~ param* ~ "]") }
@@ -140,10 +141,13 @@ params = { ("(" ~ param* ~ ")") | ("[" ~ param* ~ "]") }
 
 // Reserved word builtins
 
+out_type_def = { "->" ~ ident }
+untyped_block = { "{" ~ nl? ~ toplevel* ~ nl? ~ "}" }
+
 where_command = { "where" ~ row_condition }
-def_command = { "def" ~ ident ~ params ~ block }
-def_env_command = { "def-env" ~ ident ~ params ~ block }
-if_command = { "if" ~ expr ~ block ~ ("else" ~ if_command)* ~ ("else" ~ block)? }
+def_command = { "def" ~ ident ~ params ~ out_type_def? ~ untyped_block }
+def_env_command = { "def-env" ~ ident ~ params ~ out_type_def? ~ untyped_block }
+if_command = { "if" ~ expr ~ untyped_block ~ ("else" ~ if_command)* ~ ("else" ~ untyped_block)? }
 let_command = { "let" ~ ident ~ "=" ~ pipeline }
 
 // Commands
