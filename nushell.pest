@@ -120,7 +120,7 @@ row_condition = { row_pow_expr }
 
 // Expression values
 
-paren_expr = { "(" ~ pipeline ~ ")" }
+paren_expr = { "(" ~ nl* ~ pipeline ~ nl* ~ ")" }
 
 pathed_value = { (record | table | array | variable | closure | block | paren_expr | traditional_call) ~ (("." ~ ident) | ("[" ~ expr ~ "]"))* }
 
