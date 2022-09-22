@@ -91,39 +91,40 @@ variable = { "$" ~ variable_name }
 
 // Math expression
 
-or_expr = { value ~ (((sp+ ~ "or" ~ sp+) | (sp* ~ "||" ~ sp*)) ~ value)* }
-and_expr = { or_expr ~ (((sp+ ~ "and" ~ sp+) | (sp* ~ "&&" ~ sp*)) ~ or_expr)* }
-bitor_expr = { and_expr ~ ((sp+ ~ "bit-or" ~ sp+) ~ and_expr)* }
-bitxor_expr = { bitor_expr ~ ((sp+ ~ "bit-xor" ~ sp+) ~ bitor_expr)* }
-bitand_expr = { bitxor_expr ~ ((sp+ ~ "bit-and" ~ sp+) ~ bitxor_expr)* }
-comp_expr = { bitand_expr ~ (((sp* ~ "!~" ~ sp*) | (sp* ~ "=~" ~ sp*) | (sp+ ~ "starts-with" ~ sp+) | (sp+ ~ "ends-with" ~ sp+) | (sp* ~ "<" ~ sp*) | (sp* ~ "<=" ~ sp*) | (sp* ~ ">" ~ sp*) | (sp* ~ ">=" ~ sp*) | (sp* ~ "==" ~ sp*) | (sp* ~ "!-" ~ sp*) | (sp+ ~ "in" ~ sp+) | (sp+ ~ "not-in" ~ sp+)) ~ bitand_expr)* }
-shift_expr = { comp_expr ~ (((sp+ ~ "bit-shl" ~ sp+) | (sp+ ~ "bit-shr" ~ sp+)) ~ comp_expr)* }
-plus_expr = { shift_expr ~ (((sp* ~ "+" ~ sp*) | (sp* ~ "-" ~ sp*)) ~ shift_expr)* }
-mul_expr = { plus_expr ~ (((sp* ~ "*" ~ sp*) | (sp* ~ "/" ~ sp*) | (sp+ ~ "mod" ~ sp+) | (sp* ~ "//" ~ sp*))  ~ plus_expr)* }
-pow_expr = { mul_expr ~ ((sp* ~ "**" ~ sp*) ~ mul_expr)* }
+or_expr = { and_expr ~ (((sp+ ~ "or" ~ sp+) | (sp* ~ "||" ~ sp*)) ~ and_expr)* }
+and_expr = { bitor_expr ~ (((sp+ ~ "and" ~ sp+) | (sp* ~ "&&" ~ sp*)) ~ bitor_expr)* }
+bitor_expr = { bitxor_expr ~ ((sp+ ~ "bit-or" ~ sp+) ~ bitxor_expr)* }
+bitxor_expr = { bitand_expr ~ ((sp+ ~ "bit-xor" ~ sp+) ~ bitand_expr)* }
+bitand_expr = { comp_expr ~ ((sp+ ~ "bit-and" ~ sp+) ~ comp_expr)* }
+comp_expr = { shift_expr ~ (((sp* ~ "!~" ~ sp*) | (sp* ~ "=~" ~ sp*) | (sp+ ~ "starts-with" ~ sp+) | (sp+ ~ "ends-with" ~ sp+) | (sp* ~ "<" ~ sp*) | (sp* ~ "<=" ~ sp*) | (sp* ~ ">" ~ sp*) | (sp* ~ ">=" ~ sp*) | (sp* ~ "==" ~ sp*) | (sp* ~ "!-" ~ sp*) | (sp+ ~ "in" ~ sp+) | (sp+ ~ "not-in" ~ sp+)) ~ shift_expr)* }
+shift_expr = { plus_expr ~ (((sp+ ~ "bit-shl" ~ sp+) | (sp+ ~ "bit-shr" ~ sp+)) ~ plus_expr)* }
+plus_expr = { mul_expr ~ (((sp* ~ "+" ~ sp*) | (sp* ~ "-" ~ sp*)) ~ mul_expr)* }
+mul_expr = { pow_expr ~ (((sp* ~ "*" ~ sp*) | (sp* ~ "/" ~ sp*) | (sp+ ~ "mod" ~ sp+) | (sp* ~ "//" ~ sp*))  ~ pow_expr)* }
+pow_expr = { value ~ ((sp* ~ "**" ~ sp*) ~ value)* }
 
 // Row conditions
 
 row_value = { value | ident }
-row_or_expr = { row_value ~ (((sp+ ~ "or" ~ sp+) | (sp* ~ "||" ~ sp*)) ~ row_value)* }
-row_and_expr = { row_or_expr ~ (((sp+ ~ "and" ~ sp+) | (sp* ~ "&&" ~ sp*)) ~ row_or_expr)* }
-row_bitor_expr = { row_and_expr ~ ((sp+ ~ "bit-or" ~ sp+) ~ row_and_expr)* }
-row_bitxor_expr = { row_bitor_expr ~ ((sp+ ~ "bit-xor" ~ sp+) ~ row_bitor_expr)* }
-row_bitand_expr = { row_bitxor_expr ~ ((sp+ ~ "bit-and" ~ sp+) ~ row_bitxor_expr)* }
-row_comp_expr = { row_bitand_expr ~ (((sp* ~ "!~" ~ sp*) | (sp* ~ "=~" ~ sp*) | (sp+ ~ "starts-with" ~ sp+) | (sp+ ~ "ends-with" ~ sp+) | (sp* ~ "<" ~ sp*) | (sp* ~ "<=" ~ sp*) | (sp* ~ ">" ~ sp*) | (sp* ~ ">=" ~ sp*) | (sp* ~ "==" ~ sp*) | (sp* ~ "!-" ~ sp*) | (sp+ ~ "in" ~ sp+) | (sp+ ~ "not-in" ~ sp+)) ~ row_bitand_expr)* }
-row_shift_expr = { row_comp_expr ~ (((sp+ ~ "bit-shl" ~ sp+) | (sp+ ~ "bit-shr" ~ sp+)) ~ row_comp_expr)* }
-row_plus_expr = { row_shift_expr ~ (((sp* ~ "+" ~ sp*) | (sp* ~ "-" ~ sp*)) ~ row_shift_expr)* }
-row_mul_expr = { row_plus_expr ~ (((sp* ~ "*" ~ sp*) | (sp* ~ "/" ~ sp*) | (sp+ ~ "mod" ~ sp+) | (sp* ~ "//" ~ sp*))  ~ row_plus_expr)* }
-row_pow_expr = { row_mul_expr ~ ((sp* ~ "**" ~ sp*) ~ row_mul_expr)* }
+row_or_expr = { row_and_expr ~ (((sp+ ~ "or" ~ sp+) | (sp* ~ "||" ~ sp*)) ~ row_and_expr)* }
+row_and_expr = { row_bitor_expr ~ (((sp+ ~ "and" ~ sp+) | (sp* ~ "&&" ~ sp*)) ~ row_bitor_expr)* }
+row_bitor_expr = { row_bitxor_expr ~ ((sp+ ~ "bit-or" ~ sp+) ~ row_bitxor_expr)* }
+row_bitxor_expr = { row_bitand_expr ~ ((sp+ ~ "bit-xor" ~ sp+) ~ row_bitand_expr)* }
+row_bitand_expr = { row_comp_expr ~ ((sp+ ~ "bit-and" ~ sp+) ~ row_comp_expr)* }
+row_comp_expr = { row_shift_expr ~ (((sp* ~ "!~" ~ sp*) | (sp* ~ "=~" ~ sp*) | (sp+ ~ "starts-with" ~ sp+) | (sp+ ~ "ends-with" ~ sp+) | (sp* ~ "<" ~ sp*) | (sp* ~ "<=" ~ sp*) | (sp* ~ ">" ~ sp*) | (sp* ~ ">=" ~ sp*) | (sp* ~ "==" ~ sp*) | (sp* ~ "!-" ~ sp*) | (sp+ ~ "in" ~ sp+) | (sp+ ~ "not-in" ~ sp+)) ~ row_shift_expr)* }
+row_shift_expr = { row_plus_expr ~ (((sp+ ~ "bit-shl" ~ sp+) | (sp+ ~ "bit-shr" ~ sp+)) ~ row_plus_expr)* }
+row_plus_expr = { row_mul_expr ~ (((sp* ~ "+" ~ sp*) | (sp* ~ "-" ~ sp*)) ~ row_mul_expr)* }
+row_mul_expr = { row_pow_expr ~ (((sp* ~ "*" ~ sp*) | (sp* ~ "/" ~ sp*) | (sp+ ~ "mod" ~ sp+) | (sp* ~ "//" ~ sp*))  ~ row_pow_expr)* }
+row_pow_expr = { row_value ~ ((sp* ~ "**" ~ sp*) ~ row_value)* }
 
-row_condition = { row_pow_expr }
+row_condition = { row_or_expr }
 
 
 // Expression values
 
+expr = { or_expr }
+
 assignment_operator = { "+=" | "-=" | "*=" | "/=" | "=" }  
 assignment = { variable ~ ws* ~ assignment_operator ~ ws* ~ expr }
-expr = { pow_expr }
 
 paren_expr = { "(" ~ ws* ~ pipeline ~ ws* ~ ")" }
 
