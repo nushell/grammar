@@ -73,6 +73,39 @@ ident = @{ ident_char+ }
 range_value = ${ int | float | variable | paren_expr }
 range = @{ (range_value ~ ".." ~ range_value) | (range_value ~ ".." ) | (".." ~ range_value) }
 
+// Date & Time
+// Borrowed from here https://github.com/pest-parser/pest/blob/master/grammars/src/grammars/toml.pest
+
+//ISO8601 Format
+//1994-11-05T08:15:30.123456789Z
+//1994-11-05T08:15:30.123456789+01:00
+//1994-11-05T08:15:30.123456789-01:00
+//1994-11-05T08:15:30
+//1994-11-05T08:15:30Z
+//1994-11-05T01:01:01+03:00
+//1994-11-05
+
+//TODO: Support other date formats? Support AM/PM? Match what nushell supports?
+
+date_time       = ${ full_date ~ "T" ~ full_time }
+local_date_time = ${ full_date ~ "T" ~ partial_time }
+
+partial_time    = ${ time_hour ~ ":" ~ time_minute ~ ":" ~ time_second ~ time_secfrac? }
+full_date       = ${ date_fullyear ~ "-" ~ date_month ~ "-" ~ date_mday }
+full_time       = ${ partial_time ~ time_offset }
+
+date_fullyear = @{ ASCII_DIGIT{4} }
+date_month    = @{ ASCII_DIGIT{2} }
+date_mday     = @{ ASCII_DIGIT{2} }
+
+time_hour    = @{ ASCII_DIGIT{2} }
+time_minute  = @{ ASCII_DIGIT{2} }
+time_second  = @{ ASCII_DIGIT{2} }
+time_secfrac = @{ "." ~ ASCII_DIGIT+ }
+time_offset  = ${ "Z" | ("+" | "-") ~ time_hour ~ ":" ~ time_minute }
+
+date_or_datetime = { date_time | local_date_time | full_date ~ full_time? }
+
 // Bare word forms
 
 bare_char = _{!(" " | "\t" | "|" | "$" | "{" | "}" | "(" | ")" | "\r" | "\n") ~ ANY}
@@ -121,7 +154,7 @@ row_condition = { row_pow_expr }
 
 // Expression values
 
-assignment_operator = { "+=" | "-=" | "*=" | "/=" | "=" }  
+assignment_operator = { "+=" | "-=" | "*=" | "/=" | "=" }
 assignment = { variable ~ ws* ~ assignment_operator ~ ws* ~ expr }
 expr = { pow_expr }
 
@@ -129,7 +162,7 @@ paren_expr = { "(" ~ ws* ~ pipeline ~ ws* ~ ")" }
 
 pathed_value = { (record | table | array | variable | closure | block | paren_expr | traditional_call) ~ (("." ~ ident) | ("[" ~ ws* ~ expr ~ ws* ~ "]"))* }
 
-value = _{ binary_data | range | unit | float | int | string | pathed_value | "true" | "false" | "null" }
+value = _{ date_or_datetime | binary_data | range | unit | float | int | string | pathed_value | "true" | "false" | "null" }
 
 // Code blocks
 
