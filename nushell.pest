@@ -55,7 +55,8 @@ array = {
 }
 
 table = {
-    "["~ nl* ~ array ~ nl* ~ ";" ~ (array | nl)+ ~ "]"
+    ("["~ nl* ~ array ~ nl* ~ ";" ~ (array | nl)+ ~ "]") |
+    ("[" ~ record ~ ( "," ~ record )* ~ "]")
 }
 record = {
     "{" ~ "}" |
@@ -67,8 +68,10 @@ label = { string | ident }
 ident_char = {!(" " | "\t" | "|" | "$" | "{" | "}" | "(" | ")" | "[" | "]" | "\r" | "\n" | "." | ":") ~ ANY}
 ident = @{ ident_char+ }
 
-range_value = ${ int | float | variable | paren_expr }
-range = @{ range_value ~ ".." ~ range_value }
+range_value = _{ int | float | variable | paren_expr }
+lower_value = { range_value }
+upper_value = { range_value }
+range = { lower_value? ~ ".." ~ upper_value? }
 
 // Bare word forms
 
@@ -87,42 +90,30 @@ variable = { "$" ~ variable_name }
 
 // Math expression
 
-or_expr = { value ~ (("or" | "||") ~ value)* }
-and_expr = { or_expr ~ (("and" | "&&") ~ or_expr)* }
-bitor_expr = { and_expr ~ ("bit-or" ~ and_expr)* }
-bitxor_expr = { bitor_expr ~ ("bit-xor" ~ bitor_expr)* }
-bitand_expr = { bitxor_expr ~ ("bit-and" ~ bitxor_expr)* }
-comp_expr = { bitand_expr ~ (("!~" | "=~" | "starts-with" | "ends-with" | "<" | "<=" | ">" | ">=" | "==" | "!-" | "in" | "not-in") ~ bitand_expr)* }
-shift_expr = { comp_expr ~ (("bit-shl" | "bit-shr") ~ comp_expr)* }
-plus_expr = { shift_expr ~ (("+" | "-") ~ shift_expr)* }
-mul_expr = { plus_expr ~ (("*" | "/" | "mod" | "//")  ~ plus_expr)* }
-pow_expr = { mul_expr ~ ("**" ~ mul_expr)* }
+or = { "or" | "||" }
+and = { "and" | "&&" }
+bitor = { "bit-or" }
+bitxor = { "bit-xor" }
+bitand = { "bit-and" }
+comp = { "!~" | "=~" | "starts-with" | "ends-with" | "<" | "<=" | ">" | ">=" | "==" | "!-" | "in" | "not-in" }
+shift = { "bit-shl" | "bit-shr" }
+plus = { "+" | "-" }
+mul = { "*" | "/" | "mod" | "//" }
+pow = { "**" }
 
-expr = { pow_expr }
+operation = _{ or | and | bitor | bitxor | bitand | comp | shift | plus | mul | pow }
+expr = { value ~ ( operation ~ value )* }
 
 
 // Row conditions
 
-row_value = { value | ident }
-row_or_expr = { row_value ~ (("or" | "||") ~ value)* }
-row_and_expr = { row_or_expr ~ (("and" | "&&") ~ or_expr)* }
-row_bitor_expr = { row_and_expr ~ ("bit-or" ~ and_expr)* }
-row_bitxor_expr = { row_bitor_expr ~ ("bit-xor" ~ bitor_expr)* }
-row_bitand_expr = { row_bitxor_expr ~ ("bit-and" ~ bitxor_expr)* }
-row_comp_expr = { row_bitand_expr ~ (("!~" | "=~" | "starts-with" | "ends-with" | "<" | "<=" | ">" | ">=" | "==" | "!-" | "in" | "not-in") ~ bitand_expr)* }
-row_shift_expr = { row_comp_expr ~ (("bit-shl" | "bit-shr") ~ comp_expr)* }
-row_plus_expr = { row_shift_expr ~ (("+" | "-") ~ shift_expr)* }
-row_mul_expr = { row_plus_expr ~ (("*" | "/" | "mod" | "//")  ~ plus_expr)* }
-row_pow_expr = { row_mul_expr ~ ("**" ~ mul_expr)* }
-
-row_condition = { row_pow_expr }
+row_condition = _{ (value | ident) ~ ( operation ~ value )* }
 
 
 // Expression values
 
-paren_expr = { "(" ~ nl* ~ pipeline ~ nl* ~ ")" }
-
-pathed_value = { (record | table | array | variable | closure | block | paren_expr | traditional_call) ~ (("." ~ ident) | ("[" ~ expr ~ "]"))* }
+paren_expr = _{ "(" ~ nl* ~ pipeline ~ nl* ~ ")" }
+pathed_value = _{ (record | table | array | variable | closure | block | paren_expr | traditional_call) ~ (("." ~ ident) | ("[" ~ expr ~ "]"))* }
 
 value = _{ binary_data | range | unit | float | int | string | pathed_value | "true" | "false" | "null" }
 
@@ -148,6 +139,8 @@ where_command = { "where" ~ row_condition }
 def_command = { "def" ~ ident ~ params ~ out_type_def? ~ untyped_block }
 def_env_command = { "def-env" ~ ident ~ params ~ out_type_def? ~ untyped_block }
 if_command = { "if" ~ expr ~ untyped_block ~ ("else" ~ if_command)* ~ ("else" ~ untyped_block)? }
+for_command = { "for" ~ ident ~ "in" ~ ( range | array | ident ) ~ untyped_block }
+while_command = { "while" ~ expr ~ untyped_block }
 let_command = { "let" ~ ident ~ "=" ~ pipeline }
 
 // Commands
@@ -159,8 +152,10 @@ flag = { short_flag | long_flag }
 user_command = { ident ~ (flag | value | bare_string )* }
 
 break_command = { "break" }
-
-command = { !("def" | "def-env") ~ (if_command | where_command | break_command | expr | user_command) }
+continue_command = { "continue" }
+return_command = { "return" ~ expr? }
+commands = _{ if_command | for_command | while_command | where_command | break_command | continue_command | return_command | expr | user_command }
+command = { !("def" | "def-env") ~ commands }
 
 unnamed_arg = !{ value }
 named_arg = !{ label ~ ":" ~ value }
