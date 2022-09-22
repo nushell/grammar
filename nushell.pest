@@ -14,7 +14,7 @@ float = @{
     ~ (^"e" ~ ("+" | "-")? ~ ASCII_DIGIT+)?
 }
 
-string = { double_quote_string | single_quote_string | backtick_string | interpolation_string }
+string = { double_quote_string | single_quote_string | backtick_string | interpolated_string }
 double_quote_string = ${ "\"" ~ double_quote_string_inner ~ "\"" }
 double_quote_string_inner = @{ double_quote_string_char* }
 double_quote_string_char = {
@@ -23,17 +23,9 @@ double_quote_string_char = {
     | "\\" ~ ("u" ~ ASCII_HEX_DIGIT{4})
 }
 
-filesize = @{ dec_int ~ (^"b" | ^"kb" | ^"kib" | ^"mb" | ^"mib" | ^"gb" | ^"gib" | ^"tb" | ^"tib" | ^"pb" | ^"pib" | ^"eb" | ^"eib" | ^"zb" | ^"zib") }
-duration = @{ dec_int ~ (^"ns" | ^"us" | ^"ms" | ^"sec" | ^"min" | ^"hr" | ^"day" | ^"wk" | ^"month" | ^"yr" | ^"dec")}
-
-unit = { filesize | duration }
-
-binary_data = { binary_data_hex | binary_data_oct | binary_data_bin }
-binary_data_hex = @{ "0x[" ~ ASCII_HEX_DIGIT+ ~ "]" }
-binary_data_oct = @{ "0o[" ~ ASCII_OCT_DIGIT+ ~ "]" }
-binary_data_bin = @{ "0b[" ~ ASCII_BIN_DIGIT+ ~ "]" }
-
-interpolation_string = ${ "$\"" ~ double_quote_string_inner ~ "\"" }
+interpolated_string = { double_quote_interpolated_string | single_quote_interpolated_string }
+double_quote_interpolated_string = ${ "$\"" ~ double_quote_string_inner ~ "\"" }
+single_quote_interpolated_string = ${ "$'" ~ single_quote_string_inner ~ "'" }
 
 single_quote_string = ${ "'" ~ single_quote_string_inner ~ "'" }
 single_quote_string_inner = @{ single_quote_string_char* }
@@ -47,33 +39,45 @@ backtick_string_char = {
     !("`") ~ ANY
 }
 
+filesize = @{ dec_int ~ (^"b" | ^"kb" | ^"kib" | ^"mb" | ^"mib" | ^"gb" | ^"gib" | ^"tb" | ^"tib" | ^"pb" | ^"pib" | ^"eb" | ^"eib" | ^"zb" | ^"zib") }
+duration = @{ dec_int ~ (^"ns" | ^"us" | ^"ms" | ^"sec" | ^"min" | ^"hr" | ^"day" | ^"wk" | ^"month" | ^"yr" | ^"dec")}
+
+unit = { filesize | duration }
+
+binary_data = { binary_data_hex | binary_data_oct | binary_data_bin }
+binary_data_hex = @{ "0x[" ~ (ASCII_HEX_DIGIT | sp)+ ~ "]" }
+binary_data_oct = @{ "0o[" ~ (ASCII_OCT_DIGIT | sp)+ ~ "]" }
+binary_data_bin = @{ "0b[" ~ (ASCII_BIN_DIGIT | sp)+ ~ "]" }
+
+
 // Compound values
 
 array = {
     "[" ~ "]" |
-    "[" ~ nl* ~ bare_value ~ (nl* ~ ","? ~ nl* ~ bare_value)* ~ nl* ~ "]"
+    "[" ~ ws* ~ bare_value ~ ((ws | ",")+ ~ bare_value)* ~ ws* ~ "]"
 }
 
 table = {
-    "["~ nl* ~ array ~ nl* ~ ";" ~ (array | nl)+ ~ "]"
+    "["~ ws* ~ array ~ ws* ~ ";" ~ ws* ~ (array | ws)+ ~ "]"
 }
 record = {
-    "{" ~ "}" |
-    "{" ~ pair ~ ("," ~ pair)* ~ "}"
+    "{" ~ ws* ~ "}" |
+    "{" ~ ws* ~ pair ~ (ws* ~ "," ~ ws* ~ pair)* ~ ws* ~ "}"
 }
-pair = { label ~ ":" ~ value }
+pair = { label ~ ws* ~ ":" ~ ws* ~ bare_value }
 label = { string | ident }
 
-ident_char = {!(" " | "\t" | "|" | "$" | "{" | "}" | "(" | ")" | "[" | "]" | "\r" | "\n" | "." | ":") ~ ANY}
+ident_char = {!(" " | "\t" | "|" | "$" | "{" | "}" | "(" | ")" | "[" | "]" | "\r" | "\n" | "." | "," | ":") ~ ANY}
 ident = @{ ident_char+ }
 
 range_value = ${ int | float | variable | paren_expr }
-range = @{ range_value ~ ".." ~ range_value }
+range = @{ (range_value ~ ".." ~ range_value) | (range_value ~ ".." ) | (".." ~ range_value) }
 
 // Bare word forms
 
 bare_char = _{!(" " | "\t" | "|" | "$" | "{" | "}" | "(" | ")" | "\r" | "\n") ~ ANY}
-bare_string = @{ bare_char+ }
+bare_follow_char = _{!(" " | "\t" | "|" | "$" | "(" | ")" | "\r" | "\n") ~ ANY}
+bare_string = @{ bare_char ~ bare_follow_char* }
 bare_word = @{ (ASCII_ALPHANUMERIC | "-" | "." | "_")+ }
 bare_value = { value | bare_word }
 
@@ -87,100 +91,93 @@ variable = { "$" ~ variable_name }
 
 // Math expression
 
-or_expr = { value ~ (("or" | "||") ~ value)* }
-and_expr = { or_expr ~ (("and" | "&&") ~ or_expr)* }
-bitor_expr = { and_expr ~ ("bit-or" ~ and_expr)* }
-bitxor_expr = { bitor_expr ~ ("bit-xor" ~ bitor_expr)* }
-bitand_expr = { bitxor_expr ~ ("bit-and" ~ bitxor_expr)* }
-comp_expr = { bitand_expr ~ (("!~" | "=~" | "starts-with" | "ends-with" | "<" | "<=" | ">" | ">=" | "==" | "!-" | "in" | "not-in") ~ bitand_expr)* }
-shift_expr = { comp_expr ~ (("bit-shl" | "bit-shr") ~ comp_expr)* }
-plus_expr = { shift_expr ~ (("+" | "-") ~ shift_expr)* }
-mul_expr = { plus_expr ~ (("*" | "/" | "mod" | "//")  ~ plus_expr)* }
-pow_expr = { mul_expr ~ ("**" ~ mul_expr)* }
-
-expr = { pow_expr }
-
+or_expr = { value ~ (((sp+ ~ "or" ~ sp+) | (sp* ~ "||" ~ sp*)) ~ value)* }
+and_expr = { or_expr ~ (((sp+ ~ "and" ~ sp+) | (sp* ~ "&&" ~ sp*)) ~ or_expr)* }
+bitor_expr = { and_expr ~ ((sp+ ~ "bit-or" ~ sp+) ~ and_expr)* }
+bitxor_expr = { bitor_expr ~ ((sp+ ~ "bit-xor" ~ sp+) ~ bitor_expr)* }
+bitand_expr = { bitxor_expr ~ ((sp+ ~ "bit-and" ~ sp+) ~ bitxor_expr)* }
+comp_expr = { bitand_expr ~ (((sp* ~ "!~" ~ sp*) | (sp* ~ "=~" ~ sp*) | (sp+ ~ "starts-with" ~ sp+) | (sp+ ~ "ends-with" ~ sp+) | (sp* ~ "<" ~ sp*) | (sp* ~ "<=" ~ sp*) | (sp* ~ ">" ~ sp*) | (sp* ~ ">=" ~ sp*) | (sp* ~ "==" ~ sp*) | (sp* ~ "!-" ~ sp*) | (sp+ ~ "in" ~ sp+) | (sp+ ~ "not-in" ~ sp+)) ~ bitand_expr)* }
+shift_expr = { comp_expr ~ (((sp+ ~ "bit-shl" ~ sp+) | (sp+ ~ "bit-shr" ~ sp+)) ~ comp_expr)* }
+plus_expr = { shift_expr ~ (((sp* ~ "+" ~ sp*) | (sp* ~ "-" ~ sp*)) ~ shift_expr)* }
+mul_expr = { plus_expr ~ (((sp* ~ "*" ~ sp*) | (sp* ~ "/" ~ sp*) | (sp+ ~ "mod" ~ sp+) | (sp* ~ "//" ~ sp*))  ~ plus_expr)* }
+pow_expr = { mul_expr ~ ((sp* ~ "**" ~ sp*) ~ mul_expr)* }
 
 // Row conditions
 
 row_value = { value | ident }
-row_or_expr = { row_value ~ (("or" | "||") ~ value)* }
-row_and_expr = { row_or_expr ~ (("and" | "&&") ~ or_expr)* }
-row_bitor_expr = { row_and_expr ~ ("bit-or" ~ and_expr)* }
-row_bitxor_expr = { row_bitor_expr ~ ("bit-xor" ~ bitor_expr)* }
-row_bitand_expr = { row_bitxor_expr ~ ("bit-and" ~ bitxor_expr)* }
-row_comp_expr = { row_bitand_expr ~ (("!~" | "=~" | "starts-with" | "ends-with" | "<" | "<=" | ">" | ">=" | "==" | "!-" | "in" | "not-in") ~ bitand_expr)* }
-row_shift_expr = { row_comp_expr ~ (("bit-shl" | "bit-shr") ~ comp_expr)* }
-row_plus_expr = { row_shift_expr ~ (("+" | "-") ~ shift_expr)* }
-row_mul_expr = { row_plus_expr ~ (("*" | "/" | "mod" | "//")  ~ plus_expr)* }
-row_pow_expr = { row_mul_expr ~ ("**" ~ mul_expr)* }
+row_or_expr = { row_value ~ (((sp+ ~ "or" ~ sp+) | (sp* ~ "||" ~ sp*)) ~ row_value)* }
+row_and_expr = { row_or_expr ~ (((sp+ ~ "and" ~ sp+) | (sp* ~ "&&" ~ sp*)) ~ row_or_expr)* }
+row_bitor_expr = { row_and_expr ~ ((sp+ ~ "bit-or" ~ sp+) ~ row_and_expr)* }
+row_bitxor_expr = { row_bitor_expr ~ ((sp+ ~ "bit-xor" ~ sp+) ~ row_bitor_expr)* }
+row_bitand_expr = { row_bitxor_expr ~ ((sp+ ~ "bit-and" ~ sp+) ~ row_bitxor_expr)* }
+row_comp_expr = { row_bitand_expr ~ (((sp* ~ "!~" ~ sp*) | (sp* ~ "=~" ~ sp*) | (sp+ ~ "starts-with" ~ sp+) | (sp+ ~ "ends-with" ~ sp+) | (sp* ~ "<" ~ sp*) | (sp* ~ "<=" ~ sp*) | (sp* ~ ">" ~ sp*) | (sp* ~ ">=" ~ sp*) | (sp* ~ "==" ~ sp*) | (sp* ~ "!-" ~ sp*) | (sp+ ~ "in" ~ sp+) | (sp+ ~ "not-in" ~ sp+)) ~ row_bitand_expr)* }
+row_shift_expr = { row_comp_expr ~ (((sp+ ~ "bit-shl" ~ sp+) | (sp+ ~ "bit-shr" ~ sp+)) ~ row_comp_expr)* }
+row_plus_expr = { row_shift_expr ~ (((sp* ~ "+" ~ sp*) | (sp* ~ "-" ~ sp*)) ~ row_shift_expr)* }
+row_mul_expr = { row_plus_expr ~ (((sp* ~ "*" ~ sp*) | (sp* ~ "/" ~ sp*) | (sp+ ~ "mod" ~ sp+) | (sp* ~ "//" ~ sp*))  ~ row_plus_expr)* }
+row_pow_expr = { row_mul_expr ~ ((sp* ~ "**" ~ sp*) ~ row_mul_expr)* }
 
 row_condition = { row_pow_expr }
 
 
 // Expression values
 
-paren_expr = { "(" ~ nl* ~ pipeline ~ nl* ~ ")" }
+expr = { pow_expr }
 
-pathed_value = { (record | table | array | variable | closure | block | paren_expr | traditional_call) ~ (("." ~ ident) | ("[" ~ expr ~ "]"))* }
+paren_expr = { "(" ~ ws* ~ pipeline ~ ws* ~ ")" }
+
+pathed_value = { (record | table | array | variable | closure | block | paren_expr | traditional_call) ~ (("." ~ ident) | ("[" ~ ws* ~ expr ~ ws* ~ "]"))* }
 
 value = _{ binary_data | range | unit | float | int | string | pathed_value | "true" | "false" | "null" }
 
-
 // Code blocks
 
-out_type_block = { "->" ~ ident ~ ";" }
-block = { "{" ~ out_type_block? ~ nl? ~ toplevel* ~ nl? ~ "}" }
+block = { "{" ~ code_block ~ "}" }
 
-closure_args = { "|" ~ param* ~ "|"}
-closure = { "{" ~ closure_args ~ out_type_block? ~ ("\r" | "\n")? ~ toplevel* ~ "}" }
+closure_args = { "|" ~ sp* ~ param* ~ sp* ~ "|"}
+closure = { "{" ~ ws* ~ closure_args ~ code_block ~ "}" }
 
-param = { ident ~ (":" ~ ident)? ~ ("=" ~ value)? }
-params = { ("(" ~ param* ~ ")") | ("[" ~ param* ~ "]") }
+param = { ident ~ (sp* ~ ":" ~ sp* ~ ident)? ~ sp* ~ ("=" ~ sp* ~ value)? ~ sp* ~ ","? ~ sp? }
+params = { ("(" ~ ws* ~ param* ~ ws* ~ ")") | ("[" ~ ws* ~ param* ~ ws* ~ "]") }
 
-
-// Reserved word builtins
-
-out_type_def = { "->" ~ ident }
-untyped_block = { "{" ~ nl? ~ toplevel* ~ nl? ~ "}" }
+// Builtins
 
 where_command = { "where" ~ row_condition }
-def_command = { "def" ~ ident ~ params ~ out_type_def? ~ untyped_block }
-def_env_command = { "def-env" ~ ident ~ params ~ out_type_def? ~ untyped_block }
-if_command = { "if" ~ expr ~ untyped_block ~ ("else" ~ if_command)* ~ ("else" ~ untyped_block)? }
-let_command = { "let" ~ ident ~ "=" ~ pipeline }
+def_command = { "def" ~ sp+ ~ ident ~ sp* ~ params ~ sp* ~ block }
+def_env_command = { "def-env" ~ sp+ ~ ident ~ sp* ~ params ~ sp* ~ block }
+if_command = { "if" ~ sp+ ~ expr ~ sp* ~ block ~ (sp+ ~ "else" ~ sp+ ~ if_command)* ~ (sp+ ~ "else" ~ sp* ~ block)? }
+let_command = { "let" ~ sp+ ~ ident ~ sp* ~ "=" ~ sp* ~ pipeline }
 
 // Commands
 
-long_flag = @{ "--" ~ ASCII_ALPHANUMERIC+ ~ ("=" ~ value)? }
+long_flag = @{ "--" ~ (ASCII_ALPHANUMERIC | "-")+ ~ ("=" ~ bare_string)? }
 short_flag = @{ "-" ~ ASCII_ALPHANUMERIC+ }
 flag = { short_flag | long_flag }
 
-user_command = { ident ~ (flag | value | bare_string )* }
+user_command = { ident ~ (sp+ ~ (flag | value | bare_string ))* }
 
 break_command = { "break" }
 
-command = { !("def" | "def-env") ~ (if_command | where_command | break_command | expr | user_command) }
+command = { !(("def" | "def-env") ~ sp+) ~ (if_command | where_command | break_command | expr | user_command) }
 
 unnamed_arg = !{ value }
-named_arg = !{ label ~ ":" ~ value }
+named_arg = !{ label ~ sp* ~ ":" ~ sp* ~ value }
 traditional_call_arg = !{ named_arg | unnamed_arg }
-arg_list = !{ traditional_call_arg ~ ("," ~ traditional_call_arg)* }
-traditional_call = ${ (ident ~ "(" ~ arg_list? ~ ")") }
+arg_list = !{ traditional_call_arg ~ (sp* ~ "," ~ sp* ~ traditional_call_arg)* }
+traditional_call = ${ (ident ~ "(" ~ ws* ~ arg_list? ~ ws* ~ ")") }
 
 // Pipeline
 
-pipeline = { command ~ ((!"||" ~ nl? ~ "|") ~ command)* }
-
+pipeline = { command ~ (ws* ~ (!"||" ~ "|") ~ ws* ~ command)* }
 
 // Program
 
-toplevel = _{ nl* ~ (def_command | def_env_command | let_command | pipeline) ~ nl* }
-program = _{ SOI ~ toplevel* ~ EOI }
-
+toplevel = _{ (def_command | def_env_command | let_command | pipeline) }
+code_block = _{ (ws* ~ toplevel ~ sp* ~ ((nl | ";")+ ~ ws* ~ toplevel ~ sp*)*)? ~ ws*}
+program = _{ SOI ~ code_block ~ nl* ~ EOI }
 
 // Trivia
 
-WHITESPACE = _{ " " | "\t"  }
-COMMENT = _{ "#" ~ (!"\n" ~ ANY)* ~ "\n" }
+COMMENT = _{ "#" ~ (!"\n" ~ ANY)* }
 nl = _{ "\r" | "\n" }
+ws = _{ nl | sp }
+sp = _{ " " | "\t" }
