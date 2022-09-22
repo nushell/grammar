@@ -121,6 +121,8 @@ row_condition = { row_pow_expr }
 
 // Expression values
 
+assignment_operator = { "+=" | "-=" | "*=" | "/=" | "=" }  
+assignment = { variable ~ ws* ~ assignment_operator ~ ws* ~ expr }
 expr = { pow_expr }
 
 paren_expr = { "(" ~ ws* ~ pipeline ~ ws* ~ ")" }
@@ -148,6 +150,8 @@ if_command = { "if" ~ sp+ ~ expr ~ sp* ~ block ~ (sp+ ~ "else" ~ sp+ ~ if_comman
 for_command = { "for" ~ sp+ ~ ident ~ sp+ ~ "in" ~ sp+ ~ ( range | array | ident | variable ) ~ sp+ ~ block }
 while_command = { "while" ~ sp+ ~ expr ~ sp+ ~ block }
 let_command = { "let" ~ sp+ ~ ident ~ sp* ~ "=" ~ sp* ~ pipeline }
+let_env_command = { "let-env" ~ sp+ ~ ident ~ sp* ~ "=" ~ sp* ~ pipeline }
+mut_command = { "mut" ~ sp+ ~ ident ~ sp* ~ "=" ~ sp* ~ pipeline }
 
 // Commands
 
@@ -175,7 +179,7 @@ pipeline = { command ~ (ws* ~ (!"||" ~ "|") ~ ws* ~ command)* }
 
 // Program
 
-toplevel = _{ (def_command | def_env_command | let_command | pipeline) }
+toplevel = _{ (def_command | def_env_command | let_command | let_env_command | mut_command | assignment | pipeline) }
 code_block = _{ (ws* ~ toplevel ~ sp* ~ ((nl | ";")+ ~ ws* ~ toplevel ~ sp*)*)? ~ ws*}
 program = _{ SOI ~ code_block ~ nl* ~ EOI }
 
