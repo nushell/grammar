@@ -113,7 +113,8 @@ row_condition = _{ (value | ident) ~ ( operation ~ value )* }
 // Expression values
 
 paren_expr = _{ "(" ~ nl* ~ pipeline ~ nl* ~ ")" }
-pathed_value = _{ (record | table | array | variable | closure | block | paren_expr | traditional_call) ~ (("." ~ ident) | ("[" ~ expr ~ "]"))* }
+path = { ("." ~ ident) | (".[" ~ expr ~ "]") }
+pathed_value = _{ (record | table | array | variable | closure | block | paren_expr | traditional_call) ~ path* }
 
 value = _{ binary_data | range | unit | float | int | string | pathed_value | "true" | "false" | "null" }
 
