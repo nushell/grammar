@@ -131,10 +131,10 @@ and_expr = { bitor_expr ~ (((sp+ ~ "and" ~ sp+) | (sp* ~ "&&" ~ sp*)) ~ bitor_ex
 bitor_expr = { bitxor_expr ~ ((sp+ ~ "bit-or" ~ sp+) ~ bitxor_expr)* }
 bitxor_expr = { bitand_expr ~ ((sp+ ~ "bit-xor" ~ sp+) ~ bitand_expr)* }
 bitand_expr = { comp_expr ~ ((sp+ ~ "bit-and" ~ sp+) ~ comp_expr)* }
-comp_expr = { shift_expr ~ (((sp* ~ "!~" ~ sp*) | (sp* ~ "=~" ~ sp*) | (sp+ ~ "starts-with" ~ sp+) | (sp+ ~ "ends-with" ~ sp+) | (sp* ~ "<" ~ sp*) | (sp* ~ "<=" ~ sp*) | (sp* ~ ">" ~ sp*) | (sp* ~ ">=" ~ sp*) | (sp* ~ "==" ~ sp*) | (sp* ~ "!-" ~ sp*) | (sp+ ~ "in" ~ sp+) | (sp+ ~ "not-in" ~ sp+)) ~ shift_expr)* }
+comp_expr = { shift_expr ~ (((sp* ~ "!~" ~ sp*) | (sp* ~ "=~" ~ sp*) | (sp+ ~ "starts-with" ~ sp+) | (sp+ ~ "ends-with" ~ sp+) | (sp* ~ "<=" ~ sp*) | (sp* ~ ">=" ~ sp*) | (sp* ~ "<" ~ sp*) | (sp* ~ ">" ~ sp*) | (sp* ~ "==" ~ sp*) | (sp* ~ "!=" ~ sp*) | (sp+ ~ "in" ~ sp+) | (sp+ ~ "not-in" ~ sp+)) ~ shift_expr)* }
 shift_expr = { plus_expr ~ (((sp+ ~ "bit-shl" ~ sp+) | (sp+ ~ "bit-shr" ~ sp+)) ~ plus_expr)* }
 plus_expr = { mul_expr ~ (((sp* ~ "+" ~ sp*) | (sp* ~ "-" ~ sp*)) ~ mul_expr)* }
-mul_expr = { pow_expr ~ (((sp* ~ "*" ~ sp*) | (sp* ~ "/" ~ sp*) | (sp+ ~ "mod" ~ sp+) | (sp* ~ "//" ~ sp*))  ~ pow_expr)* }
+mul_expr = { pow_expr ~ (((sp* ~ (!"**" ~ "*") ~ sp*) | (sp* ~ "//" ~ sp*) | (sp* ~ "/" ~ sp*) | (sp+ ~ "mod" ~ sp+))  ~ pow_expr)* }
 pow_expr = { value ~ ((sp* ~ "**" ~ sp*) ~ value)* }
 
 // Row conditions
@@ -145,11 +145,11 @@ row_and_expr = { row_bitor_expr ~ (((sp+ ~ "and" ~ sp+) | (sp* ~ "&&" ~ sp*)) ~ 
 row_bitor_expr = { row_bitxor_expr ~ ((sp+ ~ "bit-or" ~ sp+) ~ row_bitxor_expr)* }
 row_bitxor_expr = { row_bitand_expr ~ ((sp+ ~ "bit-xor" ~ sp+) ~ row_bitand_expr)* }
 row_bitand_expr = { row_comp_expr ~ ((sp+ ~ "bit-and" ~ sp+) ~ row_comp_expr)* }
-row_comp_expr = { row_shift_expr ~ (((sp* ~ "!~" ~ sp*) | (sp* ~ "=~" ~ sp*) | (sp+ ~ "starts-with" ~ sp+) | (sp+ ~ "ends-with" ~ sp+) | (sp* ~ "<" ~ sp*) | (sp* ~ "<=" ~ sp*) | (sp* ~ ">" ~ sp*) | (sp* ~ ">=" ~ sp*) | (sp* ~ "==" ~ sp*) | (sp* ~ "!-" ~ sp*) | (sp+ ~ "in" ~ sp+) | (sp+ ~ "not-in" ~ sp+)) ~ row_shift_expr)* }
+row_comp_expr = { row_shift_expr ~ (((sp* ~ "!~" ~ sp*) | (sp* ~ "=~" ~ sp*) | (sp+ ~ "starts-with" ~ sp+) | (sp+ ~ "ends-with" ~ sp+) | (sp* ~ "<=" ~ sp*) | (sp* ~ ">=" ~ sp*) | (sp* ~ "<" ~ sp*) | (sp* ~ ">" ~ sp*) | (sp* ~ "==" ~ sp*) | (sp* ~ "!=" ~ sp*) | (sp+ ~ "in" ~ sp+) | (sp+ ~ "not-in" ~ sp+)) ~ row_shift_expr)* }
 row_shift_expr = { row_plus_expr ~ (((sp+ ~ "bit-shl" ~ sp+) | (sp+ ~ "bit-shr" ~ sp+)) ~ row_plus_expr)* }
 row_plus_expr = { row_mul_expr ~ (((sp* ~ "+" ~ sp*) | (sp* ~ "-" ~ sp*)) ~ row_mul_expr)* }
-row_mul_expr = { row_pow_expr ~ (((sp* ~ "*" ~ sp*) | (sp* ~ "/" ~ sp*) | (sp+ ~ "mod" ~ sp+) | (sp* ~ "//" ~ sp*))  ~ row_pow_expr)* }
-row_pow_expr = { row_value ~ ((sp* ~ "**" ~ sp*) ~ row_value)* }
+row_mul_expr = { row_pow_expr ~ (((sp* ~ "*" ~ sp*)  | (sp* ~ "//" ~ sp*) | (sp* ~ "/" ~ sp*) | (sp+ ~ "mod" ~ sp+))  ~ row_pow_expr)* }
+row_pow_expr = { row_value ~ ((sp* ~ (!"**" ~ "*") ~ sp*) ~ row_value)* }
 
 row_condition = { row_or_expr }
 
