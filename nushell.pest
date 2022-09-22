@@ -145,6 +145,8 @@ where_command = { "where" ~ row_condition }
 def_command = { "def" ~ sp+ ~ ident ~ sp* ~ params ~ sp* ~ block }
 def_env_command = { "def-env" ~ sp+ ~ ident ~ sp* ~ params ~ sp* ~ block }
 if_command = { "if" ~ sp+ ~ expr ~ sp* ~ block ~ (sp+ ~ "else" ~ sp+ ~ if_command)* ~ (sp+ ~ "else" ~ sp* ~ block)? }
+for_command = { "for" ~ sp+ ~ ident ~ sp+ ~ "in" ~ sp+ ~ ( range | array | ident | variable ) ~ sp+ ~ block }
+while_command = { "while" ~ sp+ ~ expr ~ sp+ ~ block }
 let_command = { "let" ~ sp+ ~ ident ~ sp* ~ "=" ~ sp* ~ pipeline }
 
 // Commands
@@ -156,8 +158,10 @@ flag = { short_flag | long_flag }
 user_command = { ident ~ (sp+ ~ (flag | value | bare_string ))* }
 
 break_command = { "break" }
-
-command = { !(("def" | "def-env") ~ sp+) ~ (if_command | where_command | break_command | expr | user_command) }
+continue_command = { "continue" }
+return_command = { "return" ~ expr? }
+commands = _{ if_command | for_command | while_command | where_command | break_command | continue_command | return_command | expr | user_command }
+command = { !(("def" | "def-env") ~ sp+) ~ commands }
 
 unnamed_arg = !{ value }
 named_arg = !{ label ~ sp* ~ ":" ~ sp* ~ value }
