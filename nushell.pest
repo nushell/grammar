@@ -73,41 +73,6 @@ ident = @{ ident_char+ }
 range_value = ${ int | float | variable | paren_expr }
 range = @{ (range_value ~ ".." ~ range_value) | (range_value ~ ".." ) | (".." ~ range_value) }
 
-// Date & Time
-// Borrowed from here and tweaked https://github.com/pest-parser/pest/blob/master/grammars/src/grammars/toml.pest
-
-//ISO8601 Format
-//d"1994-11-05T08:15:30.123456789Z"
-//d"1994-11-05T08:15:30.123456789+01:00"
-//d"1994-11-05T08:15:30.123456789-01:00"
-//d"1994-11-05T08:15:30"
-//d"1994-11-05T08:15:30Z"
-//d"1994-11-05T01:01:01+03:00"
-//d"1994-11-05"
-
-//TODO: Support other date formats? Support AM/PM? Match what nushell supports?
-
-date_time       = ${ full_date ~ "T" ~ full_time }
-local_date_time = ${ full_date ~ "T" ~ partial_time }
-
-quotes          = ${ ("\"" | "'" | "`") }
-date_sigil      = ${ "d" ~  quotes }
-partial_time    = ${ time_hour ~ ":" ~ time_minute ~ ":" ~ time_second ~ time_secfrac? }
-full_date       = ${ date_sigil ~ date_fullyear ~ "-" ~ date_month ~ "-" ~ date_mday ~ quotes? }
-full_time       = ${ partial_time ~ time_offset? ~ quotes }
-
-date_fullyear = @{ ASCII_DIGIT{4} }
-date_month    = @{ ASCII_DIGIT{2} }
-date_mday     = @{ ASCII_DIGIT{2} }
-
-time_hour    = @{ ASCII_DIGIT{2} }
-time_minute  = @{ ASCII_DIGIT{2} }
-time_second  = @{ ASCII_DIGIT{2} }
-time_secfrac = @{ "." ~ ASCII_DIGIT+ }
-time_offset  = ${ "Z" | ("+" | "-") ~ time_hour ~ ":" ~ time_minute }
-
-date_or_datetime = { date_time | local_date_time | full_date ~ full_time? }
-
 // Bare word forms
 
 bare_char = _{!(" " | "\t" | "|" | "$" | "{" | "}" | "(" | ")" | "\r" | "\n") ~ ANY}
@@ -126,15 +91,25 @@ variable = { "$" ~ variable_name }
 
 // Math expression
 
+comp_op_word = { "starts-with" | "ends-with" | "in" | "not-in" }
+comp_op = { "!~" | "=~" | "<=" | ">=" | "<" | ">" | "!=" | "==" }
+
+shift_op_word = { "bit-shl" | "bit-shr" }
+
+plus_op = { "+" | "-" }
+
+mul_op_word = { "mod" }
+mul_op = { (!"**" ~ "*") | "//" | "/" }
+
 or_expr = { and_expr ~ (((sp+ ~ "or" ~ sp+) | (sp* ~ "||" ~ sp*)) ~ and_expr)* }
 and_expr = { bitor_expr ~ (((sp+ ~ "and" ~ sp+) | (sp* ~ "&&" ~ sp*)) ~ bitor_expr)* }
 bitor_expr = { bitxor_expr ~ ((sp+ ~ "bit-or" ~ sp+) ~ bitxor_expr)* }
 bitxor_expr = { bitand_expr ~ ((sp+ ~ "bit-xor" ~ sp+) ~ bitand_expr)* }
 bitand_expr = { comp_expr ~ ((sp+ ~ "bit-and" ~ sp+) ~ comp_expr)* }
-comp_expr = { shift_expr ~ (((sp* ~ "!~" ~ sp*) | (sp* ~ "=~" ~ sp*) | (sp+ ~ "starts-with" ~ sp+) | (sp+ ~ "ends-with" ~ sp+) | (sp* ~ "<=" ~ sp*) | (sp* ~ ">=" ~ sp*) | (sp* ~ "<" ~ sp*) | (sp* ~ ">" ~ sp*) | (sp* ~ "==" ~ sp*) | (sp* ~ "!=" ~ sp*) | (sp+ ~ "in" ~ sp+) | (sp+ ~ "not-in" ~ sp+)) ~ shift_expr)* }
-shift_expr = { plus_expr ~ (((sp+ ~ "bit-shl" ~ sp+) | (sp+ ~ "bit-shr" ~ sp+)) ~ plus_expr)* }
-plus_expr = { mul_expr ~ (((sp* ~ "+" ~ sp*) | (sp* ~ "-" ~ sp*)) ~ mul_expr)* }
-mul_expr = { pow_expr ~ (((sp* ~ (!"**" ~ "*") ~ sp*) | (sp* ~ "//" ~ sp*) | (sp* ~ "/" ~ sp*) | (sp+ ~ "mod" ~ sp+))  ~ pow_expr)* }
+comp_expr = { shift_expr ~ (((sp* ~ comp_op ~ sp*) | (sp+ ~ comp_op_word ~ sp+)) ~ shift_expr)* }
+shift_expr = { plus_expr ~ (((sp+ ~ shift_op_word ~ sp+)) ~ plus_expr)* }
+plus_expr = { mul_expr ~ (sp* ~ plus_op ~ sp* ~ mul_expr)* }
+mul_expr = { pow_expr ~ (((sp* ~ mul_op ~ sp*) | (sp+ ~ mul_op_word ~ sp+))  ~ pow_expr)* }
 pow_expr = { value ~ ((sp* ~ "**" ~ sp*) ~ value)* }
 
 // Row conditions
@@ -145,11 +120,11 @@ row_and_expr = { row_bitor_expr ~ (((sp+ ~ "and" ~ sp+) | (sp* ~ "&&" ~ sp*)) ~ 
 row_bitor_expr = { row_bitxor_expr ~ ((sp+ ~ "bit-or" ~ sp+) ~ row_bitxor_expr)* }
 row_bitxor_expr = { row_bitand_expr ~ ((sp+ ~ "bit-xor" ~ sp+) ~ row_bitand_expr)* }
 row_bitand_expr = { row_comp_expr ~ ((sp+ ~ "bit-and" ~ sp+) ~ row_comp_expr)* }
-row_comp_expr = { row_shift_expr ~ (((sp* ~ "!~" ~ sp*) | (sp* ~ "=~" ~ sp*) | (sp+ ~ "starts-with" ~ sp+) | (sp+ ~ "ends-with" ~ sp+) | (sp* ~ "<=" ~ sp*) | (sp* ~ ">=" ~ sp*) | (sp* ~ "<" ~ sp*) | (sp* ~ ">" ~ sp*) | (sp* ~ "==" ~ sp*) | (sp* ~ "!=" ~ sp*) | (sp+ ~ "in" ~ sp+) | (sp+ ~ "not-in" ~ sp+)) ~ row_shift_expr)* }
-row_shift_expr = { row_plus_expr ~ (((sp+ ~ "bit-shl" ~ sp+) | (sp+ ~ "bit-shr" ~ sp+)) ~ row_plus_expr)* }
-row_plus_expr = { row_mul_expr ~ (((sp* ~ "+" ~ sp*) | (sp* ~ "-" ~ sp*)) ~ row_mul_expr)* }
-row_mul_expr = { row_pow_expr ~ (((sp* ~ "*" ~ sp*)  | (sp* ~ "//" ~ sp*) | (sp* ~ "/" ~ sp*) | (sp+ ~ "mod" ~ sp+))  ~ row_pow_expr)* }
-row_pow_expr = { row_value ~ ((sp* ~ (!"**" ~ "*") ~ sp*) ~ row_value)* }
+row_comp_expr = { row_shift_expr ~ (((sp* ~ comp_op ~ sp*) | (sp+ ~ comp_op_word ~ sp+)) ~ row_shift_expr)* }
+row_shift_expr = { row_plus_expr ~ (sp+ ~ shift_op_word ~ sp+ ~ row_plus_expr)* }
+row_plus_expr = { row_mul_expr ~ (sp* ~ plus_op ~ sp* ~ row_mul_expr)* }
+row_mul_expr = { row_pow_expr ~ (((sp* ~ mul_op ~ sp*) | (sp+ ~ mul_op_word ~ sp+))  ~ row_pow_expr)* }
+row_pow_expr = { row_value ~ (sp* ~ "**" ~ sp* ~ row_value)* }
 
 row_condition = { row_or_expr }
 
@@ -158,14 +133,14 @@ row_condition = { row_or_expr }
 
 expr = { or_expr }
 
-assignment_operator = { "+=" | "-=" | "*=" | "/=" | "=" }
+assignment_operator = { "+=" | "-=" | "*=" | "/=" | "=" }  
 assignment = { variable ~ ws* ~ assignment_operator ~ ws* ~ expr }
 
 paren_expr = { "(" ~ ws* ~ pipeline ~ ws* ~ ")" }
 
 pathed_value = { (record | table | array | variable | closure | block | paren_expr | traditional_call) ~ (("." ~ ident) | ("[" ~ ws* ~ expr ~ ws* ~ "]"))* }
 
-value = _{ binary_data | range | unit | float | int | string | pathed_value | date_or_datetime | "true" | "false" | "null" }
+value = _{ binary_data | range | unit | float | int | string | pathed_value | "true" | "false" | "null" }
 
 // Code blocks
 
