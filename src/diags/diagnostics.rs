@@ -92,8 +92,8 @@ pub fn help() {
     -e - runs this program in nushell expression mode.
     -d - runs this program in diagnostic mode.
     -r <string> - rule to test, specified like 'plus_expr'.
-    -f <string> - file mode: provide a file to parse.
-    -s <string> - string mode: provide a string to parse.\n
+    -f <path/to/file> - file mode: provide a file to parse.
+    -s \"<string>\" - string mode: provide a string to parse.\n
 
     example 1:
       cargo run
@@ -108,7 +108,7 @@ pub fn help() {
       runs in string mode, with the string \"10.4 + 9.6\", with output in diagnostic mode, and with the rule plus_expr.
 
     example 4:
-      cargo run -- -s \"10.4 + 9.6\" -d -r plus_expr
+      cargo run -- -s \"10.4 + 9.6\" -d
       runs in string mode, with the string \"10.4 + 9.6\", with output in diagnostic mode, and with the rule program (default).
 
     example 5:
