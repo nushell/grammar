@@ -31,11 +31,12 @@ files. Section 8 lists the shape-directed rules, and section 9 lists inputs whos
 on that information.
 
 A `; nu:` comment under a rule names the place in nu-parser that decides it. Paths are relative
-to `crates/nu-parser/src` in the nushell repository, and line numbers are those of the commit
-named in the first paragraph of `grammar.md` (`d7cb4e589`). The verdicts in `corpus/expected/`
-come from a newer revision, the one pinned in `harness/Cargo.toml` (`a4819256a`). So the
-verdicts say what nu-parser does today, while a `; nu:` line number can be a little off until
-someone re-reads that rule against the newer source.
+to `crates/nu-parser/src` in the nushell repository. Line numbers are those of the commits the
+first paragraph of `grammar.md` names: `d7cb4e589` for most rules, up to `706259d6f` for rules
+revised later. The verdicts in `corpus/expected/` come from a newer revision, the one pinned in
+`harness/Cargo.toml` (`a4819256a`). So the verdicts say what nu-parser does today, while a
+`; nu:` line number can be a little off until someone re-reads that rule against the newer
+source. Every cited file and function still exists there.
 
 ## Checking the grammar
 
@@ -79,7 +80,8 @@ path below its set directory, or `<list>.json#<index>` for a snippet list. The v
 reports, as `nu-check` would, with the text of its first label. Spans are left out, so a change
 to the standard library doesn't touch every line. `harness/.cargo/config.toml` points `HOME` and
 the XDG directories at paths that exist nowhere, so inputs that read `~` or `$nu.config-path`
-get the same verdict on every machine.
+get the same verdict on every machine. Cargo only reads that file when it runs from `harness/`.
+The expected verdicts were generated on macOS.
 
 ## Keeping it current
 

@@ -6,7 +6,8 @@ re-checked against the released `nu` 0.115.2). It exists so that what Nushell
 accepts can be checked rule by rule instead of asserted. Every rule was derived
 by reading nu-parser's source, and its `; nu:` line names the place there that
 decides it; the rules added on 2026-09-26 cite the line numbers of commit
-`7de074cfe`.
+`7de074cfe`, and the rules revised in October 2026 cite code as of commit `706259d6f`
+(2026-10-25). Every cited file and function exists in nushell `main`.
 
 Nushell has no official grammar; the language is whatever `nu-parser` accepts.
 Much of nu-parser is *shape directed*: the syntax of an argument position is the
