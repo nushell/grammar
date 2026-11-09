@@ -1,0 +1,1 @@
+alias zz = % ('echo') x

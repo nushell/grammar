@@ -1,2 +1,11 @@
 # Example of a `.gitattributes` file which reclassifies `.nu` files as Nushell:
 *.nu linguist-language=Nushell
+
+# nu-parser's verdicts in corpus/expected depend on the exact bytes of each input, so
+# check the corpus out with LF line endings whatever core.autocrlf says.
+corpus/** text eol=lf
+
+# These fixtures test CRLF line endings: store them byte for byte so that
+# core.autocrlf never converts them. (Later lines win over the rule above.)
+corpus/fixtures/accept/comments/crlf-comment-keeps-cr.nu -text
+corpus/fixtures/accept/pipelines/crlf-line-endings.nu -text
