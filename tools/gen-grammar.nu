@@ -1,11 +1,11 @@
 #!/usr/bin/env nu
-# Generate `winnow/grammar/grammar.bnf` and `winnow/grammar/grammar.ebnf` from the ```ebnf
-# fences of `winnow/grammar/grammar.md`, in order.
+# Generate `grammar.bnf` and `grammar.ebnf` from the ```ebnf
+# fences of `grammar.md`, in order. Paths are relative to the repository root.
 #
-#   nu winnow/tools/scripts/gen-grammar.nu                    # rewrite both files
-#   nu winnow/tools/scripts/gen-grammar.nu --check            # exit 1 when they are stale
-#   ebnf2railroad --lint winnow/grammar/grammar.ebnf --no-target
-#   ebnf2railroad --title "Nushell Grammar" winnow/grammar/grammar.ebnf -o winnow/grammar/grammar.html
+#   nu tools/gen-grammar.nu                    # rewrite both files
+#   nu tools/gen-grammar.nu --check            # exit 1 when they are stale
+#   ebnf2railroad --lint grammar.ebnf --no-target
+#   ebnf2railroad --title "Nushell Grammar" grammar.ebnf -o grammar.html
 #
 # grammar.bnf is the fences verbatim (the notation section as comments).
 # grammar.ebnf is the same grammar in ISO 14977 style, which ebnf2railroad and
@@ -58,7 +58,7 @@ def provenance [text: string]: nothing -> record<commit: string, date: string> {
 def bnf-text [blocks: list, prov: record]: nothing -> string {
     let header = [
         $"; The Nushell grammar as nu-parser accepts it \(nushell main ($prov.commit), ($prov.date))."
-        "; Generated from grammar.md (the fences, in order) by winnow/tools/scripts/gen-grammar.nu."
+        "; Generated from grammar.md (the fences, in order) by tools/gen-grammar.nu."
         "; grammar.md carries the discussion, the coverage analysis and the meaning of"
         "; the annotations; this file is the same grammar in one piece. Regenerate it"
         "; from grammar.md rather than editing it directly."
@@ -411,7 +411,7 @@ def ebnf-block [lines: list<string>]: nothing -> list<string> {
 def ebnf-text [blocks: list, prov: record]: nothing -> string {
     let header = [
         $"\(* The Nushell grammar as nu-parser accepts it \(nushell main ($prov.commit), ($prov.date)). *)"
-        "(* Generated from grammar.md (the fences, in order) by winnow/tools/scripts/gen-grammar.nu. *)"
+        "(* Generated from grammar.md (the fences, in order) by tools/gen-grammar.nu. *)"
         "(* grammar.md carries the discussion, the coverage analysis and the meaning of *)"
         "(* the annotations; this file is the same grammar in one piece. Regenerate it *)"
         "(* from grammar.md rather than editing it directly. *)"
@@ -435,18 +435,18 @@ def ebnf-text [blocks: list, prov: record]: nothing -> string {
 
 # Rewrite the generated grammar files, or with --check report whether they are current.
 def main [
-    --root: path    # nu-parser's directory (default: the one this script is in)
+    --root: path    # the grammar repository (default: the parent of this script's directory)
     --check         # do not write; exit 1 when a generated file is stale
 ] {
-    let root = $root | default ($env.FILE_PWD | path join ../../.. | path expand)
-    let md_path = $root | path join winnow/grammar/grammar.md
+    let root = $root | default ($env.FILE_PWD | path join .. | path expand)
+    let md_path = $root | path join grammar.md
     let md = open --raw $md_path
     let prov = provenance $md
     let blocks = fences ($md | lines)
     let outputs = [
         [path text];
-        [($root | path join winnow/grammar/grammar.bnf) (bnf-text $blocks $prov)]
-        [($root | path join winnow/grammar/grammar.ebnf) (ebnf-text $blocks $prov)]
+        [($root | path join grammar.bnf) (bnf-text $blocks $prov)]
+        [($root | path join grammar.ebnf) (ebnf-text $blocks $prov)]
     ]
     mut stale: list<string> = []
     for o in $outputs {
@@ -459,7 +459,7 @@ def main [
         }
     }
     if $check and ($stale | is-not-empty) {
-        error make { msg: $"stale generated grammar: ($stale | str join ', '); run nu winnow/tools/scripts/gen-grammar.nu" }
+        error make { msg: $"stale generated grammar: ($stale | str join ', '); run nu tools/gen-grammar.nu" }
     }
     print $"($blocks | length) fences; (if $check { 'checked' } else { 'wrote' }) grammar.bnf and grammar.ebnf"
 }
