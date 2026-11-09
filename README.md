@@ -2,7 +2,7 @@
 
 Nushell has no official grammar. The language is whatever `nu-parser` accepts. This repository
 writes that down as a BNF grammar, derived rule by rule from nu-parser's source. It also holds
-15,230 Nushell inputs and nu-parser's verdict on each one, so you can check the grammar against
+15,235 Nushell inputs and nu-parser's verdict on each one, so you can check the grammar against
 the parser and see when the parser moves.
 
 The grammar describes nu-parser and nothing else. Other projects (parsers, formatters, editor
@@ -31,8 +31,11 @@ files. Section 8 lists the shape-directed rules, and section 9 lists inputs whos
 on that information.
 
 A `; nu:` comment under a rule names the place in nu-parser that decides it. Paths are relative
-to `crates/nu-parser/src` in the nushell repository, at the commit named in the first paragraph
-of `grammar.md`.
+to `crates/nu-parser/src` in the nushell repository, and line numbers are those of the commit
+named in the first paragraph of `grammar.md` (`d7cb4e589`). The verdicts in `corpus/expected/`
+come from a newer revision, the one pinned in `harness/Cargo.toml` (`a4819256a`). So the
+verdicts say what nu-parser does today, while a `; nu:` line number can be a little off until
+someone re-reads that rule against the newer source.
 
 ## Checking the grammar
 
@@ -47,14 +50,14 @@ cd harness; cargo test                          # nu-parser's verdicts match cor
 ```
 
 The first `cargo test` builds nushell's command crates, which takes a few minutes. After that the
-harness parses all 15,230 inputs in about a second.
+harness parses all 15,235 inputs in about two seconds.
 
 ## The corpus
 
 | set | inputs | what it is |
 | --- | ---: | --- |
-| `corpus/fixtures/accept/` | 1,092 | One construct per file, written so that the grammar's syntactic rules accept it. |
-| `corpus/fixtures/reject/` | 524 | One construct per file that the syntactic rules refuse. |
+| `corpus/fixtures/accept/` | 1,096 | One construct per file, written so that the grammar's syntactic rules accept it. |
+| `corpus/fixtures/reject/` | 525 | One construct per file that the syntactic rules refuse. |
 | `corpus/files/` | 14 | Real files: std modules, the default config and env, `kitchen_sink.nu` and others. |
 | `corpus/snippets/` | 2,808 | Every built-in command example (1,729) and every Nushell code block in the book (1,079). |
 | `corpus/generated/flag-values/` | 2,720 | 48 keyword statements with a help flag or a flag value in each slot, plus switch values and short-flag batches. |
@@ -63,16 +66,20 @@ harness parses all 15,230 inputs in about a second.
 
 The harness checks two things. Every verdict must match its line in `corpus/expected/`. And
 nu-parser must reject every reject fixture, because anything the syntactic rules refuse, nu
-refuses too. The converse does not hold. 157 accept fixtures fail in nu-parser because of
+refuses too. The converse does not hold. 158 accept fixtures fail in nu-parser because of
 something the text doesn't carry: a command's signature, a type, a constant, or a module, file
-or plugin that isn't there. Section 9 of `grammar.md` covers these cases, and 142 of the 157
-have names ending in `-is-consumer`.
+or plugin that isn't there. Section 9 of `grammar.md` covers these cases. The 147 fixtures named
+`*-needs-context.nu` were written to depend on such information: 143 of them fail, and nu's
+context accepts the other four. The other 15 failures are a missing module, file or plugin,
+a command's input or output type, or an attribute evaluated at parse time.
 
 Each line of a `corpus/expected/*.txt` file is a key, a tab and a verdict. The key is the input's
 path below its set directory, or `<list>.json#<index>` for a snippet list. The verdict is `ok`,
 `error <Variant>` or `error <Variant>: <label>`. That is the first `ParseError` nu-parser
 reports, as `nu-check` would, with the text of its first label. Spans are left out, so a change
-to the standard library doesn't touch every line.
+to the standard library doesn't touch every line. `harness/.cargo/config.toml` points `HOME` and
+the XDG directories at paths that exist nowhere, so inputs that read `~` or `$nu.config-path`
+get the same verdict on every machine.
 
 ## Keeping it current
 

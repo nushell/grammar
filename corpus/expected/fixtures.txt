@@ -6,8 +6,8 @@ accept/alias/call-to-alias-of-match.nu	ok
 accept/alias/call-to-alias-of-row-condition-command.nu	ok
 accept/alias/call-to-alias-of-try.nu	ok
 accept/alias/call-to-external-alias-is-external.nu	ok
-accept/alias/export-alias-without-equals-is-consumer.nu	ok
-accept/alias/export-alias-without-target-is-consumer.nu	ok
+accept/alias/export-alias-without-equals-needs-context.nu	ok
+accept/alias/export-alias-without-target-needs-context.nu	ok
 accept/alias/external-target.nu	ok
 accept/alias/help-before-equals.nu	ok
 accept/alias/help-flag.nu	ok
@@ -21,8 +21,11 @@ accept/alias/same-name-twice.nu	ok
 accept/alias/short-flag-batch-with-help.nu	ok
 accept/alias/simple.nu	ok
 accept/alias/target-attr-example-without-arguments.nu	ok
+accept/alias/target-dynamic-percent-call-needs-context.nu	error CantAliasKeyword: not supported in alias
 accept/alias/target-env-shorthand-is-command.nu	ok
+accept/alias/target-if-group-condition-missing-positional.nu	ok
 accept/alias/target-if-incomplete.nu	ok
+accept/alias/target-nested-if-missing-positional.nu	ok
 accept/alias/target-overlay-new-without-argument.nu	ok
 accept/alias/to-custom-command.nu	ok
 accept/alias/with-args.nu	ok
@@ -61,11 +64,11 @@ accept/attributes/before-extern.nu	ok
 accept/attributes/before-longer-pipeline-are-command-words.nu	ok
 accept/attributes/blank-and-comment-lines-then-pipe-are-command-words.nu	ok
 accept/attributes/blank-line-then-pipe-are-command-words.nu	ok
-accept/attributes/category-two-arguments-is-consumer.nu	error ExtraPositional: extra positional argument
-accept/attributes/empty-name-is-consumer.nu	error UnknownCommand: unknown command
-accept/attributes/empty-name-then-word-is-consumer.nu	error UnknownCommand: unknown command
-accept/attributes/example-missing-arguments-is-consumer.nu	error MissingPositional: missing description
-accept/attributes/example-one-argument-is-consumer.nu	error MissingPositional: missing example
+accept/attributes/category-two-arguments-needs-context.nu	error ExtraPositional: extra positional argument
+accept/attributes/empty-name-needs-context.nu	error UnknownCommand: unknown command
+accept/attributes/empty-name-then-word-needs-context.nu	error UnknownCommand: unknown command
+accept/attributes/example-missing-arguments-needs-context.nu	error MissingPositional: missing description
+accept/attributes/example-one-argument-needs-context.nu	error MissingPositional: missing example
 accept/attributes/in-module.nu	ok
 accept/attributes/line-ending-with-pipe-continues-past-comment.nu	ok
 accept/attributes/line-ending-with-pipe-then-blank-line-then-pipe.nu	ok
@@ -73,26 +76,26 @@ accept/attributes/multiline-args.nu	ok
 accept/attributes/semicolon-then-def-same-line.nu	ok
 accept/attributes/semicolon-then-pipe-line-are-command-words.nu	ok
 accept/attributes/single.nu	ok
-accept/attributes/structured-extra-argument-is-consumer.nu	error ExtraPositional: extra positional argument
-accept/attributes/structured-missing-decode-is-consumer.nu	error MissingPositional: missing decode
+accept/attributes/structured-extra-argument-needs-context.nu	error ExtraPositional: extra positional argument
+accept/attributes/structured-missing-decode-needs-context.nu	error MissingPositional: missing decode
 accept/attributes/structured.nu	ok
 accept/attributes/trailing-comment-and-doc-before.nu	ok
-accept/attributes/unknown-attribute-name-is-consumer.nu	error UnknownCommand: unknown command
+accept/attributes/unknown-attribute-name-needs-context.nu	error UnknownCommand: unknown command
 accept/attributes/user-defined-attribute.nu	error LabeledError: Encountered error during parse-time evaluation
 accept/attributes/values-of-every-kind.nu	ok
 accept/attributes/with-args.nu	ok
-accept/bindings/binding-without-value-forms-is-consumer.nu	error MissingPositional: missing initial_value
+accept/bindings/binding-without-value-forms-needs-context.nu	error MissingPositional: missing initial_value
 accept/bindings/const-forms.nu	ok
-accept/bindings/const-no-name-is-consumer.nu	error MissingPositional: missing const_name
-accept/bindings/const-without-value-is-consumer.nu	error MissingPositional: missing initial_value
-accept/bindings/export-const-without-value-is-consumer.nu	error MissingPositional: missing initial_value
+accept/bindings/const-no-name-needs-context.nu	error MissingPositional: missing const_name
+accept/bindings/const-without-value-needs-context.nu	error MissingPositional: missing initial_value
+accept/bindings/export-const-without-value-needs-context.nu	error MissingPositional: missing initial_value
 accept/bindings/let-after-pipe.nu	ok
 accept/bindings/let-bare-dollar-name.nu	ok
 accept/bindings/let-closure-value.nu	ok
-accept/bindings/let-completer-in-type-is-consumer.nu	error LabeledError: Type specifications do not support custom completers
+accept/bindings/let-completer-in-type-needs-context.nu	error LabeledError: Type specifications do not support custom completers
 accept/bindings/let-dollar-name.nu	ok
 accept/bindings/let-double-dash-without-value.nu	ok
-accept/bindings/let-equals-attached-to-type-is-consumer.nu	error UnknownType: unknown type
+accept/bindings/let-equals-attached-to-type-needs-context.nu	error UnknownType: unknown type
 accept/bindings/let-external-value.nu	ok
 accept/bindings/let-help.nu	ok
 accept/bindings/let-if-value.nu	ok
@@ -102,7 +105,7 @@ accept/bindings/let-match-value.nu	ok
 accept/bindings/let-multiline-value.nu	ok
 accept/bindings/let-name-then-help.nu	ok
 accept/bindings/let-name-with-attached-type.nu	ok
-accept/bindings/let-no-name-is-consumer.nu	error MissingPositional: missing var_name
+accept/bindings/let-no-name-needs-context.nu	error MissingPositional: missing var_name
 accept/bindings/let-pipeline-value.nu	ok
 accept/bindings/let-simple.nu	ok
 accept/bindings/let-type-alias.nu	ok
@@ -112,11 +115,11 @@ accept/bindings/let-unicode.nu	ok
 accept/bindings/let-value-with-comment.nu	ok
 accept/bindings/let-with-in.nu	ok
 accept/bindings/mut-forms.nu	ok
-accept/bindings/mut-no-name-is-consumer.nu	error MissingPositional: missing var_name
-accept/bindings/mut-without-value-is-consumer.nu	error MissingPositional: missing initial_value
+accept/bindings/mut-no-name-needs-context.nu	error MissingPositional: missing var_name
+accept/bindings/mut-without-value-needs-context.nu	error MissingPositional: missing initial_value
 accept/calls/args-of-every-kind.nu	ok
-accept/calls/attribute-with-pipe-is-consumer.nu	error ExtraPositional: extra positional argument
-accept/calls/attribute-with-redirect-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/calls/attribute-with-pipe-needs-context.nu	error ExtraPositional: extra positional argument
+accept/calls/attribute-with-redirect-needs-context.nu	error ExtraPositional: extra positional argument
 accept/calls/bare-word-operators-as-args.nu	ok
 accept/calls/binary-with-pipe-is-command-name.nu	ok
 accept/calls/call-with-trailing-comment.nu	ok
@@ -128,15 +131,15 @@ accept/calls/flag-followed-by-value.nu	ok
 accept/calls/flag-with-equals-value.nu	ok
 accept/calls/flag-with-equals-various-values.nu	ok
 accept/calls/help-and-describe.nu	ok
-accept/calls/hide-extra-positional-is-consumer.nu	error ExtraPositional: extra positional argument
-accept/calls/hide-flag-word-is-no-member-is-consumer.nu	error UnknownFlag: unknown flag
-accept/calls/hide-help-extra-positional-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/calls/hide-extra-positional-needs-context.nu	error ExtraPositional: extra positional argument
+accept/calls/hide-flag-word-is-no-member-needs-context.nu	error UnknownFlag: unknown flag
+accept/calls/hide-help-extra-positional-needs-context.nu	error ExtraPositional: extra positional argument
 accept/calls/hide-int-name.nu	ok
-accept/calls/hide-null-is-consumer.nu	error ExpectedWithStringMsg: expected string
-accept/calls/hide-unknown-long-flag-is-consumer.nu	error UnknownFlag: unknown flag
-accept/calls/hide-unknown-short-flag-is-consumer.nu	error UnknownFlag: unknown flag
+accept/calls/hide-null-needs-context.nu	error ExpectedWithStringMsg: expected string
+accept/calls/hide-unknown-long-flag-needs-context.nu	error UnknownFlag: unknown flag
+accept/calls/hide-unknown-short-flag-needs-context.nu	error UnknownFlag: unknown flag
 accept/calls/hide-with-members.nu	error ModuleNotFound: module std not found
-accept/calls/hide-without-argument-is-consumer.nu	error MissingPositional: missing name
+accept/calls/hide-without-argument-needs-context.nu	error MissingPositional: missing name
 accept/calls/import-may-extend-a-command.nu	ok
 accept/calls/keyword-help-forgives-positionals.nu	ok
 accept/calls/keyword-named-commands.nu	ok
@@ -150,29 +153,29 @@ accept/calls/multiword-command.nu	ok
 accept/calls/negative-number-args.nu	ok
 accept/calls/no-args.nu	ok
 accept/calls/non-ascii-flag.nu	ok
-accept/calls/overlay-hide-help-keep-env-without-value-is-consumer.nu	error MissingFlagParam: flag missing list<string> argument
+accept/calls/overlay-hide-help-keep-env-without-value-needs-context.nu	error MissingFlagParam: flag missing list<string> argument
 accept/calls/overlay-hide-keep-env-list.nu	error CantHideDefaultOverlay: can't hide overlay
-accept/calls/overlay-hide-keep-env-without-value-is-consumer.nu	error MissingFlagParam: flag missing list<string> argument
-accept/calls/overlay-hide-two-positionals-is-consumer.nu	error ExtraPositional: extra positional argument
-accept/calls/overlay-hide-value-flag-not-last-in-batch-is-consumer.nu	error OnlyLastFlagInBatchCanTakeArg: only the last flag can take args
-accept/calls/overlay-list-positional-is-consumer.nu	error ExtraPositional: extra positional argument
-accept/calls/overlay-list-unknown-flag-is-consumer.nu	error UnknownFlag: unknown flag
+accept/calls/overlay-hide-keep-env-without-value-needs-context.nu	error MissingFlagParam: flag missing list<string> argument
+accept/calls/overlay-hide-two-positionals-needs-context.nu	error ExtraPositional: extra positional argument
+accept/calls/overlay-hide-value-flag-not-last-in-batch-needs-context.nu	error OnlyLastFlagInBatchCanTakeArg: only the last flag can take args
+accept/calls/overlay-list-positional-needs-context.nu	error ExtraPositional: extra positional argument
+accept/calls/overlay-list-unknown-flag-needs-context.nu	error UnknownFlag: unknown flag
 accept/calls/overlay-new-int-name.nu	ok
-accept/calls/overlay-new-null-is-consumer.nu	error ExpectedWithStringMsg: expected string
-accept/calls/overlay-new-two-positionals-is-consumer.nu	error ExtraPositional: extra positional argument
-accept/calls/overlay-new-without-argument-is-consumer.nu	error MissingPositional: missing name
+accept/calls/overlay-new-null-needs-context.nu	error ExpectedWithStringMsg: expected string
+accept/calls/overlay-new-two-positionals-needs-context.nu	error ExtraPositional: extra positional argument
+accept/calls/overlay-new-without-argument-needs-context.nu	error MissingPositional: missing name
 accept/calls/overlay-use-as-takes-any-item.nu	ok
-accept/calls/overlay-use-flag-without-argument-is-consumer.nu	error MissingPositional: missing name
-accept/calls/overlay-use-flags-before-as-is-consumer.nu	error UnknownFlag: unknown flag
-accept/calls/overlay-use-help-then-unknown-flag-is-consumer.nu	error UnknownFlag: unknown flag
+accept/calls/overlay-use-flag-without-argument-needs-context.nu	error MissingPositional: missing name
+accept/calls/overlay-use-flags-before-as-needs-context.nu	error UnknownFlag: unknown flag
+accept/calls/overlay-use-help-then-unknown-flag-needs-context.nu	error UnknownFlag: unknown flag
 accept/calls/overlay-use-prefix-and-as.nu	ok
 accept/calls/overlay-use-reload.nu	ok
-accept/calls/overlay-use-spread-is-no-positional-is-consumer.nu	error UnknownState: internal error: Missing required positional after call parsing
-accept/calls/overlay-use-switch-value-not-bool-is-consumer.nu	error ExpectedWithStringMsg: expected bool
-accept/calls/overlay-use-two-names-is-consumer.nu	error ExtraPositional: extra positional argument
-accept/calls/overlay-use-unknown-flag-in-batch-is-consumer.nu	error UnknownFlag: unknown flag
-accept/calls/overlay-use-unknown-flag-is-consumer.nu	error UnknownFlag: unknown flag
-accept/calls/overlay-use-without-argument-is-consumer.nu	error MissingPositional: missing name
+accept/calls/overlay-use-spread-is-no-positional-needs-context.nu	error UnknownState: internal error: Missing required positional after call parsing
+accept/calls/overlay-use-switch-value-not-bool-needs-context.nu	error ExpectedWithStringMsg: expected bool
+accept/calls/overlay-use-two-names-needs-context.nu	error ExtraPositional: extra positional argument
+accept/calls/overlay-use-unknown-flag-in-batch-needs-context.nu	error UnknownFlag: unknown flag
+accept/calls/overlay-use-unknown-flag-needs-context.nu	error UnknownFlag: unknown flag
+accept/calls/overlay-use-without-argument-needs-context.nu	error MissingPositional: missing name
 accept/calls/percent-sigil-bare-var.nu	ok
 accept/calls/percent-sigil-builtin-under-custom-multiword.nu	ok
 accept/calls/percent-sigil-builtin.nu	ok
@@ -185,10 +188,10 @@ accept/calls/percent-sigil-shadowed-builtin.nu	ok
 accept/calls/percent-sigil-spaced-head.nu	ok
 accept/calls/percent-sigil-subexpression-math.nu	ok
 accept/calls/percent-sigil-with-spread.nu	ok
-accept/calls/plugin-use-flag-value-without-argument-is-consumer.nu	error MissingPositional: missing name
-accept/calls/plugin-use-two-positionals-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/calls/plugin-use-flag-value-without-argument-needs-context.nu	error MissingPositional: missing name
+accept/calls/plugin-use-two-positionals-needs-context.nu	error ExtraPositional: extra positional argument
 accept/calls/plugin-use-with-config.nu	error FileNotFound: File not found: y
-accept/calls/plugin-use-without-argument-is-consumer.nu	error MissingPositional: missing name
+accept/calls/plugin-use-without-argument-needs-context.nu	error MissingPositional: missing name
 accept/calls/positional-args.nu	ok
 accept/calls/prefix-word-not-command.nu	ok
 accept/calls/radix-like-command-name.nu	ok
@@ -198,13 +201,13 @@ accept/calls/row-condition-command.nu	ok
 accept/calls/row-condition-multi-word-command.nu	ok
 accept/calls/run-full-reparse.nu	ok
 accept/calls/run-with-rest-and-unknown-flags.nu	ok
-accept/calls/run-without-argument-is-consumer.nu	error MissingPositional: missing filename
+accept/calls/run-without-argument-needs-context.nu	error MissingPositional: missing filename
 accept/calls/short-flag-batch.nu	ok
 accept/calls/short-flags.nu	ok
 accept/calls/source-env-null.nu	ok
-accept/calls/source-two-positionals-is-consumer.nu	error ExtraPositional: extra positional argument
-accept/calls/source-unknown-short-flag-is-consumer.nu	error UnknownFlag: unknown flag
-accept/calls/source-without-argument-is-consumer.nu	error MissingPositional: missing filename
+accept/calls/source-two-positionals-needs-context.nu	error ExtraPositional: extra positional argument
+accept/calls/source-unknown-short-flag-needs-context.nu	error UnknownFlag: unknown flag
+accept/calls/source-without-argument-needs-context.nu	error MissingPositional: missing filename
 accept/calls/spread-args.nu	ok
 accept/calls/spread-bare-word-is-positional.nu	ok
 accept/calls/spread-record-args.nu	ok
@@ -288,8 +291,8 @@ accept/comments/hash-inside-word-is-not-comment.nu	ok
 accept/comments/leading-doc-comment-def.nu	ok
 accept/comments/only-comment.nu	ok
 accept/comments/trailing-comment.nu	ok
-accept/def/alias-missing-equals-is-consumer.nu	error IncorrectValue: unexpected Incomplete alias
-accept/def/alias-missing-target-is-consumer.nu	error IncorrectValue: unexpected Incomplete alias
+accept/def/alias-missing-equals-needs-context.nu	error IncorrectValue: unexpected Incomplete alias
+accept/def/alias-missing-target-needs-context.nu	error IncorrectValue: unexpected Incomplete alias
 accept/def/blank-line-before-leading-pipe-keeps-doc.nu	ok
 accept/def/block-before-body-ignored.nu	ok
 accept/def/body-forms.nu	ok
@@ -306,9 +309,9 @@ accept/def/def-with-doc-comments-and-blank-line.nu	ok
 accept/def/dollar-params.nu	ok
 accept/def/env-flag.nu	ok
 accept/def/export-body-with-closure-params.nu	ok
-accept/def/extern-missing-signature-is-consumer.nu	error MissingPositional: missing params
+accept/def/extern-missing-signature-needs-context.nu	error MissingPositional: missing params
 accept/def/flag-defaults.nu	ok
-accept/def/flag-value-not-bool-is-consumer.nu	error ExpectedWithStringMsg: expected bool
+accept/def/flag-value-not-bool-needs-context.nu	error ExpectedWithStringMsg: expected bool
 accept/def/flag-values.nu	ok
 accept/def/flags-after-name.nu	ok
 accept/def/flags.nu	ok
@@ -317,26 +320,27 @@ accept/def/help-after-body.nu	ok
 accept/def/help-after-name.nu	ok
 accept/def/help-after-signature.nu	ok
 accept/def/help-before-signature-then-body.nu	ok
-accept/def/help-flag-is-consumer.nu	error LabeledErrorWithHelp: every command already has `--help`
+accept/def/help-flag-needs-context.nu	error LabeledErrorWithHelp: every command already has `--help`
 accept/def/help-flag-with-value.nu	ok
 accept/def/help-flag.nu	ok
 accept/def/help-then-definition-flags.nu	ok
 accept/def/help-twice-then-signature.nu	ok
 accept/def/help-with-dropped-glued-braces.nu	ok
+accept/def/help-with-io-types.nu	ok
 accept/def/io-colon-then-nothing.nu	ok
-accept/def/io-completer-is-consumer.nu	error LabeledError: Type specifications do not support custom completers
-accept/def/io-list-completer-is-consumer.nu	error LabeledError: Type specifications do not support custom completers
+accept/def/io-completer-needs-context.nu	error LabeledError: Type specifications do not support custom completers
+accept/def/io-list-completer-needs-context.nu	error LabeledError: Type specifications do not support custom completers
 accept/def/io-types-list.nu	ok
 accept/def/io-types-pass-through.nu	ok
 accept/def/io-types-single.nu	ok
 accept/def/io-types-spaced-colon.nu	ok
 accept/def/io-types-trailing-bracket-only.nu	ok
 accept/def/keyword-like-body-first-word.nu	ok
-accept/def/lone-dash-name-is-consumer.nu	error LabeledErrorWithHelp: expected space
+accept/def/lone-dash-name-needs-context.nu	error LabeledErrorWithHelp: expected space
 accept/def/main.nu	ok
 accept/def/minimal.nu	ok
-accept/def/missing-body-is-consumer.nu	error MissingPositional: missing block
-accept/def/missing-everything-is-consumer.nu	error MissingPositional: missing def_name
+accept/def/missing-body-needs-context.nu	error MissingPositional: missing block
+accept/def/missing-everything-needs-context.nu	error MissingPositional: missing def_name
 accept/def/name-is-byte-size.nu	ok
 accept/def/names-with-symbols.nu	ok
 accept/def/nested-def.nu	ok
@@ -358,25 +362,25 @@ accept/def/signature-multiline-with-trailing-commas.nu	ok
 accept/def/signature-newlines-between-parts.nu	ok
 accept/def/stray-colon-is-ignored.nu	ok
 accept/def/stray-equals-is-ignored.nu	ok
-accept/def/type-alias-completer-is-consumer.nu	error LabeledError: Type specifications do not support custom completers
+accept/def/type-alias-completer-needs-context.nu	error LabeledError: Type specifications do not support custom completers
 accept/def/type-alias-in-generic.nu	ok
 accept/def/type-alias-name-like-generic.nu	ok
 accept/def/type-alias-with-completer-on-parameter.nu	ok
-accept/def/type-alias-with-type-parameters-is-consumer.nu	error UnknownType: unknown type
+accept/def/type-alias-with-type-parameters-needs-context.nu	error UnknownType: unknown type
 accept/def/type-alias.nu	ok
-accept/def/unknown-def-flag-is-consumer.nu	error UnknownFlag: unknown flag
-accept/def/unknown-type-is-consumer.nu	error UnknownType: unknown type
-accept/def/unknown-type-no-alias-name-is-consumer.nu	error UnknownType: unknown type
+accept/def/unknown-def-flag-needs-context.nu	error UnknownFlag: unknown flag
+accept/def/unknown-type-needs-context.nu	error UnknownType: unknown type
+accept/def/unknown-type-no-alias-name-needs-context.nu	error UnknownType: unknown type
 accept/def/unparsed-block-before-body.nu	ok
 accept/def/wrapped-call-before-definition.nu	ok
 accept/def/wrapped-flag.nu	ok
 accept/def/wrapped-help-flag.nu	ok
-accept/def/wrapped-rest-any-is-consumer.nu	error TypeMismatchHelp: expected list<string>, found list<any>
-accept/def/wrapped-rest-int-is-consumer.nu	error TypeMismatchHelp: expected list<string>, found list<int>
+accept/def/wrapped-rest-any-needs-context.nu	error TypeMismatchHelp: expected list<string>, found list<any>
+accept/def/wrapped-rest-int-needs-context.nu	error TypeMismatchHelp: expected list<string>, found list<int>
 accept/def/wrapped-rest-string.nu	ok
 accept/def/wrapped-rest-typed-after-comment-with-dots.nu	ok
 accept/def/wrapped-untyped-rest-takes-external-arguments.nu	ok
-accept/def/wrapped-without-rest-is-consumer.nu	error MissingPositional: missing ...rest-like positional argument
+accept/def/wrapped-without-rest-needs-context.nu	error MissingPositional: missing ...rest-like positional argument
 accept/env-shorthand/before-keyword.nu	ok
 accept/env-shorthand/invalid-name-is-command.nu	ok
 accept/env-shorthand/let-without-value-after-shorthand.nu	ok
@@ -397,7 +401,7 @@ accept/extern/export-strict-flag.nu	ok
 accept/extern/help-after-name.nu	ok
 accept/extern/help-twice.nu	ok
 accept/extern/io-types.nu	ok
-accept/extern/lone-dash-name-is-consumer.nu	error LabeledErrorWithHelp: expected space
+accept/extern/lone-dash-name-needs-context.nu	error LabeledErrorWithHelp: expected space
 accept/extern/no-params.nu	ok
 accept/extern/paren-signature.nu	ok
 accept/extern/positional-after-rest.nu	ok
@@ -406,10 +410,10 @@ accept/extern/repeated-names.nu	ok
 accept/extern/reserved-names-allowed.nu	ok
 accept/extern/strict-flag-after-name.nu	ok
 accept/extern/strict-flag-then-end-of-options.nu	ok
-accept/extern/strict-flag-value-not-bool-is-consumer.nu	error ExpectedWithStringMsg: expected bool
+accept/extern/strict-flag-value-not-bool-needs-context.nu	error ExpectedWithStringMsg: expected bool
 accept/extern/strict-flag-value.nu	ok
 accept/extern/strict-flag.nu	ok
-accept/extern/unknown-flag-is-consumer.nu	error UnknownFlag: unknown flag
+accept/extern/unknown-flag-needs-context.nu	error UnknownFlag: unknown flag
 accept/extern/wrapped-body-ignored.nu	ok
 accept/externals/arg-bare-and-quoted.nu	ok
 accept/externals/arg-closure.nu	ok
@@ -443,7 +447,7 @@ accept/if/as-value.nu	ok
 accept/if/block-with-statements.nu	ok
 accept/if/condition-forms.nu	ok
 accept/if/condition-then-help.nu	ok
-accept/if/else-before-condition-is-consumer.nu	error MissingPositional: missing cond
+accept/if/else-before-condition-needs-context.nu	error MissingPositional: missing cond
 accept/if/else-call-with-closure-arg.nu	ok
 accept/if/else-closure-in-expression.nu	ok
 accept/if/else-closure.nu	ok
@@ -458,24 +462,24 @@ accept/if/else.nu	ok
 accept/if/empty-blocks.nu	ok
 accept/if/end-of-options-first.nu	ok
 accept/if/flags-after-else-block.nu	ok
-accept/if/help-flag-value-not-bool-is-consumer.nu	error ExpectedWithStringMsg: expected bool
+accept/if/help-flag-value-not-bool-needs-context.nu	error ExpectedWithStringMsg: expected bool
 accept/if/help-flag-with-value.nu	ok
 accept/if/help-flag.nu	ok
 accept/if/help-with-condition-asking-help.nu	ok
 accept/if/in-pipeline.nu	ok
 accept/if/multiline.nu	ok
-accept/if/negative-number-first-is-consumer.nu	error UnknownFlag: unknown flag
+accept/if/negative-number-first-needs-context.nu	error UnknownFlag: unknown flag
 accept/if/nested.nu	ok
-accept/if/no-block-is-consumer.nu	error MissingPositional: missing cond
-accept/if/no-condition-is-consumer.nu	error MissingPositional: missing cond
-accept/if/operator-after-else-block-is-consumer.nu	error ExtraPositional: extra positional argument
-accept/if/pipe-in-condition-is-consumer.nu	error MissingPositional: missing cond
+accept/if/no-block-needs-context.nu	error MissingPositional: missing cond
+accept/if/no-condition-needs-context.nu	error MissingPositional: missing cond
+accept/if/operator-after-else-block-needs-context.nu	error ExtraPositional: extra positional argument
+accept/if/pipe-in-condition-needs-context.nu	error MissingPositional: missing cond
 accept/if/simple.nu	ok
 accept/if/then-record-cell-path.nu	ok
 accept/if/then-record-raw-string-key.nu	ok
 accept/if/then-record-with-variable-key.nu	ok
 accept/if/then-value-variable.nu	ok
-accept/if/unknown-flag-after-else-block-is-consumer.nu	error UnknownFlag: unknown flag
+accept/if/unknown-flag-after-else-block-needs-context.nu	error UnknownFlag: unknown flag
 accept/interpolation/backslash-count-reset.nu	ok
 accept/interpolation/bare-word-both-ends.nu	ok
 accept/interpolation/bare-word-path.nu	ok
@@ -589,53 +593,53 @@ accept/literals/special-float-names.nu	ok
 accept/literals/unit-limits.nu	ok
 accept/literals/unit-plus-sign.nu	ok
 accept/loops/break-continue-in-nested-blocks.nu	ok
-accept/loops/break-help-then-extra-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/loops/break-help-then-extra-needs-context.nu	error ExtraPositional: extra positional argument
 accept/loops/break-help.nu	ok
-accept/loops/break-with-arg-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/loops/break-with-arg-needs-context.nu	error ExtraPositional: extra positional argument
 accept/loops/continue-help.nu	ok
-accept/loops/continue-with-arg-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/loops/continue-with-arg-needs-context.nu	error ExtraPositional: extra positional argument
 accept/loops/for-bare-dollar-name.nu	ok
 accept/loops/for-body-record-with-variable-key.nu	ok
 accept/loops/for-body-value-variable.nu	ok
 accept/loops/for-dollar-var.nu	ok
-accept/loops/for-extra-tokens-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/loops/for-extra-tokens-needs-context.nu	error ExtraPositional: extra positional argument
 accept/loops/for-help-after-var.nu	ok
-accept/loops/for-help-then-extra-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/loops/for-help-then-extra-needs-context.nu	error ExtraPositional: extra positional argument
 accept/loops/for-iterable-forms.nu	ok
 accept/loops/for-list.nu	ok
-accept/loops/for-missing-var-is-consumer.nu	error MissingPositional: missing var_name
+accept/loops/for-missing-var-needs-context.nu	error MissingPositional: missing var_name
 accept/loops/for-multiline.nu	ok
 accept/loops/for-range.nu	ok
 accept/loops/for-typed-record-with-spaces.nu	ok
-accept/loops/for-typed-then-help-is-consumer.nu	error UnknownType: unknown type
+accept/loops/for-typed-then-help-needs-context.nu	error UnknownType: unknown type
 accept/loops/for-typed.nu	ok
-accept/loops/loop-alone-is-consumer.nu	error MissingPositional: missing block
+accept/loops/loop-alone-needs-context.nu	error MissingPositional: missing block
 accept/loops/loop-basic.nu	ok
 accept/loops/loop-body-value-variable.nu	ok
-accept/loops/loop-double-dash-then-help-is-consumer.nu	error ExtraPositional: extra positional argument
-accept/loops/loop-extra-tokens-is-consumer.nu	error ExtraPositional: extra positional argument
-accept/loops/loop-help-then-extra-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/loops/loop-double-dash-then-help-needs-context.nu	error ExtraPositional: extra positional argument
+accept/loops/loop-extra-tokens-needs-context.nu	error ExtraPositional: extra positional argument
+accept/loops/loop-help-then-extra-needs-context.nu	error ExtraPositional: extra positional argument
 accept/loops/loop-help.nu	ok
 accept/loops/loop-keywords-as-values.nu	ok
 accept/loops/loop-with-continue.nu	ok
 accept/loops/return-double-dash-then-help-word.nu	ok
 accept/loops/return-double-dash-then-negative.nu	ok
-accept/loops/return-double-dash-twice-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/loops/return-double-dash-twice-needs-context.nu	error ExtraPositional: extra positional argument
 accept/loops/return-end-of-options.nu	ok
 accept/loops/return-forms.nu	ok
 accept/loops/return-help-after-value.nu	ok
-accept/loops/return-help-then-two-values-is-consumer.nu	error ExtraPositional: extra positional argument
-accept/loops/return-negative-number-is-consumer.nu	error UnknownFlag: unknown flag
-accept/loops/return-two-values-is-consumer.nu	error ExtraPositional: extra positional argument
-accept/loops/return-unknown-flag-is-consumer.nu	error UnknownFlag: unknown flag
-accept/loops/while-alone-is-consumer.nu	error MissingPositional: missing cond
+accept/loops/return-help-then-two-values-needs-context.nu	error ExtraPositional: extra positional argument
+accept/loops/return-negative-number-needs-context.nu	error UnknownFlag: unknown flag
+accept/loops/return-two-values-needs-context.nu	error ExtraPositional: extra positional argument
+accept/loops/return-unknown-flag-needs-context.nu	error UnknownFlag: unknown flag
+accept/loops/while-alone-needs-context.nu	error MissingPositional: missing cond
 accept/loops/while-basic.nu	ok
 accept/loops/while-body-value-subexpression.nu	ok
 accept/loops/while-complex-condition.nu	ok
 accept/loops/while-condition-then-help.nu	ok
 accept/loops/while-help.nu	ok
-accept/loops/while-negative-number-first-is-consumer.nu	error UnknownFlag: unknown flag
-accept/loops/while-no-block-is-consumer.nu	error MissingPositional: missing cond
+accept/loops/while-negative-number-first-needs-context.nu	error UnknownFlag: unknown flag
+accept/loops/while-no-block-needs-context.nu	error MissingPositional: missing cond
 accept/match/all-pattern-kinds.nu	ok
 accept/match/bare-dollar-pattern.nu	ok
 accept/match/block-is-closure.nu	ok
@@ -649,12 +653,12 @@ accept/match/body-is-any-token.nu	ok
 accept/match/closure-value-then-variable-block.nu	ok
 accept/match/comments-in-arms.nu	ok
 accept/match/empty-block.nu	ok
-accept/match/extra-tokens-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/match/extra-tokens-needs-context.nu	error ExtraPositional: extra positional argument
 accept/match/guard-is-any-token.nu	ok
 accept/match/guards.nu	ok
 accept/match/help-after-value.nu	ok
 accept/match/help-then-block.nu	ok
-accept/match/help-then-extra-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/match/help-then-extra-needs-context.nu	error ExtraPositional: extra positional argument
 accept/match/in-pipeline.nu	ok
 accept/match/list-pattern-assignment-mode.nu	ok
 accept/match/list-pattern-dotdot-word-is-string.nu	ok
@@ -667,8 +671,8 @@ accept/match/list-pattern-redirection-dropped.nu	ok
 accept/match/list-pattern-rest-then-pipe-group.nu	ok
 accept/match/list-patterns.nu	ok
 accept/match/literal-arms.nu	ok
-accept/match/missing-block-is-consumer.nu	error MissingPositional: missing match_block
-accept/match/negative-number-value-is-consumer.nu	error UnknownFlag: unknown flag
+accept/match/missing-block-needs-context.nu	error MissingPositional: missing match_block
+accept/match/negative-number-value-needs-context.nu	error UnknownFlag: unknown flag
 accept/match/nested-match.nu	ok
 accept/match/or-patterns.nu	ok
 accept/match/pattern-that-lexes-as-operator.nu	ok
@@ -698,24 +702,24 @@ accept/misc/unicode-everywhere.nu	ok
 accept/modules/body-help-calls.nu	ok
 accept/modules/const-and-source.nu	error SourcedFileNotFound: File not found: x.nu
 accept/modules/double-dash-after-body.nu	ok
-accept/modules/double-dash-alone-is-consumer.nu	error MissingPositional: missing module
-accept/modules/double-dash-as-name-is-consumer.nu	error Expected: expected block
-accept/modules/double-dash-before-body-is-consumer.nu	error Expected: expected block
-accept/modules/double-dash-then-block-is-consumer.nu	error TypeMismatch: expected string, found record
-accept/modules/export-alias-help-in-module-is-consumer.nu	error InternalError: failed to find added alias
-accept/modules/export-alias-without-target-in-module-is-consumer.nu	error IncorrectValue: unexpected Incomplete alias
+accept/modules/double-dash-alone-needs-context.nu	error MissingPositional: missing module
+accept/modules/double-dash-as-name-needs-context.nu	error Expected: expected block
+accept/modules/double-dash-before-body-needs-context.nu	error Expected: expected block
+accept/modules/double-dash-then-block-needs-context.nu	error TypeMismatch: expected string, found record
+accept/modules/export-alias-help-in-module-needs-context.nu	error InternalError: failed to find added alias
+accept/modules/export-alias-without-target-in-module-needs-context.nu	error IncorrectValue: unexpected Incomplete alias
 accept/modules/export-def-help.nu	ok
-accept/modules/export-env-double-dash-is-consumer.nu	error MissingPositional: missing block
+accept/modules/export-env-double-dash-needs-context.nu	error MissingPositional: missing block
 accept/modules/export-env-extra-items-ignored.nu	ok
 accept/modules/export-env-help-drops-the-rest.nu	ok
 accept/modules/export-env-help.nu	ok
-accept/modules/export-env-missing-block-is-consumer.nu	error MissingPositional: missing block
+accept/modules/export-env-missing-block-needs-context.nu	error MissingPositional: missing block
 accept/modules/export-env-multiline.nu	ok
 accept/modules/export-env-redirection-ignored.nu	ok
 accept/modules/export-env-second-block-ignored.nu	ok
 accept/modules/export-forms.nu	ok
 accept/modules/export-help-repeated.nu	ok
-accept/modules/export-help-then-extra-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/modules/export-help-then-extra-needs-context.nu	error ExtraPositional: extra positional argument
 accept/modules/export-help.nu	ok
 accept/modules/export-type.nu	ok
 accept/modules/export-with-attributes.nu	ok
@@ -724,26 +728,26 @@ accept/modules/hide-and-source.nu	error ModuleNotFound: module std not found
 accept/modules/module-body-leading-pipe.nu	ok
 accept/modules/module-deeply-nested.nu	error ModuleNotFound: module bar.nu not found
 accept/modules/module-empty.nu	ok
-accept/modules/module-extra-tokens-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/modules/module-extra-tokens-needs-context.nu	error ExtraPositional: extra positional argument
 accept/modules/module-help-after-body.nu	ok
 accept/modules/module-help-after-name.nu	ok
 accept/modules/module-help-block-not-parsed.nu	ok
-accept/modules/module-help-extra-positional-is-consumer.nu	error ExtraPositional: extra positional argument
-accept/modules/module-help-record-name-is-consumer.nu	error TypeMismatch: expected string, found record<a: int>
-accept/modules/module-help-unknown-flag-is-consumer.nu	error UnknownFlag: unknown flag
+accept/modules/module-help-extra-positional-needs-context.nu	error ExtraPositional: extra positional argument
+accept/modules/module-help-record-name-needs-context.nu	error TypeMismatch: expected string, found record<a: int>
+accept/modules/module-help-unknown-flag-needs-context.nu	error UnknownFlag: unknown flag
 accept/modules/module-inline.nu	ok
-accept/modules/module-missing-name-is-consumer.nu	error MissingPositional: missing module
-accept/modules/module-name-interpolation-is-consumer.nu	error UnknownState: internal error: name not a string
-accept/modules/module-name-record-is-consumer.nu	error TypeMismatch: expected string, found record
-accept/modules/module-name-subexpression-is-consumer.nu	error UnknownState: internal error: name not a string
-accept/modules/module-name-true-is-consumer.nu	error ExpectedWithStringMsg: expected string
+accept/modules/module-missing-name-needs-context.nu	error MissingPositional: missing module
+accept/modules/module-name-interpolation-needs-context.nu	error UnknownState: internal error: name not a string
+accept/modules/module-name-record-needs-context.nu	error TypeMismatch: expected string, found record
+accept/modules/module-name-subexpression-needs-context.nu	error UnknownState: internal error: name not a string
+accept/modules/module-name-true-needs-context.nu	error ExpectedWithStringMsg: expected string
 accept/modules/module-nested.nu	ok
 accept/modules/module-path.nu	error ModuleNotFound: module ./path/to/mod.nu not found
 accept/modules/module-quoted-name.nu	ok
 accept/modules/module-with-main.nu	ok
 accept/modules/overlay.nu	error ModuleNotFound: module ./foo.nu not found
 accept/modules/plugin.nu	error LabeledErrorWithHelp: can't load plugin without registry file
-accept/modules/use-flag-after-double-dash-is-consumer.nu	error ExportNotFound: could not find imports
+accept/modules/use-flag-after-double-dash-needs-context.nu	error ExportNotFound: could not find imports
 accept/modules/use-help-anywhere.nu	ok
 accept/modules/use-in-block.nu	ok
 accept/modules/use-inline-module.nu	ok
@@ -753,7 +757,7 @@ accept/modules/use-list-with-non-name-items.nu	ok
 accept/modules/use-member-record-ignored.nu	ok
 accept/modules/use-member-subexpression-ignored.nu	ok
 accept/modules/use-member-variable-ignored.nu	ok
-accept/modules/use-missing-module-is-consumer.nu	error MissingPositional: missing module
+accept/modules/use-missing-module-needs-context.nu	error MissingPositional: missing module
 accept/modules/use-null-then-anything.nu	ok
 accept/modules/use-null-then-name.nu	ok
 accept/modules/use-null.nu	ok
@@ -797,7 +801,7 @@ accept/operators/unary-minus-cell-path.nu	ok
 accept/operators/unary-minus-list-and-record.nu	ok
 accept/operators/unary-minus-operand.nu	ok
 accept/operators/unary-minus-subexpression.nu	ok
-accept/operators/unary-minus-type-is-consumer.nu	error OperatorUnsupportedType: does not support 'string'
+accept/operators/unary-minus-type-needs-context.nu	error OperatorUnsupportedType: does not support 'string'
 accept/operators/unary-minus-variable.nu	ok
 accept/operators/unary-not-forms.nu	ok
 accept/pipelines/assignment-then-blank-line-then-pipe.nu	ok
@@ -860,11 +864,11 @@ accept/ranges/bare-dollar-bound-head-is-external.nu	ok
 accept/ranges/block-bound-is-string.nu	ok
 accept/ranges/cell-path-bound-head-is-range.nu	ok
 accept/ranges/cell-path-bound.nu	ok
-accept/ranges/cell-path-literal-bound-head-is-consumer.nu	error OperatorUnsupportedType: does not support 'cell-path'
-accept/ranges/closure-bound-is-consumer.nu	error OperatorUnsupportedType: does not support 'closure'
+accept/ranges/cell-path-literal-bound-head-needs-context.nu	error OperatorUnsupportedType: does not support 'cell-path'
+accept/ranges/closure-bound-needs-context.nu	error OperatorUnsupportedType: does not support 'closure'
 accept/ranges/colon-dollar-bound-head-is-external.nu	ok
 accept/ranges/dotdot-as-argument.nu	ok
-accept/ranges/empty-next-bound-is-consumer.nu	error IncompleteParser: parser support missing for this expression
+accept/ranges/empty-next-bound-needs-context.nu	error IncompleteParser: parser support missing for this expression
 accept/ranges/empty-next-head-is-external.nu	ok
 accept/ranges/exclusive.nu	ok
 accept/ranges/float-bounds.nu	ok
@@ -877,11 +881,11 @@ accept/ranges/left-unbounded.nu	ok
 accept/ranges/negative-bounds.nu	ok
 accept/ranges/not-ranges.nu	ok
 accept/ranges/paren-bound-with-cell-path.nu	ok
-accept/ranges/paren-bound-with-text-is-consumer.nu	error OperatorUnsupportedType: does not support 'string'
+accept/ranges/paren-bound-with-text-needs-context.nu	error OperatorUnsupportedType: does not support 'string'
 accept/ranges/paren-bounds-with-cell-paths.nu	ok
-accept/ranges/raw-string-bound-is-consumer.nu	error OperatorUnsupportedType: does not support 'string'
-accept/ranges/record-bound-head-is-consumer.nu	error OperatorUnsupportedType: does not support 'record<a: int>'
-accept/ranges/record-bound-is-consumer.nu	error OperatorUnsupportedType: does not support 'record<a: int>'
+accept/ranges/raw-string-bound-needs-context.nu	error OperatorUnsupportedType: does not support 'string'
+accept/ranges/record-bound-head-needs-context.nu	error OperatorUnsupportedType: does not support 'record<a: int>'
+accept/ranges/record-bound-needs-context.nu	error OperatorUnsupportedType: does not support 'record<a: int>'
 accept/ranges/reverse.nu	ok
 accept/ranges/right-unbounded.nu	ok
 accept/ranges/stepped.nu	ok
@@ -907,7 +911,7 @@ accept/records/no-space-after-colon.nu	ok
 accept/records/null-key.nu	ok
 accept/records/numeric-and-unit-keys.nu	ok
 accept/records/quoted-keys.nu	ok
-accept/records/runtime-duplicate-is-consumer.nu	ok
+accept/records/runtime-duplicate-needs-context.nu	ok
 accept/records/single-pair-multiline.nu	ok
 accept/records/spread-only.nu	ok
 accept/records/spread.nu	ok
@@ -920,7 +924,7 @@ accept/redirections/append.nu	ok
 accept/redirections/both-pipe.nu	ok
 accept/redirections/both-streams.nu	ok
 accept/redirections/const-help-redirection-ignored.nu	ok
-accept/redirections/const-redirection-ignored-is-consumer.nu	error MissingPositional: missing initial_value
+accept/redirections/const-redirection-ignored-needs-context.nu	error MissingPositional: missing initial_value
 accept/redirections/err-pipe-at-line-end-closes.nu	ok
 accept/redirections/err-pipe-then-comment-line-then-leading-pipe-continues.nu	ok
 accept/redirections/err-pipe-then-semicolon.nu	ok
@@ -940,16 +944,16 @@ accept/signatures/closure-param-list-forms.nu	ok
 accept/signatures/colon-then-comment-only.nu	ok
 accept/signatures/completer-command-being-defined.nu	ok
 accept/signatures/completer-empty-list.nu	ok
-accept/signatures/completer-int-is-consumer.nu	error UnknownCommand: unknown command
+accept/signatures/completer-int-needs-context.nu	error UnknownCommand: unknown command
 accept/signatures/completer-list-of-ints.nu	ok
 accept/signatures/completer-quoted-multiword-command.nu	ok
 accept/signatures/completer-raw-string.nu	ok
-accept/signatures/completer-unknown-command-is-consumer.nu	error UnknownCommand: unknown command
-accept/signatures/custom-value-type-is-consumer.nu	ok
+accept/signatures/completer-unknown-command-needs-context.nu	error UnknownCommand: unknown command
+accept/signatures/custom-value-type-needs-context.nu	ok
 accept/signatures/default-in-redirection-position.nu	ok
 accept/signatures/defaults-matching-declared-types.nu	ok
 accept/signatures/defaults-with-types.nu	ok
-accept/signatures/empty-type-before-completer-is-consumer.nu	error UnknownType: unknown type
+accept/signatures/empty-type-before-completer-needs-context.nu	error UnknownType: unknown type
 accept/signatures/equals-comment-then-default.nu	ok
 accept/signatures/equals-then-comment-only.nu	ok
 accept/signatures/err-pipe-token-ignored.nu	ok
@@ -966,7 +970,7 @@ accept/signatures/optional-positional.nu	ok
 accept/signatures/param-named-like-keyword.nu	ok
 accept/signatures/pipe-pipe-ignored.nu	ok
 accept/signatures/pipes-ignored.nu	ok
-accept/signatures/record-type-colon-then-comma-is-consumer.nu	error UnknownType: unknown type
+accept/signatures/record-type-colon-then-comma-needs-context.nu	error UnknownType: unknown type
 accept/signatures/record-type-comment.nu	ok
 accept/signatures/record-type-double-comma.nu	ok
 accept/signatures/record-type-key-with-equals.nu	ok
@@ -975,7 +979,7 @@ accept/signatures/record-type-untyped-field-no-comma.nu	ok
 accept/signatures/redirection-then-stray-default.nu	ok
 accept/signatures/redirection-token-ignored.nu	ok
 accept/signatures/repeated-underscore-parameters.nu	ok
-accept/signatures/second-default-of-another-type-is-consumer.nu	error Expected: expected at least one range bound set
+accept/signatures/second-default-of-another-type-needs-context.nu	error Expected: expected at least one range bound set
 accept/signatures/second-default-without-type.nu	ok
 accept/signatures/separators.nu	ok
 accept/signatures/short-flag-i.nu	ok
@@ -1041,7 +1045,7 @@ accept/tables/number-column-names.nu	ok
 accept/tables/quoted-columns.nu	ok
 accept/tables/single-row.nu	ok
 accept/tables/variable-column.nu	ok
-accept/try/alone-is-consumer.nu	error MissingPositional: missing try_block
+accept/try/alone-needs-context.nu	error MissingPositional: missing try_block
 accept/try/basic.nu	ok
 accept/try/body-record-cell-path.nu	ok
 accept/try/body-value-variable.nu	ok
@@ -1059,7 +1063,7 @@ accept/try/finally.nu	ok
 accept/try/help-after-block.nu	ok
 accept/try/in-pipeline.nu	ok
 accept/try/multiline.nu	ok
-accept/try/three-handlers-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/try/three-handlers-needs-context.nu	error ExtraPositional: extra positional argument
 accept/variables/builtins.nu	ok
 accept/variables/in-alone.nu	ok
 accept/variables/it-as-name.nu	ok
@@ -1067,7 +1071,7 @@ accept/variables/named-like-units.nu	ok
 accept/variables/simple.nu	ok
 accept/variables/underscore-and-digits.nu	ok
 accept/variables/unicode-name.nu	ok
-accept/where/alone-is-consumer.nu	error MissingPositional: missing condition
+accept/where/alone-needs-context.nu	error MissingPositional: missing condition
 accept/where/bool-columns-after-and.nu	ok
 accept/where/brace-with-tail-is-row-condition.nu	ok
 accept/where/closure.nu	ok
@@ -1076,7 +1080,7 @@ accept/where/help-flag.nu	ok
 accept/where/in-subexpression.nu	ok
 accept/where/interpolation-condition.nu	ok
 accept/where/it-variable.nu	ok
-accept/where/negative-number-first-is-consumer.nu	error UnknownFlag: unknown flag
+accept/where/negative-number-first-needs-context.nu	error UnknownFlag: unknown flag
 accept/where/nested-in-closure.nu	ok
 accept/where/not-before-comparison.nu	ok
 accept/where/not-columns-after-and.nu	ok
@@ -1089,7 +1093,7 @@ accept/where/row-condition-with-if.nu	ok
 accept/where/row-condition.nu	ok
 accept/where/short-help-flag.nu	ok
 accept/where/subexpression-condition.nu	ok
-accept/where/unknown-flag-is-consumer.nu	error UnknownFlag: unknown flag
+accept/where/unknown-flag-needs-context.nu	error UnknownFlag: unknown flag
 reject/alias/alias-to-type-keyword.nu	error CantAliasKeyword: not supported in alias
 reject/alias/call-after-alias-parses-values.nu	error InvalidLiteral: invalid digits for radix 2 in int
 reject/alias/double-dash-as-name.nu	error AssignmentMismatch: missing equal sign
@@ -1110,6 +1114,7 @@ reject/alias/target-hide.nu	error CantAliasKeyword: not supported in alias
 reject/alias/target-if-invalid-condition.nu	error Expected: expected expression
 reject/alias/target-if-without-block.nu	error Expected: expected block, closure or record
 reject/alias/target-let.nu	error CantAliasKeyword: not supported in alias
+reject/alias/target-try-catch-without-argument.nu	error KeywordMissingArgument: missing oneof<closure(), closure(any)> value that follows catch
 reject/alias/target-where.nu	error CantAliasKeyword: not supported in alias
 reject/alias/variable-as-name.nu	error AliasNotValid: alias name must not be a number, a filesize, a duration, a datetime, a binary literal or a range, contain #, ^, or %, or use whitespace other than single spaces between words
 reject/assignments/env-rhs-bare-external.nu	error LabeledErrorWithHelp: add a caret (^) before the command name if you intended to run and capture its output

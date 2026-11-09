@@ -1,0 +1,9 @@
+# nu-parser reads the home and config directories (`~`, `$nu.config-path`), so the verdicts
+# would depend on the machine and leak its home path. Point them at directories that exist
+# nowhere, the same on every machine.
+[env]
+HOME = { value = "/nonexistent/home", force = true }
+XDG_CONFIG_HOME = { value = "/nonexistent/config", force = true }
+XDG_DATA_HOME = { value = "/nonexistent/data", force = true }
+XDG_CACHE_HOME = { value = "/nonexistent/cache", force = true }
+XDG_STATE_HOME = { value = "/nonexistent/state", force = true }

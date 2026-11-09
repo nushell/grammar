@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Snippets for the differential harness: every keyword statement with a help flag or a flag
+"""Snippets for the corpus: every keyword statement with a help flag or a flag
 value written into each slot after its keyword, and the fixed-signature keyword commands with
 switch values, short-flag batches and help followed by more arguments.
 usage: gen_sweep.py OUT.json"""

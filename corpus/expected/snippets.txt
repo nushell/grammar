@@ -1,4 +1,4 @@
-book.json#0	error SourcedFileNotFound: File not found: /Users/fdncred/.oh-my-posh.nu
+book.json#0	error SourcedFileNotFound: File not found: /nonexistent/home/.oh-my-posh.nu
 book.json#1	ok
 book.json#2	ok
 book.json#3	ok
