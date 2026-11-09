@@ -1,0 +1,1616 @@
+accept/alias/alias-of-wrapped-command-takes-external-arguments.nu	ok
+accept/alias/builtin-shadow.nu	ok
+accept/alias/call-before-alias-is-unknown.nu	ok
+accept/alias/call-to-alias-of-if.nu	ok
+accept/alias/call-to-alias-of-match.nu	ok
+accept/alias/call-to-alias-of-row-condition-command.nu	ok
+accept/alias/call-to-alias-of-try.nu	ok
+accept/alias/call-to-external-alias-is-external.nu	ok
+accept/alias/export-alias-without-equals-is-consumer.nu	ok
+accept/alias/export-alias-without-target-is-consumer.nu	ok
+accept/alias/external-target.nu	ok
+accept/alias/help-before-equals.nu	ok
+accept/alias/help-flag.nu	ok
+accept/alias/keyword-target.nu	ok
+accept/alias/lone-dash-name.nu	ok
+accept/alias/multiword-target.nu	ok
+accept/alias/name-alias-then-help.nu	ok
+accept/alias/pipe-inside-a-word.nu	ok
+accept/alias/quoted-name.nu	ok
+accept/alias/same-name-twice.nu	ok
+accept/alias/short-flag-batch-with-help.nu	ok
+accept/alias/simple.nu	ok
+accept/alias/target-attr-example-without-arguments.nu	ok
+accept/alias/target-env-shorthand-is-command.nu	ok
+accept/alias/target-if-incomplete.nu	ok
+accept/alias/target-overlay-new-without-argument.nu	ok
+accept/alias/to-custom-command.nu	ok
+accept/alias/with-args.nu	ok
+accept/alias/with-in.nu	ok
+accept/assignments/cell-path-target.nu	ok
+accept/assignments/compound.nu	ok
+accept/assignments/env.nu	ok
+accept/assignments/in-closure-and-block.nu	ok
+accept/assignments/list-cell-path-target.nu	ok
+accept/assignments/list-target.nu	ok
+accept/assignments/record-cell-path-target.nu	ok
+accept/assignments/record-target.nu	ok
+accept/assignments/rhs-caret-external.nu	ok
+accept/assignments/rhs-external-after-first-element.nu	ok
+accept/assignments/rhs-external-quoted.nu	ok
+accept/assignments/rhs-external-with-redirect.nu	ok
+accept/assignments/rhs-if.nu	ok
+accept/assignments/rhs-multiline-pipeline.nu	ok
+accept/assignments/rhs-pipeline.nu	ok
+accept/assignments/rhs-subexpression-external.nu	ok
+accept/assignments/rhs-user-command.nu	ok
+accept/assignments/rhs-with-comment-line.nu	ok
+accept/assignments/simple.nu	ok
+accept/assignments/to-subexpression-head.nu	ok
+accept/attributes/after-line-pipe-is-command.nu	ok
+accept/attributes/after-pipe-is-command.nu	ok
+accept/attributes/alias-name.nu	ok
+accept/attributes/args-include-assignment.nu	ok
+accept/attributes/args-include-pipe.nu	ok
+accept/attributes/args-include-redirection.nu	ok
+accept/attributes/attribute-line-after-pipe-line.nu	ok
+accept/attributes/attribute-line-continued-by-line-leading-pipe.nu	ok
+accept/attributes/attribute-line-inside-pipeline.nu	ok
+accept/attributes/before-export.nu	ok
+accept/attributes/before-extern.nu	ok
+accept/attributes/before-longer-pipeline-are-command-words.nu	ok
+accept/attributes/blank-and-comment-lines-then-pipe-are-command-words.nu	ok
+accept/attributes/blank-line-then-pipe-are-command-words.nu	ok
+accept/attributes/category-two-arguments-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/attributes/empty-name-is-consumer.nu	error UnknownCommand: unknown command
+accept/attributes/empty-name-then-word-is-consumer.nu	error UnknownCommand: unknown command
+accept/attributes/example-missing-arguments-is-consumer.nu	error MissingPositional: missing description
+accept/attributes/example-one-argument-is-consumer.nu	error MissingPositional: missing example
+accept/attributes/in-module.nu	ok
+accept/attributes/line-ending-with-pipe-continues-past-comment.nu	ok
+accept/attributes/line-ending-with-pipe-then-blank-line-then-pipe.nu	ok
+accept/attributes/multiline-args.nu	ok
+accept/attributes/semicolon-then-def-same-line.nu	ok
+accept/attributes/semicolon-then-pipe-line-are-command-words.nu	ok
+accept/attributes/single.nu	ok
+accept/attributes/structured-extra-argument-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/attributes/structured-missing-decode-is-consumer.nu	error MissingPositional: missing decode
+accept/attributes/structured.nu	ok
+accept/attributes/trailing-comment-and-doc-before.nu	ok
+accept/attributes/unknown-attribute-name-is-consumer.nu	error UnknownCommand: unknown command
+accept/attributes/user-defined-attribute.nu	error LabeledError: Encountered error during parse-time evaluation
+accept/attributes/values-of-every-kind.nu	ok
+accept/attributes/with-args.nu	ok
+accept/bindings/binding-without-value-forms-is-consumer.nu	error MissingPositional: missing initial_value
+accept/bindings/const-forms.nu	ok
+accept/bindings/const-no-name-is-consumer.nu	error MissingPositional: missing const_name
+accept/bindings/const-without-value-is-consumer.nu	error MissingPositional: missing initial_value
+accept/bindings/export-const-without-value-is-consumer.nu	error MissingPositional: missing initial_value
+accept/bindings/let-after-pipe.nu	ok
+accept/bindings/let-bare-dollar-name.nu	ok
+accept/bindings/let-closure-value.nu	ok
+accept/bindings/let-completer-in-type-is-consumer.nu	error LabeledError: Type specifications do not support custom completers
+accept/bindings/let-dollar-name.nu	ok
+accept/bindings/let-double-dash-without-value.nu	ok
+accept/bindings/let-equals-attached-to-type-is-consumer.nu	error UnknownType: unknown type
+accept/bindings/let-external-value.nu	ok
+accept/bindings/let-help.nu	ok
+accept/bindings/let-if-value.nu	ok
+accept/bindings/let-in-block-and-closure.nu	ok
+accept/bindings/let-keyword-like-names.nu	ok
+accept/bindings/let-match-value.nu	ok
+accept/bindings/let-multiline-value.nu	ok
+accept/bindings/let-name-then-help.nu	ok
+accept/bindings/let-name-with-attached-type.nu	ok
+accept/bindings/let-no-name-is-consumer.nu	error MissingPositional: missing var_name
+accept/bindings/let-pipeline-value.nu	ok
+accept/bindings/let-simple.nu	ok
+accept/bindings/let-type-alias.nu	ok
+accept/bindings/let-type-with-spaces-in-generic.nu	ok
+accept/bindings/let-typed.nu	ok
+accept/bindings/let-unicode.nu	ok
+accept/bindings/let-value-with-comment.nu	ok
+accept/bindings/let-with-in.nu	ok
+accept/bindings/mut-forms.nu	ok
+accept/bindings/mut-no-name-is-consumer.nu	error MissingPositional: missing var_name
+accept/bindings/mut-without-value-is-consumer.nu	error MissingPositional: missing initial_value
+accept/calls/args-of-every-kind.nu	ok
+accept/calls/attribute-with-pipe-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/calls/attribute-with-redirect-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/calls/bare-word-operators-as-args.nu	ok
+accept/calls/binary-with-pipe-is-command-name.nu	ok
+accept/calls/call-with-trailing-comment.nu	ok
+accept/calls/closure-arg-without-pipes.nu	ok
+accept/calls/command-named-like-spread.nu	ok
+accept/calls/dash-args.nu	ok
+accept/calls/end-of-options.nu	ok
+accept/calls/flag-followed-by-value.nu	ok
+accept/calls/flag-with-equals-value.nu	ok
+accept/calls/flag-with-equals-various-values.nu	ok
+accept/calls/help-and-describe.nu	ok
+accept/calls/hide-extra-positional-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/calls/hide-flag-word-is-no-member-is-consumer.nu	error UnknownFlag: unknown flag
+accept/calls/hide-help-extra-positional-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/calls/hide-int-name.nu	ok
+accept/calls/hide-null-is-consumer.nu	error ExpectedWithStringMsg: expected string
+accept/calls/hide-unknown-long-flag-is-consumer.nu	error UnknownFlag: unknown flag
+accept/calls/hide-unknown-short-flag-is-consumer.nu	error UnknownFlag: unknown flag
+accept/calls/hide-with-members.nu	error ModuleNotFound: module std not found
+accept/calls/hide-without-argument-is-consumer.nu	error MissingPositional: missing name
+accept/calls/import-may-extend-a-command.nu	ok
+accept/calls/keyword-help-forgives-positionals.nu	ok
+accept/calls/keyword-named-commands.nu	ok
+accept/calls/keyword-short-flag-batch.nu	ok
+accept/calls/keyword-starts-a-longer-command-name.nu	ok
+accept/calls/keyword-switch-value.nu	ok
+accept/calls/long-flags.nu	ok
+accept/calls/multiline-args-inside-parens.nu	ok
+accept/calls/multiword-command-with-subcommand-chain.nu	ok
+accept/calls/multiword-command.nu	ok
+accept/calls/negative-number-args.nu	ok
+accept/calls/no-args.nu	ok
+accept/calls/non-ascii-flag.nu	ok
+accept/calls/overlay-hide-help-keep-env-without-value-is-consumer.nu	error MissingFlagParam: flag missing list<string> argument
+accept/calls/overlay-hide-keep-env-list.nu	error CantHideDefaultOverlay: can't hide overlay
+accept/calls/overlay-hide-keep-env-without-value-is-consumer.nu	error MissingFlagParam: flag missing list<string> argument
+accept/calls/overlay-hide-two-positionals-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/calls/overlay-hide-value-flag-not-last-in-batch-is-consumer.nu	error OnlyLastFlagInBatchCanTakeArg: only the last flag can take args
+accept/calls/overlay-list-positional-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/calls/overlay-list-unknown-flag-is-consumer.nu	error UnknownFlag: unknown flag
+accept/calls/overlay-new-int-name.nu	ok
+accept/calls/overlay-new-null-is-consumer.nu	error ExpectedWithStringMsg: expected string
+accept/calls/overlay-new-two-positionals-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/calls/overlay-new-without-argument-is-consumer.nu	error MissingPositional: missing name
+accept/calls/overlay-use-as-takes-any-item.nu	ok
+accept/calls/overlay-use-flag-without-argument-is-consumer.nu	error MissingPositional: missing name
+accept/calls/overlay-use-flags-before-as-is-consumer.nu	error UnknownFlag: unknown flag
+accept/calls/overlay-use-help-then-unknown-flag-is-consumer.nu	error UnknownFlag: unknown flag
+accept/calls/overlay-use-prefix-and-as.nu	ok
+accept/calls/overlay-use-reload.nu	ok
+accept/calls/overlay-use-spread-is-no-positional-is-consumer.nu	error UnknownState: internal error: Missing required positional after call parsing
+accept/calls/overlay-use-switch-value-not-bool-is-consumer.nu	error ExpectedWithStringMsg: expected bool
+accept/calls/overlay-use-two-names-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/calls/overlay-use-unknown-flag-in-batch-is-consumer.nu	error UnknownFlag: unknown flag
+accept/calls/overlay-use-unknown-flag-is-consumer.nu	error UnknownFlag: unknown flag
+accept/calls/overlay-use-without-argument-is-consumer.nu	error MissingPositional: missing name
+accept/calls/percent-sigil-bare-var.nu	ok
+accept/calls/percent-sigil-builtin-under-custom-multiword.nu	ok
+accept/calls/percent-sigil-builtin.nu	ok
+accept/calls/percent-sigil-cell-path-head.nu	ok
+accept/calls/percent-sigil-dynamic.nu	ok
+accept/calls/percent-sigil-in-pipeline.nu	ok
+accept/calls/percent-sigil-multiword.nu	ok
+accept/calls/percent-sigil-row-condition.nu	ok
+accept/calls/percent-sigil-shadowed-builtin.nu	ok
+accept/calls/percent-sigil-spaced-head.nu	ok
+accept/calls/percent-sigil-subexpression-math.nu	ok
+accept/calls/percent-sigil-with-spread.nu	ok
+accept/calls/plugin-use-flag-value-without-argument-is-consumer.nu	error MissingPositional: missing name
+accept/calls/plugin-use-two-positionals-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/calls/plugin-use-with-config.nu	error FileNotFound: File not found: y
+accept/calls/plugin-use-without-argument-is-consumer.nu	error MissingPositional: missing name
+accept/calls/positional-args.nu	ok
+accept/calls/prefix-word-not-command.nu	ok
+accept/calls/radix-like-command-name.nu	ok
+accept/calls/record-arg.nu	ok
+accept/calls/row-condition-after-a-flag.nu	ok
+accept/calls/row-condition-command.nu	ok
+accept/calls/row-condition-multi-word-command.nu	ok
+accept/calls/run-full-reparse.nu	ok
+accept/calls/run-with-rest-and-unknown-flags.nu	ok
+accept/calls/run-without-argument-is-consumer.nu	error MissingPositional: missing filename
+accept/calls/short-flag-batch.nu	ok
+accept/calls/short-flags.nu	ok
+accept/calls/source-env-null.nu	ok
+accept/calls/source-two-positionals-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/calls/source-unknown-short-flag-is-consumer.nu	error UnknownFlag: unknown flag
+accept/calls/source-without-argument-is-consumer.nu	error MissingPositional: missing filename
+accept/calls/spread-args.nu	ok
+accept/calls/spread-bare-word-is-positional.nu	ok
+accept/calls/spread-record-args.nu	ok
+accept/calls/subcommand-user-defined.nu	ok
+accept/calls/three-word-command.nu	ok
+accept/calls/user-defined-later-in-file.nu	ok
+accept/calls/user-defined-multiword-backtick.nu	ok
+accept/calls/user-defined-multiword-quoted-single.nu	ok
+accept/calls/words-read-by-definition.nu	ok
+accept/calls/words-read-by-signature.nu	ok
+accept/cellpaths/deep-chain.nu	ok
+accept/cellpaths/empty-record-head.nu	ok
+accept/cellpaths/env-path.nu	ok
+accept/cellpaths/in-cell-path.nu	ok
+accept/cellpaths/insensitive-member.nu	ok
+accept/cellpaths/int-members.nu	ok
+accept/cellpaths/list-head.nu	ok
+accept/cellpaths/literal-cell-path-empty.nu	ok
+accept/cellpaths/literal-cell-path-in-call.nu	ok
+accept/cellpaths/literal-cell-path.nu	ok
+accept/cellpaths/nu-record.nu	ok
+accept/cellpaths/numeric-string-key.nu	ok
+accept/cellpaths/optional-and-insensitive.nu	ok
+accept/cellpaths/optional-member.nu	ok
+accept/cellpaths/quoted-members.nu	ok
+accept/cellpaths/record-head.nu	ok
+accept/cellpaths/simple-members.nu	ok
+accept/cellpaths/subexpression-head-index.nu	ok
+accept/cellpaths/subexpression-head.nu	ok
+accept/cellpaths/table-head.nu	ok
+accept/cellpaths/trailing-dot.nu	ok
+accept/cellpaths/unicode-member.nu	ok
+accept/closures/as-argument-to-each-with-flag.nu	ok
+accept/closures/body-starting-with-keyword.nu	ok
+accept/closures/body-starting-with-let.nu	ok
+accept/closures/closure-in-record-field-then-call.nu	ok
+accept/closures/do-with-closure-and-args.nu	ok
+accept/closures/dollar-param.nu	ok
+accept/closures/empty-body.nu	ok
+accept/closures/empty-braces-as-where-condition.nu	ok
+accept/closures/empty-braces-is-record.nu	ok
+accept/closures/empty-params-no-space.nu	ok
+accept/closures/empty-params.nu	ok
+accept/closures/in-variable.nu	ok
+accept/closures/multiline-body.nu	ok
+accept/closures/nested.nu	ok
+accept/closures/no-params.nu	ok
+accept/closures/one-param.nu	ok
+accept/closures/param-trailing-colon.nu	ok
+accept/closures/param-trailing-equals.nu	ok
+accept/closures/params-on-second-line.nu	ok
+accept/closures/params-with-comments.nu	ok
+accept/closures/params-with-defaults.nu	ok
+accept/closures/pipes-after-comment-line-are-body.nu	ok
+accept/closures/semicolons-in-body.nu	ok
+accept/closures/type-alias-parameter.nu	ok
+accept/closures/typed-params.nu	ok
+accept/comments/comment-after-open-paren.nu	ok
+accept/comments/comment-between-pipeline-elements.nu	ok
+accept/comments/comment-in-closure.nu	ok
+accept/comments/comment-in-io-types.nu	ok
+accept/comments/comment-in-list-pattern.nu	ok
+accept/comments/comment-in-list.nu	ok
+accept/comments/comment-in-match.nu	ok
+accept/comments/comment-in-record-pattern.nu	ok
+accept/comments/comment-in-record.nu	ok
+accept/comments/comment-in-signature.nu	ok
+accept/comments/comment-in-subexpression.nu	ok
+accept/comments/comment-in-table.nu	ok
+accept/comments/comment-in-type-params.nu	ok
+accept/comments/comment-lines-between-pipes.nu	ok
+accept/comments/comment-no-space.nu	ok
+accept/comments/comment-unicode.nu	ok
+accept/comments/comment-with-braces-in-record.nu	ok
+accept/comments/commented-out-pipeline-element.nu	ok
+accept/comments/comments-in-let-multiline.nu	ok
+accept/comments/crlf-comment-keeps-cr.nu	ok
+accept/comments/detached-comment-blank-line.nu	ok
+accept/comments/hash-inside-string.nu	ok
+accept/comments/hash-inside-word-is-not-comment.nu	ok
+accept/comments/leading-doc-comment-def.nu	ok
+accept/comments/only-comment.nu	ok
+accept/comments/trailing-comment.nu	ok
+accept/def/alias-missing-equals-is-consumer.nu	error IncorrectValue: unexpected Incomplete alias
+accept/def/alias-missing-target-is-consumer.nu	error IncorrectValue: unexpected Incomplete alias
+accept/def/blank-line-before-leading-pipe-keeps-doc.nu	ok
+accept/def/block-before-body-ignored.nu	ok
+accept/def/body-forms.nu	ok
+accept/def/body-record-shaped-is-code.nu	ok
+accept/def/body-with-closure-params.nu	ok
+accept/def/both-flags.nu	ok
+accept/def/comment-after-semicolon-documents-next.nu	ok
+accept/def/completer-quoted-name.nu	ok
+accept/def/completer.nu	ok
+accept/def/def-after-err-pipe-line-is-declared.nu	ok
+accept/def/def-then-dangling-line-leading-pipe-is-declared.nu	ok
+accept/def/def-with-dangling-pipe-is-declared.nu	ok
+accept/def/def-with-doc-comments-and-blank-line.nu	ok
+accept/def/dollar-params.nu	ok
+accept/def/env-flag.nu	ok
+accept/def/export-body-with-closure-params.nu	ok
+accept/def/extern-missing-signature-is-consumer.nu	error MissingPositional: missing params
+accept/def/flag-defaults.nu	ok
+accept/def/flag-value-not-bool-is-consumer.nu	error ExpectedWithStringMsg: expected bool
+accept/def/flag-values.nu	ok
+accept/def/flags-after-name.nu	ok
+accept/def/flags.nu	ok
+accept/def/full-signature.nu	error OutputMismatch: expected string, but command outputs int
+accept/def/help-after-body.nu	ok
+accept/def/help-after-name.nu	ok
+accept/def/help-after-signature.nu	ok
+accept/def/help-before-signature-then-body.nu	ok
+accept/def/help-flag-is-consumer.nu	error LabeledErrorWithHelp: every command already has `--help`
+accept/def/help-flag-with-value.nu	ok
+accept/def/help-flag.nu	ok
+accept/def/help-then-definition-flags.nu	ok
+accept/def/help-twice-then-signature.nu	ok
+accept/def/help-with-dropped-glued-braces.nu	ok
+accept/def/io-colon-then-nothing.nu	ok
+accept/def/io-completer-is-consumer.nu	error LabeledError: Type specifications do not support custom completers
+accept/def/io-list-completer-is-consumer.nu	error LabeledError: Type specifications do not support custom completers
+accept/def/io-types-list.nu	ok
+accept/def/io-types-pass-through.nu	ok
+accept/def/io-types-single.nu	ok
+accept/def/io-types-spaced-colon.nu	ok
+accept/def/io-types-trailing-bracket-only.nu	ok
+accept/def/keyword-like-body-first-word.nu	ok
+accept/def/lone-dash-name-is-consumer.nu	error LabeledErrorWithHelp: expected space
+accept/def/main.nu	ok
+accept/def/minimal.nu	ok
+accept/def/missing-body-is-consumer.nu	error MissingPositional: missing block
+accept/def/missing-everything-is-consumer.nu	error MissingPositional: missing def_name
+accept/def/name-is-byte-size.nu	ok
+accept/def/names-with-symbols.nu	ok
+accept/def/nested-def.nu	ok
+accept/def/param-defaults-of-every-kind.nu	ok
+accept/def/paren-signature.nu	ok
+accept/def/positional-params.nu	ok
+accept/def/quoted-name-keeps-inner-quotes.nu	ok
+accept/def/quoted-names.nu	ok
+accept/def/record-before-body-ignored.nu	ok
+accept/def/record-shaped-body.nu	ok
+accept/def/recursive.nu	ok
+accept/def/reserved-param-names-in-extern.nu	ok
+accept/def/rest-param.nu	ok
+accept/def/same-name-def-and-alias.nu	ok
+accept/def/same-name-in-module-and-block.nu	ok
+accept/def/same-name-in-nested-block.nu	ok
+accept/def/shadow-builtin-name.nu	ok
+accept/def/signature-multiline-with-trailing-commas.nu	ok
+accept/def/signature-newlines-between-parts.nu	ok
+accept/def/stray-colon-is-ignored.nu	ok
+accept/def/stray-equals-is-ignored.nu	ok
+accept/def/type-alias-completer-is-consumer.nu	error LabeledError: Type specifications do not support custom completers
+accept/def/type-alias-in-generic.nu	ok
+accept/def/type-alias-name-like-generic.nu	ok
+accept/def/type-alias-with-completer-on-parameter.nu	ok
+accept/def/type-alias-with-type-parameters-is-consumer.nu	error UnknownType: unknown type
+accept/def/type-alias.nu	ok
+accept/def/unknown-def-flag-is-consumer.nu	error UnknownFlag: unknown flag
+accept/def/unknown-type-is-consumer.nu	error UnknownType: unknown type
+accept/def/unknown-type-no-alias-name-is-consumer.nu	error UnknownType: unknown type
+accept/def/unparsed-block-before-body.nu	ok
+accept/def/wrapped-call-before-definition.nu	ok
+accept/def/wrapped-flag.nu	ok
+accept/def/wrapped-help-flag.nu	ok
+accept/def/wrapped-rest-any-is-consumer.nu	error TypeMismatchHelp: expected list<string>, found list<any>
+accept/def/wrapped-rest-int-is-consumer.nu	error TypeMismatchHelp: expected list<string>, found list<int>
+accept/def/wrapped-rest-string.nu	ok
+accept/def/wrapped-rest-typed-after-comment-with-dots.nu	ok
+accept/def/wrapped-untyped-rest-takes-external-arguments.nu	ok
+accept/def/wrapped-without-rest-is-consumer.nu	error MissingPositional: missing ...rest-like positional argument
+accept/env-shorthand/before-keyword.nu	ok
+accept/env-shorthand/invalid-name-is-command.nu	ok
+accept/env-shorthand/let-without-value-after-shorthand.nu	ok
+accept/env-shorthand/multiple.nu	ok
+accept/env-shorthand/not-shorthand-in-argument-position.nu	ok
+accept/env-shorthand/plugin-use-after-shorthand.nu	ok
+accept/env-shorthand/quoted-value.nu	ok
+accept/env-shorthand/return-after-shorthand.nu	ok
+accept/env-shorthand/run-after-shorthand.nu	ok
+accept/env-shorthand/single.nu	ok
+accept/env-shorthand/value-that-does-not-parse-is-command.nu	ok
+accept/env-shorthand/where-after-shorthand.nu	ok
+accept/extern/basic.nu	ok
+accept/extern/body-ignored.nu	ok
+accept/extern/completer-flag.nu	ok
+accept/extern/default-not-parsed.nu	ok
+accept/extern/export-strict-flag.nu	ok
+accept/extern/help-after-name.nu	ok
+accept/extern/help-twice.nu	ok
+accept/extern/io-types.nu	ok
+accept/extern/lone-dash-name-is-consumer.nu	error LabeledErrorWithHelp: expected space
+accept/extern/no-params.nu	ok
+accept/extern/paren-signature.nu	ok
+accept/extern/positional-after-rest.nu	ok
+accept/extern/quoted-name.nu	ok
+accept/extern/repeated-names.nu	ok
+accept/extern/reserved-names-allowed.nu	ok
+accept/extern/strict-flag-after-name.nu	ok
+accept/extern/strict-flag-then-end-of-options.nu	ok
+accept/extern/strict-flag-value-not-bool-is-consumer.nu	error ExpectedWithStringMsg: expected bool
+accept/extern/strict-flag-value.nu	ok
+accept/extern/strict-flag.nu	ok
+accept/extern/unknown-flag-is-consumer.nu	error UnknownFlag: unknown flag
+accept/extern/wrapped-body-ignored.nu	ok
+accept/externals/arg-bare-and-quoted.nu	ok
+accept/externals/arg-closure.nu	ok
+accept/externals/arg-flags-with-quotes.nu	ok
+accept/externals/arg-interpolated.nu	ok
+accept/externals/arg-list-and-variable.nu	ok
+accept/externals/arg-numbers-and-words.nu	ok
+accept/externals/arg-query-with-parens.nu	ok
+accept/externals/arg-record.nu	ok
+accept/externals/arg-spread.nu	ok
+accept/externals/arg-subexpressions-in-word.nu	ok
+accept/externals/caret-alone.nu	ok
+accept/externals/caret-args.nu	ok
+accept/externals/caret-simple.nu	ok
+accept/externals/head-forms.nu	ok
+accept/externals/head-interpolated.nu	ok
+accept/externals/head-subexpression.nu	ok
+accept/externals/head-variable.nu	ok
+accept/externals/in-def-wrapped.nu	ok
+accept/externals/in-pipeline.nu	ok
+accept/externals/minus-variable-stays-text.nu	ok
+accept/externals/record-then-cell-path.nu	ok
+accept/externals/relative-path-command.nu	ok
+accept/externals/subexpression-then-cell-path.nu	ok
+accept/externals/unknown-command-duration-like-argument.nu	ok
+accept/externals/unknown-command-flags-are-strings.nu	ok
+accept/externals/unknown-command-is-external.nu	ok
+accept/externals/unknown-command-quote-then-text.nu	ok
+accept/externals/unknown-command-radix-like-argument.nu	ok
+accept/if/as-value.nu	ok
+accept/if/block-with-statements.nu	ok
+accept/if/condition-forms.nu	ok
+accept/if/condition-then-help.nu	ok
+accept/if/else-before-condition-is-consumer.nu	error MissingPositional: missing cond
+accept/if/else-call-with-closure-arg.nu	ok
+accept/if/else-closure-in-expression.nu	ok
+accept/if/else-closure.nu	ok
+accept/if/else-empty-braces-cell-path.nu	ok
+accept/if/else-empty-closure.nu	ok
+accept/if/else-expression.nu	ok
+accept/if/else-if-chain.nu	ok
+accept/if/else-if-dedented-closers.nu	ok
+accept/if/else-record-cell-path.nu	ok
+accept/if/else-record.nu	ok
+accept/if/else.nu	ok
+accept/if/empty-blocks.nu	ok
+accept/if/end-of-options-first.nu	ok
+accept/if/flags-after-else-block.nu	ok
+accept/if/help-flag-value-not-bool-is-consumer.nu	error ExpectedWithStringMsg: expected bool
+accept/if/help-flag-with-value.nu	ok
+accept/if/help-flag.nu	ok
+accept/if/help-with-condition-asking-help.nu	ok
+accept/if/in-pipeline.nu	ok
+accept/if/multiline.nu	ok
+accept/if/negative-number-first-is-consumer.nu	error UnknownFlag: unknown flag
+accept/if/nested.nu	ok
+accept/if/no-block-is-consumer.nu	error MissingPositional: missing cond
+accept/if/no-condition-is-consumer.nu	error MissingPositional: missing cond
+accept/if/operator-after-else-block-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/if/pipe-in-condition-is-consumer.nu	error MissingPositional: missing cond
+accept/if/simple.nu	ok
+accept/if/then-record-cell-path.nu	ok
+accept/if/then-record-raw-string-key.nu	ok
+accept/if/then-record-with-variable-key.nu	ok
+accept/if/then-value-variable.nu	ok
+accept/if/unknown-flag-after-else-block-is-consumer.nu	error UnknownFlag: unknown flag
+accept/interpolation/backslash-count-reset.nu	ok
+accept/interpolation/bare-word-both-ends.nu	ok
+accept/interpolation/bare-word-path.nu	ok
+accept/interpolation/bare-word-starting-subexpr.nu	ok
+accept/interpolation/bare-word.nu	ok
+accept/interpolation/cell-path-inside.nu	ok
+accept/interpolation/double-basic.nu	ok
+accept/interpolation/double-parens.nu	ok
+accept/interpolation/empty-parens.nu	ok
+accept/interpolation/escaped-backslash-before-paren.nu	ok
+accept/interpolation/escaped-paren.nu	ok
+accept/interpolation/html-attribute-quotes.nu	ok
+accept/interpolation/multiline-body.nu	ok
+accept/interpolation/nested-interpolation.nu	ok
+accept/interpolation/nested-parens.nu	ok
+accept/interpolation/newline-escape.nu	ok
+accept/interpolation/no-expression.nu	ok
+accept/interpolation/only-expression.nu	ok
+accept/interpolation/pipeline-inside.nu	ok
+accept/interpolation/quotes-inside-subexpression.nu	ok
+accept/interpolation/sequential-subexpressions.nu	ok
+accept/interpolation/single-basic.nu	ok
+accept/interpolation/two-plus-two.nu	ok
+accept/interpolation/unicode-escape-and-subexpr.nu	ok
+accept/interpolation/with-equals.nu	ok
+accept/lists/assignment-mode-keeps-everything.nu	ok
+accept/lists/assignment-mode-keeps-redirection.nu	ok
+accept/lists/bare-words.nu	ok
+accept/lists/closure-items.nu	ok
+accept/lists/comma-separated.nu	ok
+accept/lists/deeply-nested.nu	ok
+accept/lists/empty.nu	ok
+accept/lists/err-pipe-separates.nu	ok
+accept/lists/mixed-separators.nu	ok
+accept/lists/mixed-values.nu	ok
+accept/lists/multiline.nu	ok
+accept/lists/nested.nu	ok
+accept/lists/operators-after-assignment.nu	ok
+accept/lists/operators-are-words.nu	ok
+accept/lists/pipes-tolerated.nu	ok
+accept/lists/quoted-url-with-equals.nu	ok
+accept/lists/redirection-before-comma.nu	ok
+accept/lists/redirection-dropped-then-item.nu	ok
+accept/lists/redirection-dropped.nu	ok
+accept/lists/separate-redirections-dropped.nu	ok
+accept/lists/space-separated.nu	ok
+accept/lists/spread-bare-word-is-not-spread.nu	ok
+accept/lists/spread-empty.nu	ok
+accept/lists/spread-list-and-subexpr.nu	ok
+accept/lists/spread-nested.nu	ok
+accept/lists/spread-variable.nu	ok
+accept/lists/trailing-comma.nu	ok
+accept/lists/unit-like-bare-word.nu	ok
+accept/literals/bare-words-look-like-numbers.nu	ok
+accept/literals/binary-bits.nu	ok
+accept/literals/binary-empty.nu	ok
+accept/literals/binary-hex-multiline-comments.nu	ok
+accept/literals/binary-hex-odd-digits.nu	ok
+accept/literals/binary-hex-spaces-commas.nu	ok
+accept/literals/binary-hex.nu	ok
+accept/literals/binary-octal.nu	ok
+accept/literals/binary-without-closing-bracket-is-word.nu	ok
+accept/literals/bool-true-false.nu	ok
+accept/literals/datetime-date.nu	ok
+accept/literals/datetime-fraction-utc.nu	ok
+accept/literals/datetime-in-record.nu	ok
+accept/literals/datetime-leap-day.nu	ok
+accept/literals/datetime-leap-second.nu	ok
+accept/literals/datetime-long-fraction.nu	ok
+accept/literals/datetime-lowercase-t-and-z.nu	ok
+accept/literals/datetime-offset-unicode-minus.nu	ok
+accept/literals/datetime-offset.nu	ok
+accept/literals/datetime-time.nu	ok
+accept/literals/duration-underscores.nu	ok
+accept/literals/duration-units.nu	ok
+accept/literals/duration-uppercase-unit-is-word.nu	ok
+accept/literals/filesize-like-with-dollar-is-string.nu	ok
+accept/literals/filesize-negative.nu	ok
+accept/literals/filesize-underscores.nu	ok
+accept/literals/filesize-units.nu	ok
+accept/literals/float-beyond-int-range.nu	ok
+accept/literals/float-exponent.nu	ok
+accept/literals/float-inf-nan.nu	ok
+accept/literals/float-leading-dot.nu	ok
+accept/literals/float-negative.nu	ok
+accept/literals/float-simple.nu	ok
+accept/literals/float-trailing-dot.nu	ok
+accept/literals/float-underscores.nu	ok
+accept/literals/int-binary.nu	ok
+accept/literals/int-decimal.nu	ok
+accept/literals/int-hex-full-width-wraps.nu	ok
+accept/literals/int-hex-not-filesize.nu	ok
+accept/literals/int-hex-underscores.nu	ok
+accept/literals/int-hex.nu	ok
+accept/literals/int-limits.nu	ok
+accept/literals/int-max.nu	ok
+accept/literals/int-min.nu	ok
+accept/literals/int-negative.nu	ok
+accept/literals/int-octal.nu	ok
+accept/literals/int-positive-sign.nu	ok
+accept/literals/int-signed-radix-limits.nu	ok
+accept/literals/int-signed-radix.nu	ok
+accept/literals/int-underscores.nu	ok
+accept/literals/int-zero.nu	ok
+accept/literals/not-a-datetime-offset-24.nu	ok
+accept/literals/not-a-datetime-second-61.nu	ok
+accept/literals/null.nu	ok
+accept/literals/semver-string-not-number.nu	ok
+accept/literals/signed-radix-at-pipeline-head.nu	ok
+accept/literals/special-float-names.nu	ok
+accept/literals/unit-limits.nu	ok
+accept/literals/unit-plus-sign.nu	ok
+accept/loops/break-continue-in-nested-blocks.nu	ok
+accept/loops/break-help-then-extra-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/loops/break-help.nu	ok
+accept/loops/break-with-arg-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/loops/continue-help.nu	ok
+accept/loops/continue-with-arg-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/loops/for-bare-dollar-name.nu	ok
+accept/loops/for-body-record-with-variable-key.nu	ok
+accept/loops/for-body-value-variable.nu	ok
+accept/loops/for-dollar-var.nu	ok
+accept/loops/for-extra-tokens-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/loops/for-help-after-var.nu	ok
+accept/loops/for-help-then-extra-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/loops/for-iterable-forms.nu	ok
+accept/loops/for-list.nu	ok
+accept/loops/for-missing-var-is-consumer.nu	error MissingPositional: missing var_name
+accept/loops/for-multiline.nu	ok
+accept/loops/for-range.nu	ok
+accept/loops/for-typed-record-with-spaces.nu	ok
+accept/loops/for-typed-then-help-is-consumer.nu	error UnknownType: unknown type
+accept/loops/for-typed.nu	ok
+accept/loops/loop-alone-is-consumer.nu	error MissingPositional: missing block
+accept/loops/loop-basic.nu	ok
+accept/loops/loop-body-value-variable.nu	ok
+accept/loops/loop-double-dash-then-help-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/loops/loop-extra-tokens-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/loops/loop-help-then-extra-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/loops/loop-help.nu	ok
+accept/loops/loop-keywords-as-values.nu	ok
+accept/loops/loop-with-continue.nu	ok
+accept/loops/return-double-dash-then-help-word.nu	ok
+accept/loops/return-double-dash-then-negative.nu	ok
+accept/loops/return-double-dash-twice-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/loops/return-end-of-options.nu	ok
+accept/loops/return-forms.nu	ok
+accept/loops/return-help-after-value.nu	ok
+accept/loops/return-help-then-two-values-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/loops/return-negative-number-is-consumer.nu	error UnknownFlag: unknown flag
+accept/loops/return-two-values-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/loops/return-unknown-flag-is-consumer.nu	error UnknownFlag: unknown flag
+accept/loops/while-alone-is-consumer.nu	error MissingPositional: missing cond
+accept/loops/while-basic.nu	ok
+accept/loops/while-body-value-subexpression.nu	ok
+accept/loops/while-complex-condition.nu	ok
+accept/loops/while-condition-then-help.nu	ok
+accept/loops/while-help.nu	ok
+accept/loops/while-negative-number-first-is-consumer.nu	error UnknownFlag: unknown flag
+accept/loops/while-no-block-is-consumer.nu	error MissingPositional: missing cond
+accept/match/all-pattern-kinds.nu	ok
+accept/match/bare-dollar-pattern.nu	ok
+accept/match/block-is-closure.nu	ok
+accept/match/block-is-empty-closure.nu	ok
+accept/match/block-is-record.nu	ok
+accept/match/block-is-subexpression.nu	ok
+accept/match/block-is-variable.nu	ok
+accept/match/block-record-cell-path.nu	ok
+accept/match/body-forms.nu	ok
+accept/match/body-is-any-token.nu	ok
+accept/match/closure-value-then-variable-block.nu	ok
+accept/match/comments-in-arms.nu	ok
+accept/match/empty-block.nu	ok
+accept/match/extra-tokens-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/match/guard-is-any-token.nu	ok
+accept/match/guards.nu	ok
+accept/match/help-after-value.nu	ok
+accept/match/help-then-block.nu	ok
+accept/match/help-then-extra-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/match/in-pipeline.nu	ok
+accept/match/list-pattern-assignment-mode.nu	ok
+accept/match/list-pattern-dotdot-word-is-string.nu	ok
+accept/match/list-pattern-ignore-rest-then-items.nu	ok
+accept/match/list-pattern-items-after-rest.nu	ok
+accept/match/list-pattern-nested-rests.nu	ok
+accept/match/list-pattern-operator-word.nu	ok
+accept/match/list-pattern-pipe-separates-items.nu	ok
+accept/match/list-pattern-redirection-dropped.nu	ok
+accept/match/list-pattern-rest-then-pipe-group.nu	ok
+accept/match/list-patterns.nu	ok
+accept/match/literal-arms.nu	ok
+accept/match/missing-block-is-consumer.nu	error MissingPositional: missing match_block
+accept/match/negative-number-value-is-consumer.nu	error UnknownFlag: unknown flag
+accept/match/nested-match.nu	ok
+accept/match/or-patterns.nu	ok
+accept/match/pattern-that-lexes-as-operator.nu	ok
+accept/match/record-pattern-pipe-value.nu	ok
+accept/match/record-pattern-quoted-field-verbatim.nu	ok
+accept/match/record-pattern-semicolon-field.nu	ok
+accept/match/record-patterns.nu	ok
+accept/match/separators.nu	ok
+accept/match/single-line.nu	ok
+accept/match/value-forms.nu	ok
+accept/match/value-patterns.nu	ok
+accept/match/wildcard-binds-variable-names.nu	ok
+accept/misc/blank-lines-everywhere.nu	ok
+accept/misc/closures-in-list-in-record.nu	ok
+accept/misc/config-record.nu	ok
+accept/misc/every-statement-in-closure.nu	ok
+accept/misc/indented-statements.nu	ok
+accept/misc/keyword-words-as-arguments.nu	ok
+accept/misc/long-pipeline-all-shapes.nu	ok
+accept/misc/multiple-shebang-like-comments.nu	ok
+accept/misc/nested-everything.nu	ok
+accept/misc/quoted-strings-do-not-interpolate.nu	ok
+accept/misc/semicolons-inside-blocks.nu	ok
+accept/misc/statement-after-def-same-line.nu	ok
+accept/misc/trailing-whitespace.nu	ok
+accept/misc/unicode-everywhere.nu	ok
+accept/modules/body-help-calls.nu	ok
+accept/modules/const-and-source.nu	error SourcedFileNotFound: File not found: x.nu
+accept/modules/double-dash-after-body.nu	ok
+accept/modules/double-dash-alone-is-consumer.nu	error MissingPositional: missing module
+accept/modules/double-dash-as-name-is-consumer.nu	error Expected: expected block
+accept/modules/double-dash-before-body-is-consumer.nu	error Expected: expected block
+accept/modules/double-dash-then-block-is-consumer.nu	error TypeMismatch: expected string, found record
+accept/modules/export-alias-help-in-module-is-consumer.nu	error InternalError: failed to find added alias
+accept/modules/export-alias-without-target-in-module-is-consumer.nu	error IncorrectValue: unexpected Incomplete alias
+accept/modules/export-def-help.nu	ok
+accept/modules/export-env-double-dash-is-consumer.nu	error MissingPositional: missing block
+accept/modules/export-env-extra-items-ignored.nu	ok
+accept/modules/export-env-help-drops-the-rest.nu	ok
+accept/modules/export-env-help.nu	ok
+accept/modules/export-env-missing-block-is-consumer.nu	error MissingPositional: missing block
+accept/modules/export-env-multiline.nu	ok
+accept/modules/export-env-redirection-ignored.nu	ok
+accept/modules/export-env-second-block-ignored.nu	ok
+accept/modules/export-forms.nu	ok
+accept/modules/export-help-repeated.nu	ok
+accept/modules/export-help-then-extra-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/modules/export-help.nu	ok
+accept/modules/export-type.nu	ok
+accept/modules/export-with-attributes.nu	ok
+accept/modules/help-flag-with-value.nu	ok
+accept/modules/hide-and-source.nu	error ModuleNotFound: module std not found
+accept/modules/module-body-leading-pipe.nu	ok
+accept/modules/module-deeply-nested.nu	error ModuleNotFound: module bar.nu not found
+accept/modules/module-empty.nu	ok
+accept/modules/module-extra-tokens-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/modules/module-help-after-body.nu	ok
+accept/modules/module-help-after-name.nu	ok
+accept/modules/module-help-block-not-parsed.nu	ok
+accept/modules/module-help-extra-positional-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/modules/module-help-record-name-is-consumer.nu	error TypeMismatch: expected string, found record<a: int>
+accept/modules/module-help-unknown-flag-is-consumer.nu	error UnknownFlag: unknown flag
+accept/modules/module-inline.nu	ok
+accept/modules/module-missing-name-is-consumer.nu	error MissingPositional: missing module
+accept/modules/module-name-interpolation-is-consumer.nu	error UnknownState: internal error: name not a string
+accept/modules/module-name-record-is-consumer.nu	error TypeMismatch: expected string, found record
+accept/modules/module-name-subexpression-is-consumer.nu	error UnknownState: internal error: name not a string
+accept/modules/module-name-true-is-consumer.nu	error ExpectedWithStringMsg: expected string
+accept/modules/module-nested.nu	ok
+accept/modules/module-path.nu	error ModuleNotFound: module ./path/to/mod.nu not found
+accept/modules/module-quoted-name.nu	ok
+accept/modules/module-with-main.nu	ok
+accept/modules/overlay.nu	error ModuleNotFound: module ./foo.nu not found
+accept/modules/plugin.nu	error LabeledErrorWithHelp: can't load plugin without registry file
+accept/modules/use-flag-after-double-dash-is-consumer.nu	error ExportNotFound: could not find imports
+accept/modules/use-help-anywhere.nu	ok
+accept/modules/use-in-block.nu	ok
+accept/modules/use-inline-module.nu	ok
+accept/modules/use-list-forms.nu	ok
+accept/modules/use-list-member-with-cell-path.nu	ok
+accept/modules/use-list-with-non-name-items.nu	ok
+accept/modules/use-member-record-ignored.nu	ok
+accept/modules/use-member-subexpression-ignored.nu	ok
+accept/modules/use-member-variable-ignored.nu	ok
+accept/modules/use-missing-module-is-consumer.nu	error MissingPositional: missing module
+accept/modules/use-null-then-anything.nu	ok
+accept/modules/use-null-then-name.nu	ok
+accept/modules/use-null.nu	ok
+accept/modules/use-path.nu	error ModuleNotFound: module ./mod.nu not found
+accept/modules/use-quoted-members.nu	ok
+accept/modules/use-std.nu	ok
+accept/operators/arithmetic.nu	ok
+accept/operators/bits-precedence.nu	ok
+accept/operators/bits.nu	ok
+accept/operators/boolean-precedence.nu	ok
+accept/operators/boolean.nu	ok
+accept/operators/cell-path-operands.nu	ok
+accept/operators/comparison.nu	ok
+accept/operators/if-as-operand.nu	ok
+accept/operators/list-head-math.nu	ok
+accept/operators/match-as-operand.nu	ok
+accept/operators/math-at-pipeline-head-then-pipe.nu	ok
+accept/operators/math-with-units.nu	ok
+accept/operators/membership.nu	ok
+accept/operators/mixed-precedence-chain.nu	ok
+accept/operators/multiline-inside-parens.nu	ok
+accept/operators/negative-numbers-vs-subtraction.nu	ok
+accept/operators/not-after-boolean-operator.nu	ok
+accept/operators/not-before-membership.nu	ok
+accept/operators/not-binds-looser-than-comparison.nu	ok
+accept/operators/not-binds-tighter-than-and.nu	ok
+accept/operators/not-in-if-condition.nu	ok
+accept/operators/not-not-before-comparison.nu	ok
+accept/operators/not-on-rhs.nu	ok
+accept/operators/null-comparison.nu	ok
+accept/operators/parenthesised-comparisons.nu	ok
+accept/operators/pow-right-associative.nu	ok
+accept/operators/precedence-arithmetic.nu	ok
+accept/operators/regex.nu	ok
+accept/operators/starts-ends-with.nu	ok
+accept/operators/string-concat-and-plus.nu	ok
+accept/operators/string-head-math.nu	ok
+accept/operators/subexpression-operands.nu	ok
+accept/operators/subtraction-left-associative.nu	ok
+accept/operators/unary-minus-cell-path.nu	ok
+accept/operators/unary-minus-list-and-record.nu	ok
+accept/operators/unary-minus-operand.nu	ok
+accept/operators/unary-minus-subexpression.nu	ok
+accept/operators/unary-minus-type-is-consumer.nu	error OperatorUnsupportedType: does not support 'string'
+accept/operators/unary-minus-variable.nu	ok
+accept/operators/unary-not-forms.nu	ok
+accept/pipelines/assignment-then-blank-line-then-pipe.nu	ok
+accept/pipelines/blank-line-after-pipe-closes.nu	ok
+accept/pipelines/blank-line-before-pipe-closes.nu	ok
+accept/pipelines/blank-then-comment-before-pipe-closes.nu	ok
+accept/pipelines/comment-lines-before-pipe-continue.nu	ok
+accept/pipelines/comment-then-blank-before-pipe-closes.nu	ok
+accept/pipelines/crlf-line-endings.nu	ok
+accept/pipelines/deeply-nested-pipelines.nu	ok
+accept/pipelines/double-pipe-tolerated.nu	ok
+accept/pipelines/empty.nu	ok
+accept/pipelines/if-before-pipe.nu	ok
+accept/pipelines/in-variable-pipeline.nu	ok
+accept/pipelines/keyword-in-pipeline-position.nu	ok
+accept/pipelines/leading-pipe-at-file-start.nu	ok
+accept/pipelines/leading-pipe-blank-lines.nu	ok
+accept/pipelines/leading-pipe-comment-then-blank-line.nu	ok
+accept/pipelines/leading-pipe-continuation.nu	ok
+accept/pipelines/leading-pipe-then-blank-line.nu	ok
+accept/pipelines/leading-pipe-with-comments.nu	ok
+accept/pipelines/let-in-pipeline-tail.nu	ok
+accept/pipelines/let-then-blank-then-pipe.nu	ok
+accept/pipelines/let-then-pipe-on-next-line-continues.nu	error InputMismatch: command doesn't support int input
+accept/pipelines/let-without-value-after-pipe.nu	ok
+accept/pipelines/many-elements.nu	ok
+accept/pipelines/mixed-separators.nu	ok
+accept/pipelines/newline-separated.nu	ok
+accept/pipelines/only-semicolons.nu	ok
+accept/pipelines/only-whitespace.nu	ok
+accept/pipelines/overlay-list-first.nu	ok
+accept/pipelines/overlay-list-in-pipeline.nu	error InputMismatch: command doesn't support table input
+accept/pipelines/pipe-blank-line-then-leading-pipe-continues.nu	ok
+accept/pipelines/pipe-comment-lines-around-blank-line-then-leading-pipe-continues.nu	ok
+accept/pipelines/pipe-comment-lines-then-blank-closes.nu	ok
+accept/pipelines/pipe-same-line-comment-then-blank-closes.nu	ok
+accept/pipelines/pipe-then-comment-then-newline.nu	ok
+accept/pipelines/pipe-two-blank-lines-then-leading-pipe-closes.nu	ok
+accept/pipelines/plugin-list-after-shorthand.nu	ok
+accept/pipelines/return-after-pipe.nu	error InputMismatch: command doesn't support table input
+accept/pipelines/run-first.nu	ok
+accept/pipelines/run-in-pipeline.nu	ok
+accept/pipelines/semicolon-separated.nu	ok
+accept/pipelines/shebang-only.nu	ok
+accept/pipelines/shebang.nu	ok
+accept/pipelines/single-call.nu	ok
+accept/pipelines/source-env-in-pipeline.nu	ok
+accept/pipelines/subexpression-starting-with-pipe.nu	ok
+accept/pipelines/tabs-as-whitespace.nu	ok
+accept/pipelines/trailing-pipe-at-end-of-file.nu	ok
+accept/pipelines/trailing-pipe-continuation.nu	ok
+accept/pipelines/trailing-pipe-then-blank-lines.nu	ok
+accept/pipelines/trailing-pipe-then-comment-then-newline.nu	ok
+accept/pipelines/trailing-pipe-then-newline-in-block.nu	ok
+accept/pipelines/trailing-pipe-then-two-comment-lines.nu	ok
+accept/pipelines/two-elements.nu	ok
+accept/pipelines/two-pipes-then-blank-line.nu	ok
+accept/ranges/bad-cell-path-bound-head-is-external.nu	ok
+accept/ranges/bare-dollar-bound-head-is-external.nu	ok
+accept/ranges/block-bound-is-string.nu	ok
+accept/ranges/cell-path-bound-head-is-range.nu	ok
+accept/ranges/cell-path-bound.nu	ok
+accept/ranges/cell-path-literal-bound-head-is-consumer.nu	error OperatorUnsupportedType: does not support 'cell-path'
+accept/ranges/closure-bound-is-consumer.nu	error OperatorUnsupportedType: does not support 'closure'
+accept/ranges/colon-dollar-bound-head-is-external.nu	ok
+accept/ranges/dotdot-as-argument.nu	ok
+accept/ranges/empty-next-bound-is-consumer.nu	error IncompleteParser: parser support missing for this expression
+accept/ranges/empty-next-head-is-external.nu	ok
+accept/ranges/exclusive.nu	ok
+accept/ranges/float-bounds.nu	ok
+accept/ranges/head-bound-with-trailing-text-is-external.nu	ok
+accept/ranges/in-pipeline.nu	ok
+accept/ranges/inclusive-equals.nu	ok
+accept/ranges/inclusive.nu	ok
+accept/ranges/invalid-variable-bound-head-is-external.nu	ok
+accept/ranges/left-unbounded.nu	ok
+accept/ranges/negative-bounds.nu	ok
+accept/ranges/not-ranges.nu	ok
+accept/ranges/paren-bound-with-cell-path.nu	ok
+accept/ranges/paren-bound-with-text-is-consumer.nu	error OperatorUnsupportedType: does not support 'string'
+accept/ranges/paren-bounds-with-cell-paths.nu	ok
+accept/ranges/raw-string-bound-is-consumer.nu	error OperatorUnsupportedType: does not support 'string'
+accept/ranges/record-bound-head-is-consumer.nu	error OperatorUnsupportedType: does not support 'record<a: int>'
+accept/ranges/record-bound-is-consumer.nu	error OperatorUnsupportedType: does not support 'record<a: int>'
+accept/ranges/reverse.nu	ok
+accept/ranges/right-unbounded.nu	ok
+accept/ranges/stepped.nu	ok
+accept/ranges/subexpression-bounds.nu	ok
+accept/ranges/three-dots-right-unbounded.nu	ok
+accept/ranges/to-bound-paren-cell-path.nu	ok
+accept/ranges/unary-minus-start.nu	ok
+accept/ranges/unit-named-variables.nu	ok
+accept/ranges/variable-bounds.nu	ok
+accept/ranges/wacky-parens.nu	ok
+accept/records/bare-word-keys.nu	ok
+accept/records/bare-word-values.nu	ok
+accept/records/basic.nu	ok
+accept/records/bool-key.nu	ok
+accept/records/closure-value-with-params.nu	ok
+accept/records/colon-in-quoted-value.nu	ok
+accept/records/empty-bare-key.nu	ok
+accept/records/empty.nu	ok
+accept/records/keys-with-equals.nu	ok
+accept/records/multiline.nu	ok
+accept/records/nested.nu	ok
+accept/records/no-space-after-colon.nu	ok
+accept/records/null-key.nu	ok
+accept/records/numeric-and-unit-keys.nu	ok
+accept/records/quoted-keys.nu	ok
+accept/records/runtime-duplicate-is-consumer.nu	ok
+accept/records/single-pair-multiline.nu	ok
+accept/records/spread-only.nu	ok
+accept/records/spread.nu	ok
+accept/records/subexpression-key.nu	ok
+accept/records/trailing-comma.nu	ok
+accept/records/unicode-keys.nu	ok
+accept/records/value-kinds.nu	ok
+accept/records/variable-key.nu	ok
+accept/redirections/append.nu	ok
+accept/redirections/both-pipe.nu	ok
+accept/redirections/both-streams.nu	ok
+accept/redirections/const-help-redirection-ignored.nu	ok
+accept/redirections/const-redirection-ignored-is-consumer.nu	error MissingPositional: missing initial_value
+accept/redirections/err-pipe-at-line-end-closes.nu	ok
+accept/redirections/err-pipe-then-comment-line-then-leading-pipe-continues.nu	ok
+accept/redirections/err-pipe-then-semicolon.nu	ok
+accept/redirections/in-let-value.nu	ok
+accept/redirections/internal-command.nu	ok
+accept/redirections/keyword-command-into-pipeline.nu	ok
+accept/redirections/let-in-pipeline.nu	ok
+accept/redirections/separate-streams.nu	ok
+accept/redirections/stderr-pipe.nu	ok
+accept/redirections/stderr.nu	ok
+accept/redirections/stdout.nu	ok
+accept/redirections/target-expressions.nu	ok
+accept/redirections/then-pipe.nu	ok
+accept/signatures/all-types.nu	ok
+accept/signatures/cell-path-default-without-dollar.nu	ok
+accept/signatures/closure-param-list-forms.nu	ok
+accept/signatures/colon-then-comment-only.nu	ok
+accept/signatures/completer-command-being-defined.nu	ok
+accept/signatures/completer-empty-list.nu	ok
+accept/signatures/completer-int-is-consumer.nu	error UnknownCommand: unknown command
+accept/signatures/completer-list-of-ints.nu	ok
+accept/signatures/completer-quoted-multiword-command.nu	ok
+accept/signatures/completer-raw-string.nu	ok
+accept/signatures/completer-unknown-command-is-consumer.nu	error UnknownCommand: unknown command
+accept/signatures/custom-value-type-is-consumer.nu	ok
+accept/signatures/default-in-redirection-position.nu	ok
+accept/signatures/defaults-matching-declared-types.nu	ok
+accept/signatures/defaults-with-types.nu	ok
+accept/signatures/empty-type-before-completer-is-consumer.nu	error UnknownType: unknown type
+accept/signatures/equals-comment-then-default.nu	ok
+accept/signatures/equals-then-comment-only.nu	ok
+accept/signatures/err-pipe-token-ignored.nu	ok
+accept/signatures/flag-names-with-dashes-and-digits.nu	ok
+accept/signatures/flag-short-forms.nu	ok
+accept/signatures/for-loop-typed.nu	ok
+accept/signatures/generic-types-multiline.nu	ok
+accept/signatures/generic-types.nu	ok
+accept/signatures/list-type-leading-comma.nu	ok
+accept/signatures/oneof-default-int-before-string.nu	ok
+accept/signatures/oneof-list-default.nu	ok
+accept/signatures/oneof-type-double-comma.nu	ok
+accept/signatures/optional-positional.nu	ok
+accept/signatures/param-named-like-keyword.nu	ok
+accept/signatures/pipe-pipe-ignored.nu	ok
+accept/signatures/pipes-ignored.nu	ok
+accept/signatures/record-type-colon-then-comma-is-consumer.nu	error UnknownType: unknown type
+accept/signatures/record-type-comment.nu	ok
+accept/signatures/record-type-double-comma.nu	ok
+accept/signatures/record-type-key-with-equals.nu	ok
+accept/signatures/record-type-leading-comma.nu	ok
+accept/signatures/record-type-untyped-field-no-comma.nu	ok
+accept/signatures/redirection-then-stray-default.nu	ok
+accept/signatures/redirection-token-ignored.nu	ok
+accept/signatures/repeated-underscore-parameters.nu	ok
+accept/signatures/second-default-of-another-type-is-consumer.nu	error Expected: expected at least one range bound set
+accept/signatures/second-default-without-type.nu	ok
+accept/signatures/separators.nu	ok
+accept/signatures/short-flag-i.nu	ok
+accept/signatures/stray-colon-before-rest.nu	ok
+accept/signatures/stray-semicolons.nu	ok
+accept/signatures/table-type-double-comma.nu	ok
+accept/signatures/two-description-comments.nu	ok
+accept/signatures/type-alias-help-call.nu	ok
+accept/signatures/unicode-param-names.nu	ok
+accept/strings/backtick-in-middle-is-bare.nu	ok
+accept/strings/backtick-no-escapes.nu	ok
+accept/strings/backtick-not-closing-is-bare.nu	ok
+accept/strings/backtick.nu	ok
+accept/strings/bare-with-trailing-quotes.nu	ok
+accept/strings/bare-word.nu	ok
+accept/strings/date-like-file-names.nu	ok
+accept/strings/double-quoted-escapes.nu	ok
+accept/strings/double-quoted.nu	ok
+accept/strings/embedded-quotes-kept.nu	ok
+accept/strings/empty-strings.nu	ok
+accept/strings/hex-escapes-form-utf8.nu	ok
+accept/strings/minus-subexpression-then-text-is-interpolation.nu	ok
+accept/strings/minus-two-subexpressions-is-interpolation.nu	ok
+accept/strings/multiline-double.nu	ok
+accept/strings/multiline-single.nu	ok
+accept/strings/quote-escape-not-env-shorthand.nu	ok
+accept/strings/quotes-with-equals.nu	ok
+accept/strings/raw-string-256-hashes.nu	ok
+accept/strings/raw-string-closed-by-its-opening-quote.nu	ok
+accept/strings/raw-string-hashes.nu	ok
+accept/strings/raw-string-multiline.nu	ok
+accept/strings/raw-string-with-equals.nu	ok
+accept/strings/raw-string-with-hashtag.nu	ok
+accept/strings/raw-string.nu	ok
+accept/strings/single-quoted-no-escapes.nu	ok
+accept/strings/single-quoted.nu	ok
+accept/strings/special-float-lookalikes.nu	ok
+accept/strings/string-comparison.nu	ok
+accept/strings/unicode-content.nu	ok
+accept/strings/unicode-escapes.nu	ok
+accept/subexpressions/as-argument.nu	ok
+accept/subexpressions/closing-paren-on-own-line.nu	ok
+accept/subexpressions/def-inside.nu	ok
+accept/subexpressions/empty.nu	ok
+accept/subexpressions/leading-comment-lines.nu	ok
+accept/subexpressions/multiline-math.nu	ok
+accept/subexpressions/multiline-pipeline.nu	ok
+accept/subexpressions/nested.nu	ok
+accept/subexpressions/paren-wrapped-record.nu	ok
+accept/subexpressions/semicolons-inside.nu	ok
+accept/subexpressions/simple.nu	ok
+accept/subexpressions/statements-inside.nu	ok
+accept/tables/bare-word-column-names.nu	ok
+accept/tables/basic.nu	ok
+accept/tables/bool-columns.nu	ok
+accept/tables/cell-path-column-name.nu	ok
+accept/tables/comma-rows.nu	ok
+accept/tables/multiline.nu	ok
+accept/tables/nested-values.nu	ok
+accept/tables/no-rows-is-list.nu	ok
+accept/tables/null-column-name.nu	ok
+accept/tables/number-column-names.nu	ok
+accept/tables/quoted-columns.nu	ok
+accept/tables/single-row.nu	ok
+accept/tables/variable-column.nu	ok
+accept/try/alone-is-consumer.nu	error MissingPositional: missing try_block
+accept/try/basic.nu	ok
+accept/try/body-record-cell-path.nu	ok
+accept/try/body-value-variable.nu	ok
+accept/try/catch-finally.nu	ok
+accept/try/catch-record-with-variable-key.nu	ok
+accept/try/catch-variable-handler.nu	ok
+accept/try/catch.nu	ok
+accept/try/double-dash-after-body.nu	ok
+accept/try/double-dash-after-catch.nu	ok
+accept/try/double-dash-then-help-before-catch.nu	ok
+accept/try/duplicate-handlers.nu	ok
+accept/try/finally-catch-order.nu	ok
+accept/try/finally-record-cell-path.nu	ok
+accept/try/finally.nu	ok
+accept/try/help-after-block.nu	ok
+accept/try/in-pipeline.nu	ok
+accept/try/multiline.nu	ok
+accept/try/three-handlers-is-consumer.nu	error ExtraPositional: extra positional argument
+accept/variables/builtins.nu	ok
+accept/variables/in-alone.nu	ok
+accept/variables/it-as-name.nu	ok
+accept/variables/named-like-units.nu	ok
+accept/variables/simple.nu	ok
+accept/variables/underscore-and-digits.nu	ok
+accept/variables/unicode-name.nu	ok
+accept/where/alone-is-consumer.nu	error MissingPositional: missing condition
+accept/where/bool-columns-after-and.nu	ok
+accept/where/brace-with-tail-is-row-condition.nu	ok
+accept/where/closure.nu	ok
+accept/where/column-after-or-and-xor.nu	ok
+accept/where/help-flag.nu	ok
+accept/where/in-subexpression.nu	ok
+accept/where/interpolation-condition.nu	ok
+accept/where/it-variable.nu	ok
+accept/where/negative-number-first-is-consumer.nu	error UnknownFlag: unknown flag
+accept/where/nested-in-closure.nu	ok
+accept/where/not-before-comparison.nu	ok
+accept/where/not-columns-after-and.nu	ok
+accept/where/raw-string-operand-is-a-value.nu	ok
+accept/where/row-condition-bare-column.nu	ok
+accept/where/row-condition-cell-path.nu	ok
+accept/where/row-condition-chain.nu	ok
+accept/where/row-condition-not-column.nu	ok
+accept/where/row-condition-with-if.nu	ok
+accept/where/row-condition.nu	ok
+accept/where/short-help-flag.nu	ok
+accept/where/subexpression-condition.nu	ok
+accept/where/unknown-flag-is-consumer.nu	error UnknownFlag: unknown flag
+reject/alias/alias-to-type-keyword.nu	error CantAliasKeyword: not supported in alias
+reject/alias/call-after-alias-parses-values.nu	error InvalidLiteral: invalid digits for radix 2 in int
+reject/alias/double-dash-as-name.nu	error AssignmentMismatch: missing equal sign
+reject/alias/double-dash-before-equals.nu	error AssignmentMismatch: missing equal sign
+reject/alias/double-dash-name-alone.nu	error AliasNotValid: alias name must not be a number, a filesize, a duration, a datetime, a binary literal or a range, contain #, ^, or %, or use whitespace other than single spaces between words
+reject/alias/help-before-name.nu	error AssignmentMismatch: missing equal sign
+reject/alias/help-then-extra.nu	error AssignmentMismatch: missing equal sign
+reject/alias/name-is-plugin-use.nu	error NameIsKeyword: 'plugin use' is a parser keyword
+reject/alias/pipeline-target.nu	error CantAliasExpression: aliasing pipeline is not supported
+reject/alias/redirection-target.nu	error CantAliasExpression: aliasing redirection is not supported
+reject/alias/target-def.nu	error CantAliasKeyword: not supported in alias
+reject/alias/target-ends-with-pipe-at-eof.nu	error UnexpectedEof: expected closing pipeline missing end
+reject/alias/target-ends-with-pipe-then-newline.nu	error CantAliasExpression: aliasing pipeline is not supported
+reject/alias/target-export-def.nu	error CantAliasKeyword: not supported in alias
+reject/alias/target-export.nu	error CantAliasKeyword: not supported in alias
+reject/alias/target-for.nu	error CantAliasKeyword: not supported in alias
+reject/alias/target-hide.nu	error CantAliasKeyword: not supported in alias
+reject/alias/target-if-invalid-condition.nu	error Expected: expected expression
+reject/alias/target-if-without-block.nu	error Expected: expected block, closure or record
+reject/alias/target-let.nu	error CantAliasKeyword: not supported in alias
+reject/alias/target-where.nu	error CantAliasKeyword: not supported in alias
+reject/alias/variable-as-name.nu	error AliasNotValid: alias name must not be a number, a filesize, a duration, a datetime, a binary literal or a range, contain #, ^, or %, or use whitespace other than single spaces between words
+reject/assignments/env-rhs-bare-external.nu	error LabeledErrorWithHelp: add a caret (^) before the command name if you intended to run and capture its output
+reject/assignments/missing-rhs.nu	error Expected: expected right hand side of assignment
+reject/assignments/rhs-bare-external-with-args.nu	error LabeledErrorWithHelp: add a caret (^) before the command name if you intended to run and capture its output
+reject/assignments/rhs-bare-external.nu	error LabeledErrorWithHelp: add a caret (^) before the command name if you intended to run and capture its output
+reject/assignments/rhs-external-in-pipeline.nu	error LabeledErrorWithHelp: add a caret (^) before the command name if you intended to run and capture its output
+reject/assignments/to-call.nu	error AssignmentRequiresVar: needs to be a variable
+reject/assignments/to-literal.nu	error AssignmentRequiresVar: needs to be a variable
+reject/attributes/assignment-in-longer-pipeline.nu	error AssignmentRequiresVar: needs to be a variable
+reject/attributes/before-export-alias-in-module.nu	error AttributeRequiresDefinition: must be followed by a definition
+reject/attributes/before-export-alias.nu	error AttributeRequiresDefinition: must be followed by a definition
+reject/attributes/before-export-const.nu	error AttributeRequiresDefinition: must be followed by a definition
+reject/attributes/before-export-module.nu	error AttributeRequiresDefinition: must be followed by a definition
+reject/attributes/before-export-use.nu	error AttributeRequiresDefinition: must be followed by a definition
+reject/attributes/blank-line-before-def.nu	error AttributeRequiresDefinition: must be followed by a definition
+reject/attributes/comment-line-before-def.nu	error AttributeRequiresDefinition: must be followed by a definition
+reject/attributes/comment-line-then-blank-line-then-pipe.nu	error AttributeRequiresDefinition: must be followed by a definition
+reject/attributes/semicolon-then-blank-line-then-pipe.nu	error AttributeRequiresDefinition: must be followed by a definition
+reject/attributes/two-blank-lines-then-pipe.nu	error AttributeRequiresDefinition: must be followed by a definition
+reject/bindings/const-help-then-word.nu	error ExpectedKeyword: expected =
+reject/bindings/const-missing-colon.nu	error ExtraTokens: extra tokens
+reject/bindings/double-dash-as-name.nu	error Expected: expected valid variable name
+reject/bindings/let-ans.nu	error NameIsBuiltinVar: already a builtin variable
+reject/bindings/let-colon-attached-to-type.nu	error ExtraTokens: extra tokens
+reject/bindings/let-colon-no-type.nu	error MissingType: expected type
+reject/bindings/let-colon-then-nothing.nu	error MissingType: expected type
+reject/bindings/let-compound-operator.nu	error ExpectedKeyword: expected =
+reject/bindings/let-dash-name.nu	error Expected: expected valid variable name
+reject/bindings/let-env.nu	error NameIsBuiltinVar: already a builtin variable
+reject/bindings/let-equals-name.nu	error Expected: expected valid variable name
+reject/bindings/let-in.nu	error NameIsBuiltinVar: already a builtin variable
+reject/bindings/let-missing-colon.nu	error ExtraTokens: extra tokens
+reject/bindings/let-missing-value.nu	error KeywordMissingArgument: missing variable value that follows =
+reject/bindings/let-no-name-if.nu	error MissingPositional: missing var_name
+reject/bindings/let-nu.nu	error NameIsBuiltinVar: already a builtin variable
+reject/bindings/let-quoted-name.nu	error VariableNotValid: variable name can't contain spaces or quotes
+reject/bindings/let-quoted-string-name.nu	error VariableNotValid: variable name can't contain spaces or quotes
+reject/bindings/let-redirect-before-equals.nu	error ExtraTokens: extra tokens
+reject/bindings/let-semi-open-brace.nu	error Unbalanced: unexpected `}` (unbalanced with `{`)
+reject/bindings/let-space-before-colon.nu	error ExtraTokens: extra tokens
+reject/bindings/let-type-stray-bracket.nu	error Unbalanced: unexpected `]` (unbalanced with `<`)
+reject/bindings/let-unclosed-generic.nu	error Unclosed: unclosed — opens here (need `>`)
+reject/bindings/let-unknown-type.nu	error UnknownType: unknown type
+reject/bindings/let-word-where-equals-goes.nu	error ExpectedKeyword: expected =
+reject/bindings/mut-missing-colon.nu	error ExtraTokens: extra tokens
+reject/bindings/mut-semi-open-brace-pipe.nu	error Unbalanced: unexpected `}` (unbalanced with `{`)
+reject/calls/attributes-at-eof.nu	error MissingPositional: missing example
+reject/calls/attributes-before-command.nu	error MissingPositional: missing example
+reject/calls/attributes-before-let.nu	error UnknownCommand: unknown command
+reject/calls/flag-equals-no-value.nu	error UnknownFlag: unknown flag
+reject/calls/flag-value-refused-by-type.nu	error Expected: expected int
+reject/calls/hide-member-not-a-name.nu	error WrongImportPattern: Wrong type of import pattern, only String and List<String> are allowed.
+reject/calls/overlay-use-as-without-name.nu	error KeywordMissingArgument: missing string value that follows as
+reject/calls/overlay-use-flag-after-end-of-options-instead-of-as.nu	error ExpectedKeyword: expected as
+reject/calls/overlay-use-help-as-without-name.nu	error KeywordMissingArgument: missing string value that follows as
+reject/calls/overlay-use-word-instead-of-as.nu	error ExpectedKeyword: expected as
+reject/calls/percent-sigil-alone.nu	error LabeledErrorWithHelp: unknown built-in command
+reject/calls/percent-sigil-custom-command.nu	error LabeledErrorWithHelp: unknown built-in command
+reject/calls/percent-sigil-custom-multiword.nu	error LabeledErrorWithHelp: unknown built-in command
+reject/calls/percent-sigil-keyword.nu	error LabeledErrorWithHelp: unknown built-in command
+reject/calls/percent-sigil-list-head.nu	error LabeledErrorWithHelp: unknown built-in command
+reject/calls/percent-sigil-prelude-custom-command.nu	error LabeledErrorWithHelp: unknown built-in command
+reject/calls/percent-sigil-quoted-name.nu	error LabeledErrorWithHelp: unknown built-in command
+reject/calls/percent-sigil-unknown-command.nu	error LabeledErrorWithHelp: unknown built-in command
+reject/calls/word-refused-by-parameter-type.nu	error InvalidLiteral: invalid digits for radix 2 in int
+reject/cellpaths/closure-head.nu	error Unclosed: unclosed — opens here (need `}`)
+reject/cellpaths/member-is-paren.nu	error Expected: expected string
+reject/cellpaths/member-with-paren.nu	error Expected: expected string
+reject/cellpaths/optional-then-equals.nu	error Expected: expected . or !
+reject/closures/closure-params-in-block-position.nu	error Mismatch: expected block, found closure
+reject/closures/def-body-subexpression.nu	error Expected: expected definition body closure { ... }
+reject/closures/duplicate-parameter.nu	error DuplicateParameter: `a` uses a name that is already taken
+reject/closures/empty-params-in-block-position.nu	error Mismatch: expected block, found closure
+reject/closures/for-body-closure.nu	error Mismatch: expected block, found closure
+reject/closures/newline-then-double-pipe.nu	error ShellOrOr: instead of '||', use 'try' or 'or'
+reject/closures/params-then-semicolon.nu	error ExtraTokens: extra tokens
+reject/closures/reserved-param-dollar.nu	error NameIsBuiltinVar: already a builtin variable
+reject/closures/reserved-param-in.nu	error NameIsBuiltinVar: already a builtin variable
+reject/closures/unclosed-params.nu	error Unclosed: unclosed — opens here (need `|`)
+reject/closures/while-body-closure.nu	error Mismatch: expected block, found closure
+reject/def/alias-keyword-name.nu	error NameIsKeyword: 'if' is a parser keyword
+reject/def/alias-missing-name.nu	error AssignmentMismatch: missing name
+reject/def/alias-name-with-hash.nu	error AliasNotValid: alias name must not be a number, a filesize, a duration, a datetime, a binary literal or a range, contain #, ^, or %, or use whitespace other than single spaces between words
+reject/def/alias-name-with-trailing-space.nu	error AliasNotValid: alias name must not be a number, a filesize, a duration, a datetime, a binary literal or a range, contain #, ^, or %, or use whitespace other than single spaces between words
+reject/def/alias-to-flag.nu	error CantAliasExpression: aliasing a string is not supported
+reject/def/alias-to-subexpression.nu	error CantAliasExpression: aliasing a cell path expression is not supported
+reject/def/alias-to-value.nu	error CantAliasExpression: aliasing an integer is not supported
+reject/def/alias-to-variable.nu	error CantAliasExpression: aliasing a cell path expression is not supported
+reject/def/bad-short-flag.nu	error Expected: expected short flag
+reject/def/block-type.nu	error LabeledErrorWithHelp: blocks are not supported as values
+reject/def/body-is-list.nu	error Unbalanced: unexpected `}` (unbalanced with `{`)
+reject/def/def-no-space-bracket.nu	error LabeledErrorWithHelp: expected space
+reject/def/default-missing.nu	error Expected: expected default value
+reject/def/double-comma.nu	error Expected: expected parameter or flag
+reject/def/duplicate-def-and-extern.nu	error DuplicateCommandDef: defined more than once
+reject/def/duplicate-in-block.nu	error DuplicateCommandDef: defined more than once
+reject/def/duplicate-on-lines.nu	error DuplicateCommandDef: defined more than once
+reject/def/extern-keyword-name.nu	error NameIsKeyword: 'while' is a parser keyword
+reject/def/extern-name-with-tab.nu	error CommandDefNotValid: command name can't be a number, a filesize, a duration, a datetime, a binary literal or a range, contain #, ^, or %, or have whitespace other than single spaces between words
+reject/def/extern-no-space-bracket.nu	error LabeledErrorWithHelp: expected space
+reject/def/extern-no-space-paren.nu	error LabeledErrorWithHelp: expected space
+reject/def/flag-after-two-braces.nu	error Expected: expected colon (:) before type signature
+reject/def/flag-value-missing.nu	error IncompleteParser: parser support missing for this expression
+reject/def/help-after-two-braces.nu	error Expected: expected colon (:) before type signature
+reject/def/help-redirected.nu	error RedirectingBuiltinCommand: not allowed here
+reject/def/help-then-body-then-extra.nu	error Expected: expected block, closure or record
+reject/def/io-body-is-list.nu	error Unbalanced: unexpected `}` (unbalanced with `{`)
+reject/def/io-colon-then-nothing-with-params.nu	error Unclosed: unclosed — opens here (need `] or )`)
+reject/def/io-colon-then-nothing.nu	error Unclosed: unclosed — opens here (need `] or )`)
+reject/def/io-empty-list.nu	error Unbalanced: unexpected `}` (unbalanced with `{`)
+reject/def/io-missing-arrow.nu	error Expected: expected arrow (->)
+reject/def/io-missing-output.nu	error MissingType: expected type
+reject/def/io-spaced-unclosed-generic.nu	error Unclosed: unclosed — opens here (need `>`)
+reject/def/io-types-without-colon.nu	error Expected: expected colon (:) before type signature
+reject/def/io-unclosed-body.nu	error Unclosed: unclosed — opens here (need `}`)
+reject/def/io-unclosed-input-generic.nu	error Expected: expected arrow (->)
+reject/def/io-unclosed-list-generic.nu	error Unclosed: unclosed — opens here (need `>`)
+reject/def/io-unclosed-nested-generic.nu	error Unclosed: unclosed — opens here (need `>`)
+reject/def/io-unclosed-record-generic.nu	error Unclosed: unclosed — opens here (need `>`)
+reject/def/keyword-name-def.nu	error NameIsKeyword: 'def' is a parser keyword
+reject/def/keyword-name-garbage.nu	error NameIsKeyword: 'def' is a parser keyword
+reject/def/keyword-name-if.nu	error NameIsKeyword: 'if' is a parser keyword
+reject/def/keyword-name-loop.nu	error NameIsKeyword: 'loop' is a parser keyword
+reject/def/keyword-name-quoted-break.nu	error NameIsKeyword: 'break' is a parser keyword
+reject/def/keyword-name-run.nu	error NameIsKeyword: 'run' is a parser keyword
+reject/def/keyword-name-where.nu	error NameIsKeyword: 'where' is a parser keyword
+reject/def/lone-dash-then-signature-error.nu	error Expected: expected colon (:) before type signature
+reject/def/long-flag-with-dot.nu	error Expected: expected valid variable name for this long flag
+reject/def/missing-name.nu	error LabeledErrorWithHelp: expected space
+reject/def/missing-signature.nu	error Expected: expected [ or (
+reject/def/name-is-filesize.nu	error CommandDefNotValid: command name can't be a number, a filesize, a duration, a datetime, a binary literal or a range, contain #, ^, or %, or have whitespace other than single spaces between words
+reject/def/name-is-hex-literal.nu	error CommandDefNotValid: command name can't be a number, a filesize, a duration, a datetime, a binary literal or a range, contain #, ^, or %, or have whitespace other than single spaces between words
+reject/def/name-is-interpolation.nu	error UnknownState: Could not get string from string expression
+reject/def/name-is-list.nu	error LabeledErrorWithHelp: expected space
+reject/def/name-is-multiword-keyword.nu	error NameIsKeyword: 'export def' is a parser keyword
+reject/def/name-is-number.nu	error CommandDefNotValid: command name can't be a number, a filesize, a duration, a datetime, a binary literal or a range, contain #, ^, or %, or have whitespace other than single spaces between words
+reject/def/name-is-overlay-use.nu	error NameIsKeyword: 'overlay use' is a parser keyword
+reject/def/name-is-subexpression.nu	error LabeledErrorWithHelp: expected space
+reject/def/name-is-variable.nu	error VariableNotFound: variable not found. 
+reject/def/name-with-caret.nu	error CommandDefNotValid: command name can't be a number, a filesize, a duration, a datetime, a binary literal or a range, contain #, ^, or %, or have whitespace other than single spaces between words
+reject/def/name-with-double-space.nu	error CommandDefNotValid: command name can't be a number, a filesize, a duration, a datetime, a binary literal or a range, contain #, ^, or %, or have whitespace other than single spaces between words
+reject/def/name-with-hash.nu	error CommandDefNotValid: command name can't be a number, a filesize, a duration, a datetime, a binary literal or a range, contain #, ^, or %, or have whitespace other than single spaces between words
+reject/def/name-with-percent.nu	error CommandDefNotValid: command name can't be a number, a filesize, a duration, a datetime, a binary literal or a range, contain #, ^, or %, or have whitespace other than single spaces between words
+reject/def/no-space-before-body.nu	error Unclosed: unclosed — opens here (need `] or )`)
+reject/def/optional-param-with-dot.nu	error Expected: expected valid variable name for this optional parameter
+reject/def/param-trailing-equals.nu	error Expected: expected default value
+reject/def/param-with-dot.nu	error Expected: expected valid variable name for this parameter
+reject/def/quoted-name-with-paren.nu	error LabeledErrorWithHelp: expected space
+reject/def/redirect-after-def.nu	error RedirectingBuiltinCommand: not allowed here
+reject/def/rest-param-with-dot.nu	error Expected: expected valid variable name for this rest parameter
+reject/def/short-alias-multi-char.nu	error Expected: expected short flag
+reject/def/short-alias-twice.nu	error Expected: expected one short flag
+reject/def/short-alias-unclosed.nu	error Unbalanced: unexpected `]` (unbalanced with `(`)
+reject/def/short-alias-without-long.nu	error Expected: expected unknown flag
+reject/def/short-flag-multi-char.nu	error Expected: expected short flag
+reject/def/signature-error-call-fails.nu	error ExpectedWithStringMsg: expected bool
+reject/def/signature-is-word.nu	error Expected: expected [ or (
+reject/def/spread-as-name.nu	error Expected: expected [ or (
+reject/def/type-alias-builtin-name.nu	error TypeAliasShadowsBuiltin: built-in type
+reject/def/type-alias-equals-attached.nu	error IncorrectValue: unexpected type alias
+reject/def/type-alias-invalid-name.nu	error TypeAliasNameNotValid: a type alias name starts with a letter or `_` and continues with letters, digits, `_` and `-`
+reject/def/type-alias-missing-equals.nu	error TypeAliasMissingEquals: expected `=` and a type after this name
+reject/def/type-alias-missing-name.nu	error AssignmentMismatch: missing name
+reject/def/type-alias-missing-type.nu	error MissingType: expected type
+reject/def/type-alias-two-types.nu	error ExtraTokens: extra tokens
+reject/def/type-keyword-as-command-name.nu	error NameIsKeyword: 'type' is a parser keyword
+reject/def/type-missing-last.nu	error Expected: expected type
+reject/def/type-missing.nu	error Expected: expected type
+reject/def/word-between-signature-and-body.nu	error Expected: expected colon (:) before type signature
+reject/def/wrapped-shadowed-by-plain-def.nu	error ExtraTokensAfterClosingDelimiter: invalid characters
+reject/def/wrapped-typed-dollar-rest-takes-values.nu	error ExtraTokensAfterClosingDelimiter: invalid characters
+reject/def/wrapped-typed-rest-takes-values.nu	error ExtraTokensAfterClosingDelimiter: invalid characters
+reject/env-shorthand/def-after-shorthand.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/env-shorthand/export-env-after-shorthand.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/env-shorthand/for-after-shorthand.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/env-shorthand/hide-after-shorthand.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/env-shorthand/module-after-shorthand.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/env-shorthand/mut-after-shorthand.nu	error AssignInPipeline: 'mut' in pipeline
+reject/env-shorthand/overlay-list-after-shorthand.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/env-shorthand/shorthand-alone.nu	error UnknownCommand: unknown command
+reject/env-shorthand/use-after-shorthand.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/extern/duplicate-extern.nu	error DuplicateCommandDef: defined more than once
+reject/extern/lone-dash-then-signature-error.nu	error Expected: expected [ or (
+reject/extern/strict-flag-after-signature.nu	error Expected: expected colon (:) before type signature
+reject/externals/brace-comment-with-cell-path.nu	error Unclosed: unclosed — opens here (need `}`)
+reject/externals/list-then-cell-path.nu	error Unclosed: unclosed — opens here (need `]`)
+reject/externals/list-then-index.nu	error Unclosed: unclosed — opens here (need `]`)
+reject/externals/spread-list-then-cell-path.nu	error Unclosed: unclosed — opens here (need `]`)
+reject/if/alone.nu	error Expected: expected expression
+reject/if/block-is-number.nu	error Expected: expected block, closure or record
+reject/if/condition-continues-on-next-line.nu	error Expected: expected block, closure or record
+reject/if/else-nothing.nu	error KeywordMissingArgument: missing oneof<block, expression> value that follows else
+reject/if/help-after-invalid-condition.nu	error Expected: expected expression
+reject/if/help-before-invalid-condition.nu	error Expected: expected expression
+reject/if/help-then-extra.nu	error Expected: expected operator
+reject/if/then-block-is-quoted-key-record.nu	error TypeMismatch: expected block, found record<a: int>
+reject/if/then-block-is-record-with-record-spread.nu	error TypeMismatch: expected block, found record<a: int, b: int>
+reject/if/then-block-is-record.nu	error TypeMismatch: expected block, found record<a: int>
+reject/if/then-list.nu	error ExpectedWithStringMsg: expected block
+reject/lexer/and-and.nu	error ShellAndAnd: instead of '&&', use ';' or 'and'
+reject/lexer/bash-both-redirect.nu	error ShellOutErrRedirect: use 'out+err>' instead of '2>&1' in Nushell
+reject/lexer/bash-stderr-redirect.nu	error ShellErrRedirect: use 'err>' instead of '2>' in Nushell
+reject/lexer/comment-after-tab-swallows-closing-brace.nu	error Unclosed: unclosed — opens here (need `}`)
+reject/lexer/comment-swallows-closing-brace.nu	error Unclosed: unclosed — opens here (need `}`)
+reject/lexer/deeply-unclosed-lists.nu	error Unclosed: unclosed — opens here (need `]`)
+reject/lexer/extra-brace-after-def.nu	error Unbalanced: unexpected `}` (unbalanced with `{`)
+reject/lexer/extra-brace-after-if-without-block.nu	error Unbalanced: unexpected `}` (unbalanced with `{`)
+reject/lexer/extra-brace-after-while-without-block.nu	error Unbalanced: unexpected `}` (unbalanced with `{`)
+reject/lexer/extra-brace-with-raw-string-content.nu	error Unbalanced: unexpected `}` (unbalanced with `{`)
+reject/lexer/extra-brace-with-string-content.nu	error Unbalanced: unexpected `}` (unbalanced with `{`)
+reject/lexer/extra-bracket-in-block.nu	error Unbalanced: unexpected `]` (unbalanced with `{`)
+reject/lexer/extra-paren-after-balanced.nu	error Unbalanced: unexpected `)` (unbalanced with `{`)
+reject/lexer/extra-paren-in-block.nu	error Unbalanced: unexpected `)` (unbalanced with `{`)
+reject/lexer/mismatched-brace-closed-with-paren.nu	error Unbalanced: unexpected `)` (unbalanced with `{`)
+reject/lexer/mismatched-bracket-in-block.nu	error Unbalanced: unexpected `]` (unbalanced with `{`)
+reject/lexer/mismatched-list-closed-with-paren.nu	error Unbalanced: unexpected `)` (unbalanced with `[`)
+reject/lexer/mismatched-paren-closed-with-bracket.nu	error Unbalanced: unexpected `]` (unbalanced with `(`)
+reject/lexer/missing-closure-brace-before-pipe.nu	error Unclosed: unclosed — opens here (need `}`)
+reject/lexer/missing-signature-close.nu	error Unclosed: unclosed — opens here (need `]`)
+reject/lexer/multiline-unclosed-list.nu	error Unclosed: unclosed — opens here (need `]`)
+reject/lexer/multiline-unclosed-paren.nu	error Unclosed: unclosed — opens here (need `)`)
+reject/lexer/multiline-unclosed-record.nu	error Unclosed: unclosed — opens here (need `}`)
+reject/lexer/or-or.nu	error ShellOrOr: instead of '||', use 'try' or 'or'
+reject/lexer/raw-string-missing-quote.nu	error Expected: expected '
+reject/lexer/stdout-pipe-redirect.nu	error Expected: expected `|`.  Redirecting stdout to a pipe is the same as normal piping.
+reject/lexer/text-after-closing-brace.nu	error ExtraTokensAfterClosingDelimiter: invalid characters
+reject/lexer/text-after-closing-quote.nu	error ExtraTokensAfterClosingDelimiter: invalid characters
+reject/lexer/trailing-backslash-in-string.nu	error Unclosed: unclosed — opens here (need `"`)
+reject/lexer/unbalanced-brace-after-comment.nu	error Unbalanced: unexpected `}` (unbalanced with `{`)
+reject/lexer/unbalanced-brace-alone.nu	error Unbalanced: unexpected `}` (unbalanced with `{`)
+reject/lexer/unbalanced-brace-nested.nu	error Unbalanced: unexpected `}` (unbalanced with `{`)
+reject/lexer/unbalanced-paren-alone.nu	error Unbalanced: unexpected `)` (unbalanced with `(`)
+reject/lexer/unbalanced-paren.nu	error Unbalanced: unexpected `)` (unbalanced with `(`)
+reject/lexer/unbalanced-quoted-paren.nu	error Unbalanced: unexpected `)` (unbalanced with `(`)
+reject/lexer/unclosed-brace.nu	error Unclosed: unclosed — opens here (need `}`)
+reject/lexer/unclosed-bracket.nu	error Unclosed: unclosed — opens here (need `]`)
+reject/lexer/unclosed-double-quote-multiline.nu	error Unclosed: unclosed — opens here (need `"`)
+reject/lexer/unclosed-double-quote.nu	error Unclosed: unclosed — opens here (need `"`)
+reject/lexer/unclosed-interpolation-quote-in-subexpression.nu	error Unclosed: unclosed — opens here (need `)`)
+reject/lexer/unclosed-interpolation-subexpression-eof.nu	error Unclosed: unclosed — opens here (need `)`)
+reject/lexer/unclosed-interpolation-subexpression.nu	error Unclosed: unclosed — opens here (need `)`)
+reject/lexer/unclosed-interpolation.nu	error Unclosed: unclosed — opens here (need `"`)
+reject/lexer/unclosed-nested-record.nu	error Unclosed: unclosed — opens here (need `}`)
+reject/lexer/unclosed-paren.nu	error Unclosed: unclosed — opens here (need `)`)
+reject/lexer/unclosed-raw-string.nu	error Unclosed: unclosed — opens here (need `'#`)
+reject/lexer/unclosed-single-quote-multiline.nu	error Unclosed: unclosed — opens here (need `'`)
+reject/lexer/unclosed-single-quote.nu	error Unclosed: unclosed — opens here (need `'`)
+reject/lists/bracket-word-is-an-unclosed-list.nu	error Unclosed: unclosed — opens here (need `]`)
+reject/lists/pipe-pipe-between-items.nu	error ShellOrOr: instead of '||', use 'try' or 'or'
+reject/lists/semicolon-between-items.nu	error LabeledErrorWithHelp: not a valid list separator
+reject/lists/semicolon-single.nu	error LabeledErrorWithHelp: not a valid list separator
+reject/lists/stray-bracket-after-vertical-tab-comment.nu	error Unbalanced: unexpected `]` (unbalanced with `[`)
+reject/lists/stray-closing-bracket-in-table.nu	error Unbalanced: unexpected `]` (unbalanced with `[`)
+reject/lists/stray-closing-bracket-nested.nu	error Unbalanced: unexpected `]` (unbalanced with `[`)
+reject/lists/stray-closing-bracket.nu	error Unbalanced: unexpected `]` (unbalanced with `[`)
+reject/lists/trailing-pipe.nu	error UnexpectedEof: expected closing pipeline missing end
+reject/literals/binary-invalid-bit.nu	error InvalidBinaryString: invalid binary string
+reject/literals/binary-invalid-hex-digit.nu	error InvalidBinaryString: invalid binary string
+reject/literals/binary-invalid-octal-digit.nu	error InvalidBinaryString: invalid binary string
+reject/literals/binary-octal-overflow.nu	error InvalidBinaryString: invalid binary string
+reject/literals/binary-with-pipe-as-argument.nu	error InvalidLiteral: invalid digits for radix 2 in int
+reject/literals/duration-below-smallest.nu	error LiteralTooLarge: duration too large
+reject/literals/duration-days-too-large.nu	error LiteralTooLarge: duration too large
+reject/literals/duration-faulty-number.nu	error LabeledError: not a number
+reject/literals/duration-too-large.nu	error LiteralTooLarge: duration too large
+reject/literals/filesize-bad-number-word.nu	error LabeledError: not a number
+reject/literals/filesize-kilobytes-too-large.nu	error LiteralTooLarge: filesize too large
+reject/literals/filesize-too-large.nu	error LiteralTooLarge: filesize too large
+reject/literals/hex-too-large.nu	error InvalidLiteral: number too large for 64 bits in int
+reject/literals/int-binary-invalid-digit-word.nu	error InvalidLiteral: invalid digits for radix 2 in int
+reject/literals/int-binary-invalid-digits-in-math.nu	error InvalidLiteral: invalid digits for radix 2 in int
+reject/literals/int-hex-invalid-digits-in-math.nu	error InvalidLiteral: invalid digits for radix 16 in int
+reject/literals/int-octal-truncated-in-math.nu	error InvalidLiteral: invalid digits for radix 8 in int
+reject/literals/int-prefix-without-digits.nu	error InvalidLiteral: invalid digits for radix 16 in int
+reject/literals/int-too-large-in-list.nu	error InvalidLiteral: number too large (add `.0` for a float) in int
+reject/literals/int-too-large-negative.nu	error InvalidLiteral: number too large (add `.0` for a float) in int
+reject/literals/int-too-large.nu	error InvalidLiteral: number too large (add `.0` for a float) in int
+reject/literals/invalid-date-at-pipeline-head.nu	error InvalidLiteral: not a valid date in datetime
+reject/literals/invalid-date-feb-29-common-year.nu	error InvalidLiteral: not a valid date in datetime
+reject/literals/invalid-date-feb-30.nu	error InvalidLiteral: not a valid date in datetime
+reject/literals/invalid-date-in-list.nu	error InvalidLiteral: not a valid date in datetime
+reject/literals/invalid-date-with-time.nu	error InvalidLiteral: not a valid date in datetime
+reject/literals/radix-prefix-after-underscore.nu	error InvalidLiteral: invalid digits for radix 16 in int
+reject/literals/radix-prefix-bracket-then-word.nu	error InvalidLiteral: invalid digits for radix 16 in int
+reject/literals/radix-prefix-with-bracket-tail.nu	error InvalidLiteral: invalid digits for radix 16 in int
+reject/literals/signed-hex-too-large.nu	error InvalidLiteral: number too large for 64 bits in int
+reject/literals/unit-with-range-value.nu	error LabeledError: not a number
+reject/loops/for-bad-var-name.nu	error Expected: expected valid variable name
+reject/loops/for-body-is-record.nu	error TypeMismatch: expected block, found record<a: int>
+reject/loops/for-help-then-in-without-block.nu	error KeywordMissingArgument: missing any value that follows in
+reject/loops/for-help-then-in-without-value.nu	error KeywordMissingArgument: missing any value that follows in
+reject/loops/for-missing-block.nu	error KeywordMissingArgument: missing any value that follows in
+reject/loops/for-missing-in.nu	error ExpectedKeyword: expected in
+reject/loops/for-reserved-var.nu	error NameIsBuiltinVar: already a builtin variable
+reject/loops/for-typed-without-in.nu	error MissingType: expected type
+reject/loops/loop-body-is-record.nu	error TypeMismatch: expected block, found record<a: int>
+reject/loops/loop-piped.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/loops/while-after-env-shorthand-piped.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/loops/while-after-pipe.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/loops/while-body-is-record.nu	error TypeMismatch: expected block, found record<a: int>
+reject/loops/while-help-then-extra.nu	error Expected: expected operator
+reject/loops/while-piped.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/match/bad-variable-pattern.nu	error Expected: expected valid variable name
+reject/match/block-is-list.nu	error ExpectedWithStringMsg: expected match-block
+reject/match/block-is-word.nu	error ExpectedWithStringMsg: expected match-block
+reject/match/body-is-call-with-args.nu	error Mismatch: expected =>, found end of input
+reject/match/body-is-if-statement.nu	error Expected: expected expression
+reject/match/body-with-trailing-tokens.nu	error Mismatch: expected =>, found end of input
+reject/match/cell-path-pattern.nu	error Expected: expected valid variable name
+reject/match/empty-braces-with-tail.nu	error Unclosed: unclosed — opens here (need `}`)
+reject/match/empty-guard.nu	error LabeledErrorWithHelp: expected an expression
+reject/match/help-then-non-block.nu	error ExpectedWithStringMsg: expected match-block
+reject/match/interpolation-pattern.nu	error Expected: expected valid variable name
+reject/match/list-pattern-invalid-item-after-rest.nu	error InvalidLiteral: invalid digits for radix 16 in int
+reject/match/list-pattern-second-rest-binding.nu	error LabeledErrorWithHelp: extra rest pattern
+reject/match/list-pattern-second-rest.nu	error LabeledErrorWithHelp: extra rest pattern
+reject/match/list-pattern-variable-in.nu	error NameIsBuiltinVar: already a builtin variable
+reject/match/missing-body.nu	error Mismatch: expected match result, found end of input
+reject/match/missing-value.nu	error Expected: expected expression
+reject/match/nested-match-without-parens.nu	error Expected: expected expression
+reject/match/no-arrow.nu	error Mismatch: expected =>, found end of input
+reject/match/pattern-after-pipe-missing.nu	error Mismatch: expected =>, found end of input
+reject/match/record-pattern-missing-colon.nu	error Expected: expected record
+reject/match/record-pattern-semicolon.nu	error Expected: expected record
+reject/match/record-pattern-variable-env.nu	error NameIsBuiltinVar: already a builtin variable
+reject/match/variable-pattern-in.nu	error NameIsBuiltinVar: already a builtin variable
+reject/modules/body-with-call-after-def.nu	error ExpectedKeyword: expected def, const, extern, alias, type, use, module, export or export-env keyword
+reject/modules/body-with-command.nu	error ExpectedKeyword: expected def, const, extern, alias, type, use, module, export or export-env keyword
+reject/modules/body-with-let.nu	error ExpectedKeyword: expected def, const, extern, alias, type, use, module, export or export-env keyword
+reject/modules/export-alone.nu	error UnexpectedKeyword: unexpected export
+reject/modules/export-env-body-is-record.nu	error TypeMismatch: expected block, found record<a: int>
+reject/modules/export-invalid.nu	error UnexpectedKeyword: unexpected export
+reject/modules/module-call-redirected.nu	error RedirectingBuiltinCommand: not allowed here
+reject/modules/use-glob-not-last.nu	error WrongImportPattern: glob member can be only at the end of an import pattern
+reject/modules/use-list-not-last.nu	error WrongImportPattern: list member can be only at the end of an import pattern
+reject/modules/use-list-spread.nu	error WrongImportPattern: cannot spread in an import pattern
+reject/modules/use-member-int.nu	error WrongImportPattern: Wrong type of import pattern, only String and List<String> are allowed.
+reject/modules/use-member-interpolation.nu	error WrongImportPattern: Wrong type of import pattern, only String and List<String> are allowed.
+reject/modules/use-member-null.nu	error WrongImportPattern: Wrong type of import pattern, only String and List<String> are allowed.
+reject/modules/use-member-range.nu	error WrongImportPattern: Wrong type of import pattern, only String and List<String> are allowed.
+reject/modules/use-raw-string-member.nu	error WrongImportPattern: Wrong type of import pattern, only String and List<String> are allowed.
+reject/operators/ampersand.nu	error UnknownOperator: Operator '&' not supported
+reject/operators/bang.nu	error Expected: expected operator
+reject/operators/bits-and.nu	error UnknownOperator: Operator 'bits-and' not supported
+reject/operators/caret.nu	error UnknownOperator: Operator '^' not supported
+reject/operators/contains.nu	error UnknownOperator: Operator 'contains' not supported
+reject/operators/incomplete.nu	error IncompleteMathExpression: incomplete math expression
+reject/operators/is.nu	error UnknownOperator: Operator 'is' not supported
+reject/operators/missing-operator.nu	error Expected: expected operator
+reject/operators/negative-number-after-operand.nu	error Expected: expected operator
+reject/operators/not-alone.nu	error Expected: expected expression
+reject/operators/percent.nu	error UnknownOperator: Operator '%' not supported
+reject/operators/pow-word.nu	error UnknownOperator: Operator 'pow' not supported
+reject/operators/shift.nu	error UnknownOperator: Operator '<<' not supported
+reject/operators/trailing-operator-after-if.nu	error Expected: expected operator
+reject/operators/triple-equals.nu	error UnknownOperator: Operator '===' not supported
+reject/operators/two-operators.nu	error Expected: expected operator
+reject/pipelines/alias-with-pipe-word.nu	error CantAliasExpression: aliasing pipeline is not supported
+reject/pipelines/assignment-pipe-then-blank-line.nu	error UnexpectedEof: expected closing pipeline missing end
+reject/pipelines/const-after-pipe.nu	error AssignInPipeline: 'const' in pipeline
+reject/pipelines/dangling-pipe-then-semicolon-line.nu	error ExtraTokens: extra tokens
+reject/pipelines/def-in-pipeline.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/pipelines/for-in-pipeline.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/pipelines/hide-after-pipe.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/pipelines/hide-before-pipe.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/pipelines/let-in-after-pipe.nu	error AssignmentRequiresVar: needs to be a variable
+reject/pipelines/let-with-value-after-pipe.nu	error AssignmentRequiresVar: needs to be a variable
+reject/pipelines/module-in-pipeline.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/pipelines/mut-after-pipe.nu	error AssignInPipeline: 'mut' in pipeline
+reject/pipelines/mut-without-value-after-pipe.nu	error AssignInPipeline: 'mut' in pipeline
+reject/pipelines/overlay-after-pipe.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/pipelines/overlay-new-before-pipe.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/pipelines/pipe-then-comment-at-eof.nu	error UnexpectedEof: expected closing pipeline missing end
+reject/pipelines/pipe-then-newline-then-semicolon.nu	error ExtraTokens: extra tokens
+reject/pipelines/pipe-then-semicolon-then-command.nu	error ExtraTokens: extra tokens
+reject/pipelines/pipe-then-semicolon.nu	error ExtraTokens: extra tokens
+reject/pipelines/plugin-use-before-pipe.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/pipelines/source-after-pipe.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/pipelines/source-before-pipe.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/pipelines/statement-after-pipe.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/pipelines/trailing-pipe-in-block.nu	error UnexpectedEof: expected closing pipeline missing end
+reject/pipelines/trailing-pipe-in-closure.nu	error UnexpectedEof: expected closing pipeline missing end
+reject/pipelines/trailing-pipe-in-let-value.nu	error UnexpectedEof: expected closing pipeline missing end
+reject/pipelines/trailing-pipe-in-subexpression.nu	error UnexpectedEof: expected closing pipeline missing end
+reject/pipelines/trailing-pipe-then-comment-at-eof.nu	error UnexpectedEof: expected closing pipeline missing end
+reject/pipelines/trailing-pipe-then-two-comments.nu	error UnexpectedEof: expected closing pipeline missing end
+reject/pipelines/trailing-pipe-without-newline.nu	error UnexpectedEof: expected closing pipeline missing end
+reject/pipelines/type-alias-after-pipe.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/pipelines/use-in-pipeline.nu	error BuiltinCommandInPipeline: not allowed in pipeline
+reject/ranges/bare-dollar-bound-value.nu	error LabeledErrorWithHelp: expected a variable name after `$`
+reject/ranges/bound-too-large.nu	error InvalidLiteral: number too large (add `.0` for a float) in int
+reject/ranges/string-bound.nu	error Expected: expected . or ! or ?
+reject/ranges/unclosed-quote-before-dots.nu	error Unclosed: unclosed — opens here (need `'`)
+reject/records/assignment-token-key.nu	error LabeledErrorWithHelp: expected a record key here
+reject/records/assignment-token-value.nu	error LabeledErrorWithHelp: expected a value, found `=`
+reject/records/bare-colon-key.nu	error InvalidLiteral: colon in bare word specifying record key
+reject/records/duplicate-key-bare-and-quoted.nu	error ColumnDefinedTwice: field redefined here
+reject/records/duplicate-key-raw-string.nu	error ColumnDefinedTwice: field redefined here
+reject/records/duplicate-key.nu	error ColumnDefinedTwice: field redefined here
+reject/records/interpolated-value-with-colon.nu	error InvalidLiteral: colon in bare word specifying record value
+reject/records/math-value.nu	error LabeledErrorWithHelp: expected `:`, found `1`
+reject/records/missing-colon-with-value.nu	error LabeledErrorWithHelp: expected `:`, found `3`
+reject/records/missing-colon.nu	error LabeledErrorWithHelp: expected `:` after this key
+reject/records/missing-value.nu	error Expected: expected value for record field
+reject/records/multibyte-character-after-brace.nu	error ExtraTokensAfterClosingDelimiter: invalid characters
+reject/records/pipe-value.nu	error LabeledErrorWithHelp: expected a value, found `||`
+reject/records/redirection-token-value.nu	error LabeledErrorWithHelp: expected a value, found `o>`
+reject/records/semicolon-key.nu	error LabeledErrorWithHelp: expected a record key here
+reject/records/semicolon-separator.nu	error LabeledErrorWithHelp: expected a record key here
+reject/records/spread-with-cell-path.nu	error ExtraTokensAfterClosingDelimiter: invalid characters
+reject/records/url-value-colon.nu	error InvalidLiteral: colon in bare word specifying record value
+reject/records/value-with-colon.nu	error InvalidLiteral: colon in bare word specifying record value
+reject/redirections/duplicate-both.nu	error MultipleRedirections: first redirection
+reject/redirections/duplicate-stream.nu	error MultipleRedirections: first redirection
+reject/redirections/hide-redirected.nu	error RedirectingBuiltinCommand: not allowed here
+reject/redirections/let-help-redirected.nu	error ExpectedKeyword: expected =
+reject/redirections/missing-target.nu	error Expected: expected redirection target
+reject/redirections/mut-redirected-without-value.nu	error ExpectedKeyword: expected =
+reject/redirections/nothing-after-pipe.nu	error UnexpectedRedirection: redirecting nothing
+reject/redirections/nothing-to-redirect-append.nu	error UnexpectedRedirection: redirecting nothing
+reject/redirections/nothing-to-redirect-pipe.nu	error UnexpectedRedirection: redirecting nothing
+reject/redirections/nothing-to-redirect.nu	error UnexpectedRedirection: redirecting nothing
+reject/redirections/overlay-doubled-redirected.nu	error RedirectingBuiltinCommand: not allowed here
+reject/redirections/overlay-unknown-subcommand-redirected.nu	error RedirectingBuiltinCommand: not allowed here
+reject/redirections/overlay-use-redirected.nu	error RedirectingBuiltinCommand: not allowed here
+reject/redirections/plugin-use-redirected.nu	error RedirectingBuiltinCommand: not allowed here
+reject/redirections/run-redirected.nu	error RedirectingBuiltinCommand: not allowed here
+reject/redirections/source-redirected.nu	error RedirectingBuiltinCommand: not allowed here
+reject/redirections/target-is-pipe.nu	error Expected: expected redirection target
+reject/signatures/bool-typed-switch.nu	error LabeledError: Remove the `: bool` type annotation.
+reject/signatures/colon-last-token.nu	error Expected: expected type
+reject/signatures/completer-inside-record-type.nu	error Unclosed: unclosed — opens here (need `>`)
+reject/signatures/completer-record.nu	error OperatorUnsupportedType: does not support 'record<a: int>'
+reject/signatures/completer-subexpression.nu	error OperatorUnsupportedType: does not support 'int'
+reject/signatures/default-filesize-for-int.nu	error Expected: expected int
+reject/signatures/default-float-for-int.nu	error Expected: expected int
+reject/signatures/default-for-error-type.nu	error ExpectedWithStringMsg: expected error
+reject/signatures/default-int-for-bool.nu	error ExpectedWithStringMsg: expected bool
+reject/signatures/default-int-for-closure.nu	error Expected: expected block, closure or record
+reject/signatures/default-int-for-filesize.nu	error Expected: expected filesize with valid units
+reject/signatures/default-int-for-list.nu	error ExpectedWithStringMsg: expected list<int>
+reject/signatures/default-not-of-declared-type.nu	error Expected: expected int
+reject/signatures/default-string-for-int.nu	error Expected: expected int
+reject/signatures/default-true-for-string.nu	error ExpectedWithStringMsg: expected string
+reject/signatures/double-dash-alone.nu	error Expected: expected valid variable name for this short flag
+reject/signatures/duplicate-flag.nu	error DuplicateParameter: `--x` uses a name that is already taken
+reject/signatures/duplicate-parameter-with-dollar.nu	error DuplicateParameter: `a` uses a name that is already taken
+reject/signatures/duplicate-parameter.nu	error DuplicateParameter: `a` uses a name that is already taken
+reject/signatures/duplicate-rest-name.nu	error DuplicateParameter: `...a` uses a name that is already taken
+reject/signatures/duplicate-short-flag.nu	error DuplicateParameter: `-x` uses a name that is already taken
+reject/signatures/duplicate-short-only-flag.nu	error DuplicateParameter: `-x` uses a name that is already taken
+reject/signatures/equals-last-token.nu	error Expected: expected default value
+reject/signatures/flag-and-parameter-share-a-variable.nu	error DuplicateParameter: `--foo-bar` uses a name that is already taken
+reject/signatures/flag-default-string-for-int.nu	error Expected: expected int
+reject/signatures/io-types-semicolon.nu	error Expected: expected arrow (->)
+reject/signatures/list-type-semicolon.nu	error UnknownType: unknown type
+reject/signatures/list-type-two-params.nu	error LabeledError: only one parameter allowed
+reject/signatures/parameter-after-rest.nu	error PositionalAfterRest: parameter a after the rest parameter
+reject/signatures/record-field-named-true.nu	error ExpectedWithStringMsg: expected string
+reject/signatures/record-type-key-is-operator.nu	error LabeledError: must be a string
+reject/signatures/record-type-semicolon.nu	error LabeledError: must be a string
+reject/signatures/required-after-optional.nu	error RequiredAfterOptional: required parameter y after optional parameter
+reject/signatures/reserved-flag-env.nu	error NameIsBuiltinVar: already a builtin variable
+reject/signatures/reserved-flag-in.nu	error NameIsBuiltinVar: already a builtin variable
+reject/signatures/reserved-param-in.nu	error NameIsBuiltinVar: already a builtin variable
+reject/signatures/rest-with-default.nu	error AssignmentMismatch: can't have default value
+reject/signatures/short-flag-dot.nu	error Expected: expected valid variable name for this short flag
+reject/signatures/two-rest-params.nu	error MultipleRestParams: multiple rest params
+reject/strings/hex-escape-before-multibyte-character.nu	error InvalidLiteral: invalid hex escape '\xHH', expected exactly 2 hex digits in string
+reject/strings/hex-escape-non-ascii.nu	error InvalidLiteral: invalid UTF-8 from `\x` escapes in string
+reject/strings/hex-escape-non-hex.nu	error InvalidLiteral: invalid hex escape '\xHH', expected exactly 2 hex digits in string
+reject/strings/hex-escape-short.nu	error InvalidLiteral: incomplete hex escape '\xHH', expected 2 hex digits in string
+reject/strings/raw-string-multibyte-after-closing-hash.nu	error Unbalanced: unexpected `postfix #` (unbalanced with `prefix #`)
+reject/strings/raw-string-opening-quote-closes-it.nu	error Unclosed: unclosed — opens here (need `'`)
+reject/strings/unicode-escape-before-multibyte-character.nu	error InvalidLiteral: invalid unicode escape '\u{...}', must be 1-6 hex digits, max codepoint 0x10FFFF in string
+reject/strings/unicode-escape-no-brace.nu	error InvalidLiteral: invalid unicode escape '\u{...}', must be 1-6 hex digits, max codepoint 0x10FFFF in string
+reject/strings/unicode-escape-too-large.nu	error InvalidLiteral: invalid unicode escape '\u{...}', must be 1-6 hex digits, max codepoint 0x10FFFF in string
+reject/strings/unicode-escape-too-long.nu	error InvalidLiteral: invalid unicode escape '\u{...}', must be 1-6 hex digits, max codepoint 0x10FFFF in string
+reject/strings/unicode-escape-unclosed.nu	error InvalidLiteral: incomplete unicode escape '\u{...}', missing closing '}' in string
+reject/strings/unknown-escape.nu	error InvalidLiteral: unrecognized escape sequence '\q' in string
+reject/tables/duplicate-column.nu	error ColumnDefinedTwice: field redefined here
+reject/tables/extra-columns.nu	error ExtraColumns: expected 2 columns
+reject/tables/header-only-with-semicolon.nu	error Expected: expected table row
+reject/tables/missing-columns.nu	error MissingColumns: expected 2 columns
+reject/tables/non-list-row.nu	error LabeledErrorWithHelp: not a list
+reject/tables/semicolon-between-rows.nu	error LabeledErrorWithHelp: not a list
+reject/tables/spread-in-header.nu	error LabeledError: invalid spread here
+reject/tables/spread-in-row.nu	error LabeledError: invalid spread here
+reject/try/bad-handler-word.nu	error ExpectedKeyword: expected catch
+reject/try/body-is-record.nu	error TypeMismatch: expected block, found record<a: int>
+reject/try/catch-handler-not-closure.nu	error ExpectedWithStringMsg: expected one of a list of accepted shapes: [Closure(None), Closure(Some([Any]))]
+reject/try/catch-is-record.nu	error TypeMismatch: expected oneof<closure>, found record<a: int>
+reject/try/catch-without-handler.nu	error KeywordMissingArgument: missing oneof<closure(), closure(any)> value that follows catch
+reject/try/double-dash-twice.nu	error ExpectedKeyword: expected catch
+reject/try/finally-typed-record.nu	error TypeMismatch: expected oneof<closure>, found record<a: int>
+reject/try/help-then-extra.nu	error ExpectedKeyword: expected catch
+reject/variables/bad-optional-chain.nu	error Expected: expected . or ?
+reject/variables/dollar-alone.nu	error LabeledErrorWithHelp: expected a variable name after `$`
+reject/variables/double-question.nu	error Expected: expected . or !
+reject/variables/name-with-dash.nu	error ExpectedWithDidYouMean: expected valid variable name. 
+reject/variables/negative-index.nu	error InvalidLiteral: negative index is not supported in cell path
+reject/where/closure-with-tail.nu	error Unclosed: unclosed — opens here (need `}`)
+reject/where/help-then-extra.nu	error Expected: expected operator
