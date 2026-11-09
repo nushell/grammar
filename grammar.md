@@ -2,28 +2,25 @@
 
 This file is a BNF description of the Nushell language **as accepted by
 `nu-parser`** (nushell `main`, commit `d7cb4e589`, 2026-09-23; behaviour
-re-checked against the released `nu` 0.115.2). It exists so that "this parser
-parses all of Nushell" can be audited rule by rule instead of asserted. Every
-rule was derived by reading nu-parser's source, not this parser's, and then
-annotated with where the winnow parser implements it. Section 9 is the
-scoreboard of differences between the two parsers, each one verified by
-running both; it was re-verified on 2026-09-26 against commit `7de074cfe`
-(the differential harness's), whose line numbers the rules added then cite.
-It stands at **5 open** (one in 9.1, four in 9.2); the rows closed so far are counted there and
-pinned as fixtures under `tests/winnow/fixtures/`, and 9.4 lists the checks that are
-a consumer's by design.
+re-checked against the released `nu` 0.115.2). It exists so that what Nushell
+accepts can be checked rule by rule instead of asserted. Every rule was derived
+by reading nu-parser's source, and its `; nu:` line names the place there that
+decides it; the rules added on 2026-09-26 cite the line numbers of commit
+`7de074cfe`.
 
 Nushell has no official grammar; the language is whatever `nu-parser` accepts.
 Much of nu-parser is *shape directed*: the syntax of an argument position is the
 `SyntaxShape` of the command's signature (`if`'s `else` branch is
 `Keyword("else", OneOf[Block, Expression])`). This grammar therefore has two
 kinds of rules: purely syntactic ones (decidable from the text alone) and
-shape-directed ones, which need a command table, declarations, constant
-evaluation or files. The winnow parser implements the first kind and leaves the
-second to its consumer, so a `; here: consumer` annotation is a design
-decision, not a gap. A `; here: none` annotation, or a rule marked
-`; DIFF n`, would be a real gap or disagreement, detailed in section 9; there
-is one at the time of writing (`DIFF 1` on `<alias-target>`, see 9.1 and 9.2).
+shape-directed ones, which need a command's signature, declarations, constant
+evaluation, types or files. Section 8 lists the shape-directed rules and what
+nu-parser needs for each; section 9 lists inputs for which that information, not
+the text, decides what nu-parser does.
+
+The grammar is validated against nu-parser by the corpus in this repository
+(section 10): nu-parser parses every input of the corpus, and its verdicts are
+compared with the recorded ones.
 
 ## 0. Notation and reading the annotations
 
@@ -39,11 +36,6 @@ x - y                       x except y (ISO 14977 exception; used for name restr
                             and side conditions the notation cannot express
 ; nu: file.rs:line          where nu-parser decides the rule
                             (crates/nu-parser/src/ unless another crate is named)
-; here: path::fn            where the winnow parser implements it (src/winnow/syntax/...)
-; here: consumer            needs signatures, declarations, const-eval or files:
-                            left to the consumer by design
-; here: none                not implemented
-; DIFF n                    a verified disagreement, see section 9
 ```
 
 Two facts about nu-parser shape everything below and are easy to forget:
@@ -68,24 +60,20 @@ Two facts about nu-parser shape everything below and are easy to forget:
 ; a leading "#!" line is an ordinary comment to the lexer; the lite parse (2)
 ; groups the token stream into <block-tokens>
 ; nu: lex.rs:1075 (comment at token start)
-; here: src/winnow/syntax/parser/mod.rs::parse (records `shebang`)
 ; A UTF-8 byte-order mark at the start of a whole file is skipped before the shebang is
 ; looked for (nu's lex_file); the file's contents keep it, so spans into the file don't move.
 
 <whitespace>      ::= " " | "\t" | <carriage-return> | <additional-whitespace>
 ; <additional-whitespace> depends on the construct being lexed (1.4)
 ; nu: lex.rs:1100 (skipped between tokens), lex.rs:63 (terminates an item)
-; here: src/winnow/syntax/lex.rs::skip_whitespace, item_length (is_terminator)
 
 <carriage-return> ::= "\r"
 ; ignored between tokens; inside an item it terminates the item like whitespace
 ; nu: lex.rs:1062, lex.rs:63
-; here: src/winnow/syntax/lex.rs::skip_whitespace, item_length
 
 <eol>             ::= "\n"
 ; an Eol token, unless "\n" is additional whitespace for the construct
 ; nu: lex.rs:1065
-; here: src/winnow/syntax/lex.rs::lex_token, LexOptions::additional_whitespace
 
 <comment>         ::= "#" { <any byte except "\n"> }
 ; At a token boundary "#" always starts a comment running to "\n" (a "\r" before
@@ -95,7 +83,6 @@ Two facts about nu-parser shape everything below and are easy to forget:
 ; is none: `a#b` and `[a]#b` are not comments. A comment inside brackets ends at "\n"/"\r" and the
 ; item continues. Comments are dropped when the construct lexes with skip_comment.
 ; nu: lex.rs:1075-1099, 429-447
-; here: src/winnow/syntax/lex.rs::lex_comment, item_length (`in_comment`, `previous`)
 ```
 
 ### 1.2 Tokens
@@ -106,7 +93,6 @@ Two facts about nu-parser shape everything below and are easy to forget:
                     | <comment> | <assignment-op> | <redirection-op>
                     | <bashism>                      ; always an error
 ; nu: lex.rs:963 lex_internal, lex.rs:10 TokenContents
-; here: src/winnow/syntax/lex.rs::TokenContents, lex_token
 
 <pipe>            ::= "|"
 ; A "|" directly after an <eol> token replaces that Eol (line continuation), and
@@ -114,23 +100,18 @@ Two facts about nu-parser shape everything below and are easy to forget:
 ; one pipeline. Exactly ONE Eol is absorbed: `a\n\n| b` keeps an Eol (see
 ; <pipe-continuation>, 2).
 ; nu: lex.rs:1005-1031
-; here: src/winnow/syntax/parser/lite_parser.rs::LiteBlock (the same rule, applied in the lite
-;       parse: exactly `Eol (Comment Eol)* Pipe` continues the line)
 
 <pipe-pipe>       ::= "||"
 ; an error (ShellOrOr) everywhere except as empty closure parameters
 ; nu: lex.rs:991-1001, lite_parser.rs:295,361
-; here: src/winnow/syntax/lex.rs::lex_token, src/winnow/syntax/parser/lite_parser.rs::LiteBlock
 
 <semicolon>       ::= ";"
 ; ";" directly after "|" is an error
 ; nu: lex.rs:1047-1050
-; here: src/winnow/syntax/lex.rs::lex_token, src/winnow/syntax/parser/parse_pipelines.rs::parse_pipeline
 
 <assignment-op>   ::= "=" | "+=" | "-=" | "*=" | "/=" | "++="
 ; an item whose whole text is one of these
 ; nu: lex.rs:82, 733
-; here: src/winnow/syntax/lex.rs::item_contents, AssignmentOperator
 
 <redirection-op>  ::= <out-redirect> | <err-redirect> | <out-err-redirect>
                     | <err-pipe> | <out-err-pipe>
@@ -144,13 +125,11 @@ Two facts about nu-parser shape everything below and are easy to forget:
 ; glued on only when the text before it is one of "o>" "out>" "e>" "err>" "o+e>"
 ; "e+o>" "out+err>" "err+out>"; otherwise "|" ends the item.
 ; nu: lex.rs:737-779, 601, 1122
-; here: src/winnow/syntax/lex.rs::item_contents, is_redirection, RedirectionOperator
 
 <bashism>         ::= "o>|" | "out>|" | "&&" | "2>" | "2>&1"
-; items with exactly these texts are errors with a hint (nu keeps parsing them as
-; "|" / "e>" / "|"; this parser stops the statement: both report an error)
+; items with exactly these texts are errors with a hint; nu reports the error and
+; keeps parsing them as "|" / "e>" / "|"
 ; nu: lex.rs:745, 780-803
-; here: src/winnow/syntax/lex.rs::item_contents (ErrorKind::ShellSyntax)
 ```
 
 ### 1.3 Items
@@ -164,13 +143,11 @@ Two facts about nu-parser shape everything below and are easy to forget:
 ; UnexpectedEof("command"). A special byte at the START of an item is an item of
 ; its own (":" in record keys, "." in cell paths).
 ; nu: lex.rs:182 lex_item, lex.rs:63, lex.rs:721
-; here: src/winnow/syntax/lex.rs::item_length, lex_item
 
 <plain-byte>      ::= any byte that is not a terminator, not "'" "\"" "`", not
                       "[" "{" "(" "]" "}" ")", not "r" followed by "#", and
                       (only in signature mode) not "<" or ">"
 ; "#" is a plain byte unless it starts a comment (1.1)
-; here: src/winnow/syntax/lex.rs::item_length
 
 <quoted-run>      ::= "\"" { <dq-byte> } "\""
                     | "'"  { <byte except "'"> } "'"
@@ -181,7 +158,6 @@ Two facts about nu-parser shape everything below and are easy to forget:
 ; and the item continues after the closing quote (`"a"b` is one item; the value
 ; parser rejects it later, 5.8).
 ; nu: lex.rs:381, 675
-; here: src/winnow/syntax/lex.rs::item_length (`quote` state)
 
 <interp-quoted-run> ::= "$" ( "\"" | "'" ) ... the same quote
 ; When the byte before the opening quote (within the item) is "$", an unescaped "("
@@ -189,7 +165,6 @@ Two facts about nu-parser shape everything below and are easy to forget:
 ; interp_subexpr_step until the matching ")", and the string's own quote cannot
 ; close it. Backtick strings never interpolate. An unclosed "(" is Unclosed(")").
 ; nu: lex.rs:127 interp_subexpr_step, 417-426, 655
-; here: src/winnow/syntax/lex.rs::item_length (`quote_is_interp`, `interp_level`), interp_subexpr_step
 
 <raw-string>      ::= "r" <hashes> "'" { <any byte> } "'" <hashes>
 <hashes>          ::= 1*"#"
@@ -201,7 +176,6 @@ Two facts about nu-parser shape everything below and are easy to forget:
 ; (whose value 5.6 reads as `#a'#`); in `r#'#a'#` the `a'#` opens a quote that
 ; never closes.
 ; nu: lex.rs:586, 812 lex_raw_string
-; here: src/winnow/syntax/lex.rs::lex_raw_string
 
 <bracketed-run>   ::= "[" <nested> "]" | "{" <nested> "}" | "(" <nested> ")"
                     | "<" <nested> ">"          ; only in signature mode
@@ -213,33 +187,31 @@ Two facts about nu-parser shape everything below and are easy to forget:
 ; ")" with an empty stack is Unbalanced. In signature mode ">" pops an Angle frame
 ; and is otherwise a plain byte. An opener still open at the end is Unclosed.
 ; nu: lex.rs:463-585
-; here: src/winnow/syntax/lex.rs::item_length, close_bracket, group_end
 ```
 
 ### 1.4 Re-lexing options per construct
 
 Bracketed items are lexed again from their interior. nu-parser passes
-`additional_whitespace`, `special_tokens`, `skip_comment` and `in_signature`;
-this parser's `LexOptions` constants carry the same sets.
+`additional_whitespace`, `special_tokens`, `skip_comment` and `in_signature`:
 
-| construct | additional whitespace | special tokens | comments | nu | here |
-| --- | --- | --- | --- | --- | --- |
-| block, file | none | none | kept | parse_block | `BLOCK` |
-| subexpression `( )`, `(...)` cell-path head | `\n\r` | none | kept | parse_paren_expr, parse_full_cell_path | `SUBEXPRESSION` |
-| list `[ ]` | `\n\r,` | none | kept | parse_list_expression | `LIST` |
-| record `{ }` key | `\n\r,` | `:` | kept | parse_record | `RECORD_KEY` |
-| record `{ }` value | `\n\r,` | none | kept | parse_record | `RECORD_VALUE` |
-| brace probe (first two tokens of `{ }`) | `\r\n\t` | `:` | skipped | parse_brace_expr | `BRACE_PROBE` |
-| signature `[ ]` `( )` `\| \|` | `\n\r` | `:=,` in_signature | kept | parse_signature_helper | `SIGNATURE` |
-| input/output types | `\n\r,` | none, in_signature | skipped | parse_input_output_types | `IO_TYPES` |
-| generic type params `< >` | `\n\r` | `:,` | skipped | parse_type_params | `IO_TYPES` / `SIGNATURE` |
-| cell path | `\n\r` | `.?!` | skipped | parse_cell_path | `CELL_PATH` |
-| match block | ` \r\n,|` | none | skipped | parse_match_block_expression | `MATCH` (`\|` is a token here, whitespace in nu: the same arms) |
-| list pattern | `\n\r,` | none | skipped | parse_list_pattern (then lite-parsed) | `PATTERN_LIST` |
-| record pattern | `\n\r,` | `:` | skipped | parse_record_pattern | `PATTERN_RECORD` |
-| binary literal | `,\r\n` | none | skipped | parse_binary_with_base | `BINARY` |
-| assignment rhs | none | none | kept | parse_assignment_expression | block parse of the token slice |
-| `let x: <type>` items | none | `,` | skipped | parse_var_with_opt_type | `parse_type` on the merged span |
+| construct | additional whitespace | special tokens | comments | nu |
+| --- | --- | --- | --- | --- |
+| block, file | none | none | kept | parse_block |
+| subexpression `( )`, `(...)` cell-path head | `\n\r` | none | kept | parse_paren_expr, parse_full_cell_path |
+| list `[ ]` | `\n\r,` | none | kept | parse_list_expression |
+| record `{ }` key | `\n\r,` | `:` | kept | parse_record |
+| record `{ }` value | `\n\r,` | none | kept | parse_record |
+| brace probe (first two tokens of `{ }`) | `\r\n\t` | `:` | skipped | parse_brace_expr |
+| signature `[ ]` `( )` `\| \|` | `\n\r` | `:=,` in_signature | kept | parse_signature_helper |
+| input/output types | `\n\r,` | none, in_signature | skipped | parse_input_output_types |
+| generic type params `< >` | `\n\r` | `:,` | skipped | parse_type_params |
+| cell path | `\n\r` | `.?!` | skipped | parse_cell_path |
+| match block | ` \r\n,\|` | none | skipped | parse_match_block_expression |
+| list pattern | `\n\r,` | none | skipped | parse_list_pattern (then lite-parsed) |
+| record pattern | `\n\r,` | `:` | skipped | parse_record_pattern |
+| binary literal | `,\r\n` | none | skipped | parse_binary_with_base |
+| assignment rhs | none | none | kept | parse_assignment_expression |
+| `let x: <type>` items | none | `,` | skipped | parse_var_with_opt_type |
 
 ## 2. Blocks, pipelines and commands (the lite parse)
 
@@ -252,16 +224,13 @@ this parser's `LexOptions` constants carry the same sets.
 ; comments (a def's documentation); a blank line clears them. A comment after a
 ; token on the same line is a trailing comment. Empty pipelines are dropped.
 ; nu: lite_parser.rs:219 lite_parse, 466-487; parse_pipelines.rs:129 parse_block
-; here: src/winnow/syntax/parser/parse_pipelines.rs::parse_block
 
 <pipeline>        ::= <lite-pipeline> | <parsed-pipeline>
-; the same text seen as tokens (here) and after its items are parsed (2.1)
+; the same text seen as tokens (this section) and after its items are parsed (2.1)
 <lite-pipeline>   ::= [ <pipe> ] <command> { <pipe-continuation> <command> }
 ; A leading "|" yields an empty first command that is dropped (`( | str join)`).
 ; Two pipes in a row (`a | | b`) likewise drop the empty command.
 ; nu: lite_parser.rs:451, LitePipeline::push
-; here: src/winnow/syntax/parser/parse_pipelines.rs::parse_pipeline (a pipeline of only pipes yields
-;       nothing)
 
 <pipe-continuation> ::= <pipe> [ <eol> ] { <comment-line> }
 ; After "|" the next command may start on a later line: the Eol directly after the
@@ -276,15 +245,12 @@ this parser's `LexOptions` constants carry the same sets.
 ; `a |\n\n| b` is ONE pipeline (comment lines may stand on either side of the blank
 ; line), while `a |\n\n\n| b` is two.
 ; nu: lite_parser.rs:198, 460; lex.rs:1005-1031
-; here: src/winnow/syntax/parser/lite_parser.rs::LiteBlock, last_non_comment_token
 
 ; The trailing-pipe rule: a BLOCK whose last non-comment token is "|" (skipping ([Comment]+ Eol) pairs
 ; from the end) is UnexpectedEof("pipeline missing end"), whatever absorbed the
 ; pipe. So `ls |`, `ls | # c`, `ls |\n# c` (no final newline) and `alias x = ls |`
 ; are errors; `ls |\n`, `ls |\n\n`, `ls | # c\n` and `ls |\n# c\n` are not.
 ; nu: lite_parser.rs:509
-; here: src/winnow/syntax/parser/parse_pipelines.rs::parse_block,
-;       src/winnow/syntax/parser/lite_parser.rs::last_non_comment_token (nu's, ported)
 
 <command>         ::= [ <attribute-lines> ] <command-body>
 <command-body>    ::= <item> { <item> | <redirection> } [ <assignment-tail> ]
@@ -292,7 +258,6 @@ this parser's `LexOptions` constants carry the same sets.
 ; Items after a file redirection are still part of the command (`^echo x o> f extra`
 ; parses). A command with no items but a redirection is UnexpectedRedirection.
 ; nu: lite_parser.rs:365-450, 77, 89
-; here: src/winnow/syntax/parser/lite_parser.rs::LiteBlock
 
 <redirection>     ::= ( <out-redirect> | <err-redirect> | <out-err-redirect> ) <item>
 ; The target must be the very next token and must be an <item>; anything else
@@ -305,8 +270,6 @@ this parser's `LexOptions` constants carry the same sets.
 ; Stderr then Stdout is Separate; any other second, or any third, is
 ; MultipleRedirections.
 ; nu: lite_parser.rs:293-358, 497, 83 try_add_redirection; parse_pipelines.rs:26
-; here: src/winnow/syntax/parser/lite_parser.rs::LiteBlock,
-;       src/winnow/syntax/parser/parse_pipelines.rs::parse_redirection
 
 <pipe-redirection> ::= <err-pipe> | <out-err-pipe>
 ; ends the command like "|" (it becomes the pipe of the next element) and records a
@@ -316,8 +279,6 @@ this parser's `LexOptions` constants carry the same sets.
 ; only through a "|" that starts a later line, after comment lines but no blank
 ; line (`a e>|\nb` is two pipelines, `a e>|\n# c\n| b` one)
 ; nu: lite_parser.rs:427-450; lex.rs:1005-1031
-; here: src/winnow/syntax/parser/lite_parser.rs::LiteBlock,
-;       src/winnow/syntax/parser/parse_pipelines.rs::parse_redirection
 
 <assignment-tail> ::= <assignment-op> { <item> | <pipe> | <pipe-pipe> | <redirection-op> | <comment> }
 ; From the first <assignment-op> token to the end of the line everything, pipes and
@@ -325,7 +286,6 @@ this parser's `LexOptions` constants carry the same sets.
 ; trailing "|" or before a leading "|" exactly as in <pipe-continuation> (one Eol).
 ; ";" ends the assignment. The tail is re-lexed and parsed as a block (3.3).
 ; nu: lite_parser.rs:259-291, 392-400
-; here: src/winnow/syntax/parser/lite_parser.rs::LiteBlock (the same continuation rule)
 
 <attribute-lines> ::= 1*<attribute-line>
 <attribute-line>  ::= "@" <item-rest> { <item> | <pipe> | <pipe-pipe> | <redirection-op> | <assignment-op> } ( <eol> | <semicolon> )
@@ -337,7 +297,7 @@ this parser's `LexOptions` constants carry the same sets.
 ; continues the line (the lexer turns the Eol before it into it: `@a x\n| y` gives
 ; `@a` the words `x`, "|" and `y`). The definition must start on the very next line
 ; or after the ";": a blank line or a comment line between attributes and definition
-; closes the command and the attributes then lack a definition (6.8). In a pipeline
+; closes the command and the attributes then lack a definition (6.7). In a pipeline
 ; of several commands the attribute lines are items of their element, the first of
 ; them its head (`ls |\n@a x\ndef f [] {}` calls `@a`).
 ; One blank line, then any comment lines, then a line starting with "|" is the
@@ -349,9 +309,6 @@ this parser's `LexOptions` constants carry the same sets.
 ; blank line, a second blank line, or a blank line after the ";" ends the statement.
 ; nu: lex.rs lex_internal (an Eol before "|" becomes it); lite_parser.rs:239-257,
 ;     379-383, 455-469; parse_pipelines.rs parse_pipeline_element
-; here: src/winnow/syntax/parser/lite_parser.rs::LiteBlock (every token of the line becomes a
-;       word),
-;       src/winnow/syntax/parser/parse_pipelines.rs::parse_pipeline_element
 ```
 
 ### 2.1 Which parser sees a command
@@ -366,24 +323,17 @@ this parser's `LexOptions` constants carry the same sets.
 ;   def, extern, export, export-env, @attributes, let, const, mut, for, alias,
 ;   module, use, overlay, source, source-env, run, hide, where, plugin use
 ; Before the table, if the first item is not math-expression-like, not an
-; unaliasable keyword and names an ALIAS, the alias is expanded (consumer).
+; unaliasable keyword and names an ALIAS in scope, the alias is expanded (this needs
+; the alias declarations).
 ; if/match/while/loop/try/return/break/continue are ordinary declared commands whose
 ; signatures use keyword and block shapes; nu parses them with parse_call.
 ; nu: parse_expressions.rs:1723 parse_builtin_commands, 1729-1873
-; here: src/winnow/syntax/parser/parse_pipelines.rs::parse_pipeline_element,
-;       src/winnow/syntax/parser/parse_expressions.rs::parse_builtin_commands (one match for all
-;       keywords including if/match/...; source, hide, run, overlay, plugin use are plain
-;       Calls, their arguments the consumer's but for hide's import pattern and overlay
-;       use's `as`: parse_calls.rs::check_call)
 
 <multi-command-pipeline> ::= <pipeline-element> { <pipeline-element> }
 ; Every element is parsed with parse_expression (3.1); the keyword table is NOT
 ; consulted. Elements after the first that mention `$in` are wrapped in `collect`
 ; (semantic).
 ; nu: parse_pipelines.rs:50
-; here: src/winnow/syntax/parser/parse_pipelines.rs::parse_pipeline (the commands are collected first,
-;       then parsed in Position::Element),
-;       src/winnow/syntax/parser/parse_expressions.rs::check_builtin_command_in_pipeline
 ```
 
 ## 3. Expressions
@@ -404,10 +354,9 @@ this parser's `LexOptions` constants carry the same sets.
                                            ; are not)
 ; The item is split at its FIRST "=". An item that fails these rules ends the
 ; shorthand prefix and starts the command. If every item is shorthand the element
-; is UnknownCommand (`FOO=1` alone; recorded as recovered, the command a garbage point
-; after the shorthand). Becomes `with-env {..} { <element-body> }`.
+; is UnknownCommand (`FOO=1` alone), and nu makes the element garbage. Becomes
+; `with-env {..} { <element-body> }`.
 ; nu: parse_expressions.rs:96, 1540-1580; parse_literals.rs:1981 parse_string_strict
-; here: src/winnow/syntax/parser/parse_expressions.rs::parse_env_shorthand_prefix, is_env_variable_name
 
 <element-body>    ::= <assignment>              ; if ANY remaining item is an <assignment-op>
                                                 ; (not for a statement starting with overlay,
@@ -432,14 +381,12 @@ this parser's `LexOptions` constants carry the same sets.
 ; list: `ls | let x = 1` fails as an assignment (AssignmentRequiresVar) and
 ; `ls | let x` is a call to `let`.
 ; nu: parse_expressions.rs:1587-1680
-; here: src/winnow/syntax/parser/parse_expressions.rs::parse_expression (Position::Element after a "|"
-;       and after shorthand), check_builtin_command_in_pipeline (the same head table)
 ; nu reports BuiltinCommandInPipeline (AssignInPipeline for const/mut) at the element's first
-; item (the shorthand's when there is one) and reads the statement as a call (parse_call); so
-; does the parser, the error recorded as recovered. An element with an assignment operator is an
-; assignment (nu's assignment test comes first), whose left side is read so; a left side that is
-; no variable is reported and the assignment kept (recorded as recovered). A `while` or `loop`
-; in a longer pipeline is reported before the elements, which are then read as any.
+; item (the shorthand's when there is one) and goes on, reading the statement as a call
+; (parse_call). An element with an assignment operator is an assignment (nu's assignment test
+; comes first), whose left side is read so; a left side that is no variable is reported and the
+; assignment kept. A `while` or `loop` in a longer pipeline is reported by parse_pipeline
+; before it parses the elements.
 
 ; An item is math-expression-like when it is one of:
 ;   "true" | "false" | "null" | "not" | "if" | "match"
@@ -459,8 +406,6 @@ this parser's `LexOptions` constants carry the same sets.
 ;                                      ; `5..r#'a'#b` and `5..(1)!` are external commands
 ; the literal probes are the section 5 parsers run speculatively
 ; nu: parse_expressions.rs:38 is_math_expression_like
-; here: src/winnow/syntax/parser/parse_expressions.rs::is_math_expression_like,
-;       src/winnow/syntax/parser/parse_literals.rs::is_range_head
 ```
 
 ### 3.2 Math expressions and operators
@@ -469,7 +414,7 @@ this parser's `LexOptions` constants carry the same sets.
 <math-expression> ::= <keyword-expression>
                     | <operand> { <operator> <operand-or-keyword> }
 <keyword-expression> ::= <if> | <match>                 ; (6.6)
-; a leading "if"/"match" hands ALL remaining items to parse_call (6.5); alone it
+; a leading "if"/"match" hands ALL remaining items to parse_call (6.6); alone it
 ; is Expected("expression")
 <operand>         ::= <value>
                     | "not" <negated>
@@ -486,8 +431,6 @@ this parser's `LexOptions` constants carry the same sets.
 ; or stays level; "**" never collapses on equal precedence (right associative);
 ; every other operator is left associative.
 ; nu: parse_expressions.rs parse_math_expression, parse_math_operand
-; here: src/winnow/syntax/parser/parse_expressions.rs::parse_math_expression, parse_math_operand,
-;       negated_operand_end, fold_binary_op
 
 <operator>        ::= "==" | "!=" | "<" | "<=" | ">" | ">="
                     | "=~" | "like" | "!~" | "not-like"
@@ -501,12 +444,8 @@ this parser's `LexOptions` constants carry the same sets.
 ; "contains" "%" "&" "<<" ">>" "bits-and" "bits-xor" "bits-or" "bits-shl"
 ; "bits-shr"; an <assignment-op> here is Expected("a non-assignment operator").
 ; nu reports an unknown operator (or a non-operator item, Expected("operator")) and goes
-; on with the expression: the parser records it as recovered and makes the whole math
-; expression a garbage leaf over its items, which the consumer reads with nu's parser
-; from the leaf's text (so only when that text lexes to the same items).
+; on with the expression.
 ; nu: parse_expressions.rs:1152 parse_operator
-; here: src/winnow/syntax/ast/mod.rs::Operator::from_spelling,
-;       src/winnow/syntax/parser/parse_expressions.rs::parse_operator
 ```
 
 Precedence (nu-protocol `ast/operator.rs:256`; higher binds tighter):
@@ -527,8 +466,6 @@ Precedence (nu-protocol `ast/operator.rs:256`; higher binds tighter):
 | 40 | `or` | left |
 | 10 | assignment operators (never inside a math expression) | n/a |
 
-`; here: src/winnow/syntax/ast/mod.rs::Operator::precedence, is_right_associative (identical)`
-
 ### 3.3 Assignment
 
 ```ebnf
@@ -542,13 +479,9 @@ Precedence (nu-protocol `ast/operator.rs:256`; higher binds tighter):
 ; `[1].0 = 2`, `{a: 1}.a = 2`; a non-FullCellPath (`1 = 2`, `[1] = 2`,
 ; `{a: 1} = 2`, `echo a = b`) is AssignmentRequiresVar.
 ; rhs: an unknown (external) command at the start of the rhs must be written with
-; "^" ("External command calls must be explicit in assignments"), which nu reports
-; keeping the assignment: the parser records it as recovered.
+; "^" ("External command calls must be explicit in assignments"), which nu reports,
+; keeping the assignment; whether the command is unknown needs the declarations.
 ; nu: parse_expressions.rs:1026 parse_assignment_expression, 1108
-; here: src/winnow/syntax/parser/parse_expressions.rs::parse_assignment_expression (lhs: Var,
-;       Subexpression, FullCellPath, List, Table or a "key: value" Record, which are what
-;       parse_full_cell_path yields; the "^" rule is applied when a command table is
-;       configured)
 ```
 
 ## 4. Calls
@@ -556,11 +489,10 @@ Precedence (nu-protocol `ast/operator.rs:256`; higher binds tighter):
 ```ebnf
 <call>            ::= <external-call> | <sigil-call> | <keyword-command> | <internal-call>
 ; nu: parse_calls.rs:1588 parse_call
-; here: src/winnow/syntax/parser/parse_calls.rs::parse_call
 
 <keyword-command> ::= <if> | <match> | <while> | <loop> | <try> | <return> | <break> | <continue>
 ; ordinary declared commands whose signatures use keyword and block shapes (6.6);
-; nu parses them with parse_call, this parser in parse_expressions.rs::parse_builtin_commands.
+; nu parses them with parse_call.
 ; Being parse_call's, the head is the longest known name (<call-head>): a longer
 ; command name that starts with the keyword is called instead (`def "if ready"`
 ; makes `if ready { }` a call to it). `where` and the statement keywords go by
@@ -569,22 +501,18 @@ Precedence (nu-protocol `ast/operator.rs:256`; higher binds tighter):
 ; `run me` runs `me` where `def "run me"` exists; after a `|` or a shorthand,
 ; `source-env me` calls the longer command.
 ; nu: nu-cmd-lang core_commands signatures; parse_calls.rs:947 parse_internal_call
-; here: src/winnow/syntax/parser/parse_expressions.rs::parse_builtin_commands (the longer name through
-;       parse_calls.rs::find_longest_decl, then parse_call)
 
 <external-call>   ::= "^" <ext-head> { <ext-arg> }
                     | <unknown-head> { <ext-arg> }  ; no "^": a head that names no command
 <unknown-head>    ::= <ext-string>
-; a bare head that names no declaration (a built-in, keyword or prelude command of the
-; table, or a def/extern/alias in scope: <call-head> matched none), or that
+; a bare head that names no declaration (a built-in, keyword or prelude command, or a
+; def/extern/alias in scope: <call-head> matched none), or that
 ; names an alias of an external call: nu's parse_call tries a leading ".." range
 ; and then calls parse_external_call, so every argument is an <ext-arg> and
-; `git log 0b2d1f4..HEAD` is three external strings. Needs the command table: with none
-; configured every head is an <internal-call>.
+; `git log 0b2d1f4..HEAD` is three external strings. Which heads name a declaration
+; depends on the commands in scope, so telling this rule from <internal-call> needs them.
 ; nu: parse_calls.rs:1588 parse_call (the fall-through after find_longest_decl),
 ;     1718 (an alias whose wrapped call is an ExternalCall)
-; here: src/winnow/syntax/parser/parse_calls.rs::parse_call_lenient, parse_external_arguments;
-;       working_set.rs::find_decl (DeclKind::ExternalAlias)
 <ext-head>        ::= <var-item> | <paren-item>       ; parsed as an expression
                     | <ext-string>
                     | <the empty string>              ; `^` alone parses, fails at run time
@@ -594,12 +522,9 @@ Precedence (nu-protocol `ast/operator.rs:256`; higher binds tighter):
 ; a "[" argument goes to parse_list_expression alone, which needs the item to END
 ; with "]": `^cmd [a].x`, `^cmd [a].0`, `^cmd ...[a].x` are Unclosed("]"), while
 ; `^cmd (ls).name` and `^cmd {a: 1}.a` parse. The same holds after an <unknown-head>
-; (`se [a].0`). nu goes on past the error with garbage: recorded as recovered, the
-; argument a garbage leaf.
+; (`se [a].0`). nu goes on past the error, the argument garbage.
 ; nu: parse_calls.rs:375 parse_external_call, 347 parse_external_arg, 362;
 ;     parse_expressions.rs:115 parse_list_expression
-; here: src/winnow/syntax/parser/parse_calls.rs::parse_external_call, parse_external_arg,
-;       check_external_list_argument
 
 <ext-string>      ::= <raw-string>
                     | <bare-glob>                     ; no quote, paren or backtick in it
@@ -611,8 +536,6 @@ Precedence (nu-protocol `ast/operator.rs:256`; higher binds tighter):
 ; (Glob)Interpolation. So `--query='a (b)'` keeps its parens literal while
 ; `--out=(pwd)/x` interpolates. "\" escapes only inside "...".
 ; nu: parse_calls.rs:125 parse_external_string
-; here: src/winnow/syntax/parser/parse_calls.rs::parse_external_string (glob-vs-string is not
-;       represented: both are String/StringInterpolation; consumer)
 
 <sigil-call>      ::= "%" <builtin-head> <args>              ; `%ls`: forced built-in
                     | "%" " " <builtin-head> <args>          ; `% ls` (two items)
@@ -624,13 +547,10 @@ Precedence (nu-protocol `ast/operator.rs:256`; higher binds tighter):
 ; and `%my cmd` under `def "my cmd"` is the error at `my`. The <args> read as a
 ; call to that built-in reads them: `%any $it > 2` takes one row condition.
 ; After the error nu reads the items after the "%" as an external call
-; (parse_external_call: the head an external name, `%^foo` the name `^foo`): so does
-; the parser, the error recorded as recovered. After a lone "%" nu's head is empty:
-; the external call's head is a point after the "%" and every item after it an argument.
+; (parse_external_call: the head an external name, `%^foo` the name `^foo`). After a
+; lone "%" nu's head is empty: the external call's head is a point after the "%" and
+; every item after it an argument.
 ; nu: parse_calls.rs:1600-1700 (find_longest_decl_with_command_type)
-; here: src/winnow/syntax/parser/parse_calls.rs::parse_percent_call (find_longest_name asking
-;       find_builtin_decl: the built-in table from ParseConfig, or the engine's
-;       CommandLookup::find_builtin_decl)
 
 <internal-call>   ::= <call-head> <args>
 <call-head>       ::= <word> { " " <word> }
@@ -639,25 +559,18 @@ Precedence (nu-protocol `ast/operator.rs:256`; higher binds tighter):
 ; words of the aliased command. A head naming no declaration is an <unknown-head>. A quoted word is never a head (`"ls" -l` is a
 ; math-expression error) because is_math_expression_like fires on the quote.
 ; nu: parse_calls.rs:1838 find_longest_decl_with_prefix
-; here: src/winnow/syntax/parser/parse_calls.rs::find_longest_decl (longest known name, at most 5 words
-;       with a ParseConfig table, any number with an engine's CommandLookup, from the
-;       table plus def/extern/alias names declared in scope; alias subcommand
-;       expansion: consumer)
 
 <args>            ::= { <arg> }
 <arg>             ::= <long-flag> | <short-flags> | "--" | <spread-arg> | <keyword-arg> | <positional>
 ; nu: parse_calls.rs:947 parse_internal_call
-; here: src/winnow/syntax/parser/parse_calls.rs::parse_call_arguments
 
 <long-flag>       ::= "--" <flag-name> [ "=" <value> ]
                     | "--" <flag-name> <value>      ; when the signature says the flag takes a value
 ; `--flag=value` on a switch parses value as Boolean; "--" exactly is end of
 ; options: everything after is positional. Unknown flags are UnknownFlag. An empty value
-; (`--flag=`) is nu's value parser's IncompleteParser, which it goes on past: recorded as
-; recovered, the value a garbage point.
+; (`--flag=`) is nu's value parser's IncompleteParser, which nu goes on past with a
+; garbage value.
 ; nu: parse_calls.rs:435 parse_long_flag
-; here: src/winnow/syntax/parser/parse_calls.rs::parse_call_arguments (`--x`, `--x=v`; whether `--x v`
-;       binds v: consumer)
 
 <short-flags>     ::= "-" 1*<char>
 ; each char must be a known short flag; only the LAST may take a value. `-1` /
@@ -665,15 +578,11 @@ Precedence (nu-protocol `ast/operator.rs:256`; higher binds tighter):
 ; is Int/Number/Float (or a OneOf containing one); for any other shape it is
 ; "doesn't have flag -1" (so `echo -1` and `return -1` are errors in nu).
 ; nu: parse_calls.rs:571 parse_short_flags, shape_allows_negative_number
-; here: src/winnow/syntax/parser/parse_calls.rs::parse_call_arguments (`-<digit>`, `-.<digit>` always a
-;       positional number, `-..` a range; consumer)
 
 <spread-arg>      ::= "..." ( <bracket-item> | <brace-item> | <var-item> | <paren-item> )
 ; a list spread needs a rest param or --wrapped; a record spread needs at least one
 ; named flag; a list spread may not skip a required positional (all semantic)
 ; nu: parse_calls.rs:1266-1400; parse_helpers.rs extract_spread_*
-; here: src/winnow/syntax/parser/parse_calls.rs::parse_call_arguments,
-;       src/winnow/syntax/parser/parse_helpers.rs::is_spread; consumer
 
 <positional>      ::= <value-of-shape>
 ; parsed with the SyntaxShape of the next positional in the signature; multi-span
@@ -681,17 +590,11 @@ Precedence (nu-protocol `ast/operator.rs:256`; higher binds tighter):
 ; Keyword, VarWithOptType, OneOf of those) consume several items; where they end is
 ; computed from keyword positions and remaining required positionals.
 ; nu: parse_calls.rs:782 parse_multispan_value, 696 calculate_end_span, 720 parse_oneof
-; here: src/winnow/syntax/parser/parse_expressions.rs::parse_value with ExpectedShape::Any for every
-;       positional; the multi-span shapes only occur in keyword statements, where each
-;       statement parser handles them (6); consumer otherwise (nu-parser's front end:
-;       src/winnow/lower/call.rs::multispan_value, which has a row condition or a math
-;       expression of several items parsed again with parser/mod.rs::parse_items)
 
 <keyword-arg>     ::= <keyword-word> <value-of-shape>
 ; SyntaxShape::Keyword(kw, shape): the item must equal kw exactly, then the inner
 ; shape follows; a missing inner value is KeywordMissingArgument
 ; nu: parse_calls.rs:864
-; here: inside each statement parser (`in`, `else`, `catch`, `finally`, `as`, `=`)
 ```
 
 ## 5. Values and literals
@@ -708,15 +611,11 @@ Each rule describes the text of one item.
                     | <raw-string>             ; item starts with "r#"     (5.8)
                     | <shaped-value>           ; anything else, by expected shape
 ; nu: parse_expressions.rs:848 parse_value, 866-891
-; here: src/winnow/syntax/parser/parse_expressions.rs::parse_value
 
 <bracket-expr>    ::= <list-or-table> [ <cell-path-tail> ]
 ; only when the expected shape is Any, List, Table, Signature, ExternalSignature,
 ; Filepath, String, GlobPattern or ExternalArgument; every other shape rejects "["
 ; nu: parse_expressions.rs:869-885, 950-955
-; here: src/winnow/syntax/parser/parse_expressions.rs::parse_value, parse_value_for_shape ("[" checked
-;       against the shape for the typed defaults of 7.1, and for the arguments of calls
-;       whose signature the parser knows: no lookup, a built-in or a `def` of the text)
 
 <shaped-value>    ::= <any-value>              ; shape Any
                     | <int>                    ; Int
@@ -735,16 +634,11 @@ Each rule describes the text of one item.
 <negation>        ::= "-" <dollar-expr>      ; not a range: "-$x..5" is one, with a negated bound
                     | "-" <paren-expr>       ; the "(" closes at the end of the item
 ; the negation of a number, duration or filesize (Expr::UnaryMinus); whether the
-; operand's type can be negated is the consumer's check. "-(1)px" and "-(1)+(2)" are
+; operand's type can be negated is a type check, which needs that type. "-(1)px" and "-(1)+(2)" are
 ; bare interpolations. A call's argument starting with "-" is read as a flag first, and
 ; an external command's stays the text it spells.
-; nu: parse_expressions.rs parse_negation   here: src/winnow/syntax/parser/parse_expressions.rs::parse_negation, is_negation
+; nu: parse_expressions.rs parse_negation
 ; nu: parse_expressions.rs:893-1004
-; here: src/winnow/syntax/parser/parse_expressions.rs::parse_value with
-;       ExpectedShape::{Any,Number,String,Closure,MatchArmBody,Declared}:
-;       Declared is the declared shape of a parameter default (7.1), or of a call's
-;       parameter when the parser knows the signature (no lookup: a built-in or a `def`
-;       of the text, parse_calls::parse_call_arguments_by_shape); otherwise the consumer's
 
 <any-value>       ::= <nothing> | <bool>
                     | <binary>       ; 1st: only "0x["/"0o["/"0b[" prefixes; bad digit = hard error
@@ -759,7 +653,6 @@ Each rule describes the text of one item.
                     | <string>       ; 8th: any remaining text
 ; "hard error" = not an `Expected` error, so the item is garbage, never a string
 ; nu: parse_expressions.rs:947-1000
-; here: src/winnow/syntax/parser/parse_expressions.rs::parse_any_value (same order)
 ```
 
 ### 5.2 Booleans, nothing, numbers
@@ -767,7 +660,7 @@ Each rule describes the text of one item.
 ```ebnf
 <bool>            ::= "true" | "false"
 <nothing>         ::= "null"
-; nu: parse_expressions.rs:912-920   here: src/winnow/syntax/parser/parse_expressions.rs::parse_any_value
+; nu: parse_expressions.rs:912-920
 
 <int>             ::= <int-text>                 ; after deleting every "_"
 <int-text>        ::= [ "+" | "-" ] ( "0b" 1*<digit-2> | "0o" 1*<digit-8> | "0x" 1*<digit-16>
@@ -781,8 +674,6 @@ Each rule describes the text of one item.
 ; that radix is the hard error "invalid digits for radix N" (at a pipeline head such a
 ; word is a command: `0xdump`).
 ; nu: parse_literals.rs read_int, decode_int, parse_int, strip_underscores
-; here: src/winnow/syntax/parser/parse_literals.rs::read_int (IntLiteral), parse_int;
-;       src/winnow/syntax/parser/parse_expressions.rs::parse_any_value
 
 <float>           ::= <float-text>               ; after deleting every "_"
 <float-text>      ::= [ "+" | "-" ] ( 1*<digit> [ "." { <digit> } ] | "." 1*<digit> )
@@ -791,7 +682,6 @@ Each rule describes the text of one item.
 ; what Rust's f64::from_str accepts, except its other special spellings ("INF",
 ; "Infinity", "Nan", "i_n_f"), which are words
 ; nu: parse_literals.rs read_float, SPECIAL_FLOAT_NAMES, parse_number
-; here: src/winnow/syntax/parser/parse_literals.rs::parse_float, SPECIAL_FLOAT_NAMES, parse_number
 ```
 
 ### 5.3 Filesize and duration
@@ -813,8 +703,6 @@ Each rule describes the text of one item.
 <duration-unit>   ::= "ns" | "us" | "µs" | "μs" | "ms" | "sec" | "min" | "hr" | "day" | "wk"
 ; U+00B5 and U+03BC both spell microseconds; units are case-sensitive
 ; nu: parse_literals.rs parse_unit_value, FILESIZE_UNIT_GROUPS, DURATION_UNIT_GROUPS
-; here: src/winnow/syntax/parser/parse_literals.rs::parse_unit_value, parse_filesize, parse_duration
-;       (same tables, same order, UnitError)
 ```
 
 ### 5.4 Datetime
@@ -835,7 +723,6 @@ Each rule describes the text of one item.
 ; is the hard error "not a valid date"; anything else that fails is a plain string
 ; (2023-02-29.log, 2024-01-15T10:00).
 ; nu: parse_literals.rs parse_datetime, is_invalid_date_literal
-; here: src/winnow/syntax/parser/parse_literals.rs::is_datetime, days_in_month, is_invalid_date_literal
 ```
 
 ### 5.5 Binary
@@ -849,7 +736,6 @@ Each rule describes the text of one item.
 ; ("0o[777]", "0x[zz]") is InvalidBinaryString. A "|", redirection or assignment
 ; token inside is "expected binary".
 ; nu: parse_literals.rs:26 parse_binary, 41, 118 decode_with_base
-; here: src/winnow/syntax/parser/parse_literals.rs::parse_binary, parse_binary_with_base
 ```
 
 ### 5.6 Strings
@@ -861,13 +747,11 @@ Each rule describes the text of one item.
                     | <bare-word>
 ; the empty item is "expected String"
 ; nu: parse_literals.rs:1944 parse_string, 1288 is_bare_string_interpolation
-; here: src/winnow/syntax/parser/parse_literals.rs::parse_string, parse_string_literal
 
 <bare-word>       ::= 1*<bare-char>
 ; any byte the lexer lets into an item (1.3) in the current context. Quotes inside a
 ; bare word are kept literally ("a"b"c" is a"b"c). The value is the text unchanged.
 ; nu: parse_literals.rs:1898 unescape_unquote_string; parse_helpers.rs:60 trim_quotes
-; here: src/winnow/syntax/parser/parse_literals.rs::parse_string_literal (Quote::Bare)
 
 <double-quoted>   ::= "\"" { <dq-char> | <escape> } "\""
 ; the LAST "\"" of the item must be its final byte ("a"b is ExtraTokens); earlier
@@ -877,7 +761,6 @@ Each rule describes the text of one item.
                                                           ; trailing text: `a`b is the
                                                           ; literal string `a`b
 ; nu: parse_literals.rs:1921 check_string_no_trailing_tokens (only the double and the single quote)
-; here: src/winnow/syntax/parser/parse_literals.rs::quoted_string_body, parse_string_literal
 
 <escape>          ::= "\" ( "\"" | "'" | "\" | "/" | "(" | ")" | "{" | "}" | "$" | "^"
                           | "#" | "|" | "~" | " " | "a" | "b" | "e" | "f" | "n" | "r" | "t" | "0" )
@@ -886,7 +769,6 @@ Each rule describes the text of one item.
                     | "\u{" 1*6<hex> "}"          ; a valid scalar (no surrogates, <= 10FFFF)
 ; \a=07 \b=08 \e=1b \f=0c; any other "\X" or a trailing "\" is an error
 ; nu: parse_literals.rs:1737 unescape_string, 1657 parse_hex_escape, 1685 parse_unicode_escape
-; here: src/winnow/syntax/parser/parse_literals.rs::unescape_string (bytes, then one UTF-8 check)
 
 ; <raw-string> and <hashes> are defined with the lexer (1.3): the same "#" count on
 ; both sides; the body may contain "'" followed by fewer "#". The value is the text
@@ -894,7 +776,6 @@ Each rule describes the text of one item.
 ; of the item, which the lexer may have run past the raw part (its opening quote can
 ; close that, 1.3): `r#'#a'#'#` is the string `#a'#`
 ; nu: parse_literals.rs:444 parse_raw_string
-; here: src/winnow/syntax/parser/parse_literals.rs::parse_raw_string
 ```
 
 ### 5.7 Interpolation
@@ -912,15 +793,13 @@ Each rule describes the text of one item.
 ; head (5.14): it may span lines and hold a whole pipeline; a cell-path tail cannot
 ; follow it (".a" after ")" is text). The last-quote rule applies to the closer.
 ; nu: parse_literals.rs:634 parse_string_interpolation, 1288
-; here: src/winnow/syntax/parser/parse_literals.rs::parse_string_interpolation,
-;       parse_interpolation_parts; src/winnow/syntax/parser/parse_calls.rs::parse_external_string (bare
-;       words of external calls)
 ```
 
 For the Filepath, Directory and GlobPattern shapes the same text yields
 `Filepath` / `Directory` / `GlobPattern` (with a `quoted` flag) or, for a bare
 interpolation, `StringInterpolation` / `GlobInterpolation`. That distinction is
-signature driven (`; nu: parse_literals.rs:1246 parse_path_like`; `; here: consumer`).
+signature driven: it needs the command's signature
+(`; nu: parse_literals.rs:1246 parse_path_like`).
 
 ### 5.8 Variables
 
@@ -933,8 +812,6 @@ signature driven (`; nu: parse_literals.rs:1246 parse_path_like`; `; here: consu
 ; Reserved names with fixed ids: "$nu", "$in", "$env", "$ans". "$it" is an ordinary
 ; name bound implicitly by row conditions (7.7). Existence is semantic.
 ; nu: parse_literals.rs:796 parse_variable_expr; parse_helpers.rs:41-55
-; here: src/winnow/syntax/parser/parse_helpers.rs::is_identifier,
-;       src/winnow/syntax/parser/parse_literals.rs::parse_variable_expr
 ```
 
 ### 5.9 `$` items
@@ -946,10 +823,8 @@ signature driven (`; nu: parse_literals.rs:1246 parse_path_like`; `; here: consu
                     | <full-cell-path>                   ; otherwise (5.11)
 ; A bare `$`, a name that is no variable name (`$foo-bar`), a modifier on the head
 ; (`$x?`) or a member that may not follow (`$x.a??`) nu reports with garbage and goes on
-; past: the parser records the error as recovered and the value is a garbage leaf over
-; the item, which the consumer reads again with nu's value parser.
+; past.
 ; nu: parse_literals.rs:415 parse_dollar_expr
-; here: src/winnow/syntax/parser/parse_literals.rs::parse_dollar_expr
 ```
 
 ### 5.10 Ranges
@@ -968,7 +843,10 @@ signature driven (`; nu: parse_literals.rs:1246 parse_path_like`; `; here: consu
 ; check refuses a bound that is no number (`5..{a: 1}`, `5..{|| 1}`, `5..r#'a'#`,
 ; `1..$.a`: OperatorUnsupportedType, semantic). A block bound (`5..{ls}`), a
 ; "[" or a bare-word bound fails, and the whole item falls through to the next
-; shape (it becomes a string). On the text of the item, before parsing bounds:
+; shape (it becomes a string); so does a subexpression bound followed by a broken
+; cell path (`echo 5..(1)!`, `echo 5..(1).(2)`, `echo 1..(1)!..5`; at a command
+; head such an item is an external command, 3.1). On the text of the item, before
+; parsing bounds:
 ; an item starting with "..." is never a range (spread); the ".." occurrences
 ; counted are those at parenthesis depth 0 (quotes are not considered); exactly one
 ; or two must exist; with two, the first is the "next" operator, and an empty
@@ -977,13 +855,6 @@ signature driven (`; nu: parse_literals.rs:1246 parse_path_like`; `; here: consu
 ; operator has no "to" (`1...` is `1..`, `1..3...` is `1..3..`); "1...5" is the
 ; range 1 .. 0.5.
 ; nu: parse_literals.rs:231 parse_range; type_check.rs check_range_types
-; here: src/winnow/syntax/parser/parse_literals.rs::is_range_syntax, find_range_operators,
-;       range_bounds, is_range_bound (a "{" bound through
-;       src/winnow/syntax/parser/parse_expressions.rs::BraceShape::of_probe), parse_range (it
-;       refuses a raw string, record or closure bound and a bare interpolation: a "("
-;       bound is a closed group with any cell path after it, and a "(" group that does
-;       not close, `(1)abc`, is the string the ".." refuses; the type of any other
-;       bound, such as "$.a", is the consumer's), is_range_head (a command head, 3.1)
 ```
 
 ### 5.11 Cell paths
@@ -1009,9 +880,6 @@ signature driven (`; nu: parse_literals.rs:1246 parse_path_like`; `; here: consu
 ; newlines inside are whitespace. A "(...)" head is parsed as a block (a whole
 ; pipeline list, so `(ls | length).0` works).
 ; nu: parse_literals.rs:885 parse_cell_path, 1033, 1059 parse_full_cell_path
-; here: src/winnow/syntax/parser/parse_literals.rs::parse_cell_path, parse_dollar_expr,
-;       parse_full_cell_path, parse_simple_cell_path (a bare member with "(" in it is
-;       refused)
 ```
 
 ### 5.12 Parenthesised items
@@ -1024,8 +892,6 @@ signature driven (`; nu: parse_literals.rs:1246 parse_path_like`; `; here: consu
                     | <bare-interpolation>                     ; when the "(" group closes
                                                                ; before the item ends: "(pwd)/x"
 ; nu: parse_literals.rs:497 parse_paren_expr
-; here: src/winnow/syntax/parser/parse_literals.rs::parse_paren_expr,
-;       src/winnow/syntax/parser/parse_expressions.rs::parse_subexpression
 ```
 
 ### 5.13 Brace items: record, closure, block
@@ -1043,15 +909,10 @@ signature driven (`; nu: parse_literals.rs:1246 parse_path_like`; `; here: consu
 ;                          Any -> closure; any other shape -> "non-block value"
 ; So a record where a Block is required (`if true {a: 1}`) is a type mismatch.
 ; nu: parse_literals.rs:547 parse_brace_expr
-; here: src/winnow/syntax/parser/parse_expressions.rs::parse_brace_expr, probe_brace_shape,
-;       BraceShape::of_probe (the classification, shared with range bounds, 5.10),
-;       parse_block_body (a "key:" body in block position is "expected block, found a
-;       record")
 
 <closure>         ::= "{" [ <closure-params> ] <block-tokens> "}"
 <closure-params>  ::= "|" <params> "|" | "||"      ; may be preceded by newlines (7.1)
 ; nu: parse_expressions.rs:696 parse_closure_expression
-; here: src/winnow/syntax/parser/parse_expressions.rs::parse_closure_expression
 
 <block>           ::= "{" <block-tokens> "}"       ; a leading "|" is "expected block but found closure"
 ; where a keyword wants a <block> or a closure (if, while, loop, for, try, catch,
@@ -1059,17 +920,12 @@ signature driven (`; nu: parse_literals.rs:1246 parse_path_like`; `; here: consu
 ; token (probed as in 5.13, a tail such as `.a` included) is ":": a record or a
 ; cell path on one. nu types it any, which passes, unless it is a record whose keys
 ; are all plain strings (not raw), which is a type error: `if true { $env.A:b }` and
-; `try {a: 1}.a` parse, `if true {a: 1}` does not (an error recorded as recovered:
-; the record stays the value, and the consumer reports nu's type mismatch with garbage
-; over the argument, `catch {a: 1}` as a whole for a handler). Closure parameters where
-; a keyword wants its block (`if $c { |x| $x }`) are nu's Mismatch with garbage in the
-; block's place: the error is recorded as recovered and the value is garbage, which the
-; consumer reads with nu's block parser.
+; `try {a: 1}.a` parse, `if true {a: 1}` does not (nu reports the type mismatch with
+; garbage over the argument, over `catch {a: 1}` as a whole for a handler). Closure
+; parameters where a keyword wants its block (`if $c { |x| $x }`) are nu's Mismatch with
+; garbage in the block's place.
 ; nu: parse_expressions.rs:411 parse_block_expression; parse_literals.rs:547
 ;     parse_brace_expr; parse_expressions.rs:1943 parse_record (its type)
-; here: src/winnow/syntax/parser/parse_expressions.rs::parse_block_body, parse_block_expression,
-;       parse_brace_record, is_typed_record;
-;       src/winnow/syntax/parser/parse_keywords.rs::parse_block_or_value_argument, parse_brace_value
 ```
 
 ### 5.14 Lists and tables
@@ -1090,11 +946,6 @@ signature driven (`; nu: parse_literals.rs:1246 parse_path_like`; `; here: consu
 <spread>          ::= "..." ( "[" <list-body> "]" | <variable> [ <cell-path-tail> ] | "(" <block-tokens> ")" )
 ; "...x" with any other first byte is the bare word "...x"
 ; nu: parse_expressions.rs parse_list_expression; lex.rs LexMode::ListItems; parse_helpers.rs
-; here: src/winnow/syntax/lex.rs::LexOptions::LIST (LexMode::ListItems),
-;       src/winnow/syntax/parser/lite_parser.rs::lite_parse_parts (the lite parse of a bracket's tokens;
-;       dropped redirections are recorded as ignored text),
-;       src/winnow/syntax/parser/parse_expressions.rs::parse_list_expression, parse_list_item;
-;       value.rs::is_spread
 
 <table>           ::= "[" <list> ";" <list> { <list-sep> <list> } "]"
 ; The item is a table iff its body's first token starts with "[" and its second is
@@ -1106,10 +957,6 @@ signature driven (`; nu: parse_literals.rs:1246 parse_path_like`; `; here: consu
 ; column name not string". A column named twice is ColumnDefinedTwice.
 ; nu: parse_expressions.rs parse_table_expression, parse_table_row, parse_field_name,
 ;     check_duplicate_name
-; here: src/winnow/syntax/parser/parse_expressions.rs::parse_table_expression, parse_table_row,
-;       parse_field_name, check_duplicate_name (all the checks; a column name is a
-;       string when it is a string, an interpolation, a variable, a cell path or a
-;       subexpression: the type of the last three is the consumer's)
 ```
 
 ### 5.15 Records
@@ -1139,8 +986,6 @@ signature driven (`; nu: parse_literals.rs:1246 parse_path_like`; `; here: consu
 ; only when the record runs (`$k`, a spread) is checked then.
 ; nu: parse_expressions.rs parse_record, parse_field_name, check_duplicate_name,
 ;     check_record_key_or_value
-; here: src/winnow/syntax/parser/parse_expressions.rs::parse_record, parse_field_name,
-;       check_duplicate_name, check_record_key_or_value
 ```
 
 ## 6. Statements
@@ -1159,7 +1004,6 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
                     | <where> | <plugin-use>
 ; only for a single-command pipeline (2.1)
 ; nu: parse_expressions.rs:1770-1830
-; here: src/winnow/syntax/parser/parse_expressions.rs::parse_builtin_commands
 
 ; Every keyword is a command with a fixed signature, so at the start of each of its
 ; positional arguments nu looks for flags (any number of them): "--help"/"-h"
@@ -1170,8 +1014,7 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; (as for "--help"), whatever it reads after the flag, since everything before it
 ; parsed. So is a statement with an item after its last positional, nu's
 ; ExtraPositional (`break x`, `loop {} y`, `return 1 2`). (`alias` and `use` still
-; refuse an unknown flag; `for`, `match` and `export-env` calls go on to the consumer,
-; which reads some of them.) Where a positional spans several items (a condition, a
+; refuse an unknown flag.) Where a positional spans several items (a condition, a
 ; signature, an alias target) only its first item is such a boundary: `if true --foo
 ; {}` is the condition's "expected operator".
 ; A positional missing at the end of the statement is a MissingPositional, semantic:
@@ -1186,7 +1029,7 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; --` has one too many), `return -- --help` returns a string.
 ; "--help=value" is the help flag too: nu shows help whatever the value, which it
 ; reads as the switch's Boolean (`if --help=false true {}` shows help, `if --help=1
-; ...` is "expected bool", semantic: the consumer's); `alias` and `type` drop the
+; ...` is "expected bool", semantic); `alias` and `type` drop the
 ; errors of the call they parse to look for help (`type t --help=1 = int`). `-h=x` is the batch
 ; "h", "=", "x", an unknown flag. A def or extern reads its own flags among help flags
 ; (`def --help --env f`), an `if` whose else branch is one block leaves the flags after
@@ -1197,15 +1040,11 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; -- = ls`, `module -- x {}`, `module x -- {}`, `let -- x = 1`, `export-env -- {}`
 ; are errors ("missing sign", "expected block", "not a valid variable name"). An
 ; alias help call must be the whole statement: `alias --help x = ls` and `alias x
-; --help extra` are "missing sign" (which nu reports with garbage over the item: the
-; parser records it as recovered and reads the statement as the call, as the consumer
-; checks it). `export --help x` has an extra positional (semantic: nu's call).
+; --help extra` are "missing sign" (which nu reports with garbage over the item).
+; `export --help x` has an extra positional (semantic: nu's call).
 ; nu: parse_calls.rs:1067-1213 (parse_long_flag, parse_short_flags per positional,
 ;     `end_of_options`), 30 check_call; parse_alias.rs:20 check_alias_name;
 ;     parse_type_alias.rs (help call errors dropped); parse_module.rs parse_export_env
-; here: src/winnow/syntax/parser/parse_keywords.rs::keyword_boundary, KeywordCall::flags,
-;       KeywordCall::help_flag, seen_end_of_options, KeywordCall::positional,
-;       parse_help_call; src/winnow/syntax/parser/parse_helpers.rs::is_help_text
 
 <pipeline-forbidden-head> ::= "def" | "extern" | "for" | "module" | "type" | "use" | "source"
                     | "alias" | "export" | "export-env" | "hide" | "const" | "mut"
@@ -1218,9 +1057,6 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; pipeline itself, at the first item after any env shorthand of each element.
 ; nu: parse_expressions.rs parse_expression (HeadKind::Builtin), parse_pipelines.rs
 ;     parse_pipeline
-; here: src/winnow/syntax/parser/parse_expressions.rs::check_builtin_command_in_pipeline (every element
-;       of a multi-command pipeline and the command after shorthand are parsed in
-;       Position::Element), src/winnow/syntax/parser/parse_pipelines.rs::check_loop_in_pipeline
 
 ; Redirections are refused on: def, extern, alias, type, use, module, for, source,
 ; source-env, run, hide, overlay* (by the word "overlay" alone, before its
@@ -1234,15 +1070,10 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; because the redirection is absorbed into the rhs pipeline. Only a pipeline of one
 ; command is refused (nu's parse functions read those); in a longer one each command
 ; is read where a command is, which refuses none (`run null e>| ls`). nu reports the
-; statement and makes it garbage, so the error is recorded as recovered, but on a
-; lone let or mut and an attribute block.
+; error and makes the statement garbage.
 ; nu: redirecting_builtin_error call sites in parse_def.rs, parse_alias.rs,
 ;     parse_module.rs, parse_source.rs, parse_expressions.rs:1801,1817; parse_let and
 ;     parse_mut over parts_including_redirection, parse_const over parts
-; here: src/winnow/syntax/parser/parse_pipelines.rs::rejects_redirection (the statements, the
-;       keywords' calls, a lone let or mut, and the calls whose fixed signature is not
-;       redirectable); drops_redirection (export-env's and a const's redirection is ignored
-;       text)
 
 <parser-keyword>  ::= "if" | "match" | "try" | "overlay" | "overlay hide"
                     | "overlay new" | "overlay use"                    ; aliasable
@@ -1256,17 +1087,13 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; a def/extern/alias NAME equal to any entry (after quote removal) is NameIsKeyword;
 ; the multi-word entries match quoted names (`def "export def"`)
 ; nu: parse_keywords.rs:9-46, 95 reject_parser_keyword_name
-; here: src/winnow/syntax/parser/parse_keywords.rs::is_parser_keyword (both tables, multi-word entries
-;       included)
 
 <bad-definition-name> ::= a name containing "#" | "^" | "%"
                     | a name parsing as a filesize ("1kb") or f64 ("5", "1.5", "inf")
 ; nu: parse_def.rs:89, parse_alias.rs:144
-; here: src/winnow/syntax/parser/parse_def.rs::check_definition_name
 ; a def/extern NAME refused either way (or with whitespace other than single spaces) is
-; recorded as a recovered error and the statement goes on: nu's predeclaration and
-; finish_def/finish_extern report it (CommandDefNotValid, NameIsKeyword) and go on too
-; (here: parse_def.rs::recover_name_error)
+; an error that nu's predeclaration and parse_def/parse_extern report (CommandDefNotValid,
+; NameIsKeyword) and go on past
 
 ; Predeclaration: before a block is parsed, every single-command pipeline of the form
 ; [ "export" ] ( "def" | "extern" ) { "--flag" } <name> ... "[" | "(" declares <name>,
@@ -1274,7 +1101,7 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; twice this way in one block is DuplicateCommandDef (an alias is not predeclared,
 ; so `def foo` plus `alias foo` is fine, and so is a nested block). <name> must read
 ; as a string and is declared unquoted as parse_string unquotes it (`def "a"b [] {}`
-; declares nothing), and must not be a name nu refuses (reject_command_name: a parser
+; declares nothing), and must not be a name parse_def_predecl refuses (a parser
 ; keyword or a <bad-definition-name>; `def if [] {}` declares nothing). A dropped "|" (a blank line or the end of the block after it,
 ; or the end of the line after an "e>|") does not join the def to another command,
 ; so the def is still a single-command pipeline; a def after an attribute line
@@ -1283,10 +1110,6 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; span only, so that a use of the alias above it (or inside it) can be told from an
 ; unknown type; the alias itself is defined when the statement is parsed.
 ; nu: parse_def.rs parse_def_predecl (add_type_predecl)
-; here: src/winnow/syntax/parser/parse_def.rs::parse_def_predecl, scan_predecls (TypeAliasPredecl,
-;       for the engine's BlockSink::predecl_type_alias; whether a pipe joins the next
-;       command: src/winnow/syntax/parser/lite_parser.rs::LiteBlock; the name:
-;       src/winnow/syntax/parser/parse_signatures.rs::parse_definition_name)
 ```
 
 ### 6.2 let, mut, const
@@ -1313,14 +1136,13 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; missing value of `mut x` and `const x` is MissingPositional (semantic: signature).
 ; A typed `mut x: int` / `const x: int` without a value is MissingType: of the two
 ; required positionals the variable gets only the `x:` item; nu goes on with its call,
-; which the statement then is (recorded as recovered), as for `for y: int` without `in`. A redirection or "|" in the rhs is
+; which the statement then is, as for `for y: int` without `in`. A redirection or "|" in the rhs is
 ; part of the rhs pipeline. nu lexes the rhs again from its text, as a block: inside
 ; "(" ")", whose newlines are whitespace, a newline between its items still ends a
 ; pipeline (`(let x = 1\n2)` gives `x` a block of two). Type checks and
 ; const-evaluability: semantic.
 ; nu: parse_bindings.rs:20 parse_let, 298 parse_mut, 148 parse_const;
 ;     nu-cmd-lang core_commands/{let_,mut_,const_}.rs signatures
-; here: src/winnow/syntax/parser/parse_bindings.rs::parse_let
 ```
 
 ### 6.3 def, extern
@@ -1330,42 +1152,35 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
                     | "def" <definition-call>
 <def-flag>        ::= ( "--env" | "--wrapped" ) [ "=" <value> ]
 <definition-call> ::= { <item> }   ; an unknown or short flag before the signature, a flag
-                                   ; or "--" as the last item: nu's call, read by the consumer
+                                   ; or "--" as the last item: nu's call, read by def's signature
 ; the flags are ordinary named arguments, so they parse anywhere in principle, but a
-; flag between the signature and the body breaks the multi-span signature (an error
-; here too) and one after the body leaves the body missing. nu's parse_def reads the
-; statement with parse_internal_call and finish_def finishes any call, so an unknown
+; flag between the signature and the body breaks the multi-span signature (an error)
+; and one after the body leaves the body missing. nu's parse_def reads the statement
+; with parse_internal_call and finishes any call it gets, so an unknown
 ; flag (`def --foo f`, `def -e f`, `def -1 f`), a flag in the body's place (`def f []
 ; {} --env`, a MissingPositional), a flag value that is no bool (`--env=1`), a
 ; `--wrapped` without a string rest and a command's own `--help` flag are semantic: the
 ; command is still defined (or the call becomes garbage when a flag's value does not
-; evaluate). A call form with input/output types (`def -1 f []: nothing -> int {}`, a
-; call for help too) is still refused: its items are read as values, and `[]:` is an
-; unclosed list (the consumer would read them by the signature shape).
+; evaluate). A call form reads its items by the shapes of def's signature, input/output
+; types included (`def --help f []: nothing -> int {}` parses and shows help).
 ; A flag with a value is set when the value, evaluated as a constant, is true
 ; (`def --env=false f`); the first of a repeated flag decides (`--env=false --env`
 ; is not set). The predeclaration looks for the item `--wrapped` as written, so a
 ; `--wrapped=true` command takes external arguments only once it is defined. A value
 ; that is not `true` or `false` needs constant evaluation, and so do the `--wrapped`
-; checks that depend on it (9.4).
+; checks that depend on it (9).
 ; nu: parse_def.rs:321 parse_def (via parse_internal_call), 613 `has_flag_const`;
 ;     nu-protocol Call::has_flag_const
-; here: src/winnow/syntax/parser/parse_def.rs::parse_def, parse_definition_flags (before or after the
-;       name), definition_flag; ast::DefinitionFlag::is_set
 
 <def-name>        ::= <string> - <reserved-definition-name>   ; bare or quoted (multi-word)
 <reserved-definition-name> ::= <parser-keyword> | <bad-definition-name>
 ; must be a string item: `def $x` and `def $"x"` are "expected string", nu's call's error for
-; its `string` positional (VariableNotFound, UnknownState), recorded as recovered, the
-; statement that call; a bare interpolation (`def $"a(1)"`) predeclares nothing; a name with
+; its `string` positional (VariableNotFound, UnknownState); a bare interpolation
+; (`def $"a(1)"`) predeclares nothing; a name with
 ; "(" or "[" anywhere in its text, quoted or not (`def (foo)`, `def [foo]`,
 ; `def "a(b"`, `def foo[]`), is "no space between name and parameters", which nu reports
-; and makes the statement garbage (in the definition's scope, which it leaves open): the
-; parser records it as recovered and reads the statement as the call, which the
-; consumer refuses so
+; and makes the statement garbage (in the definition's scope, which it leaves open)
 ; nu: parse_def.rs:958 detect_params_in_name; SyntaxShape::String
-; here: src/winnow/syntax/parser/parse_def.rs::parse_def_name,
-;       src/winnow/syntax/parser/parse_signatures.rs::parse_definition_name
 
 <full-signature>  ::= <signature-item>
                     | <signature-item> <brace-item>         ; the brace item is DROPPED (never parsed):
@@ -1383,12 +1198,7 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; "colon (:) before type signature". `[]:` with nothing after it is Unclosed.
 ; nu: parse_signatures.rs:390 parse_full_signature, 544 parse_signature;
 ;     parse_calls.rs:655 calculate_end_span
-; here: src/winnow/syntax/parser/parse_signatures.rs::parse_full_signature (the dropped item is ignored
-;       text)
-; A signature error is nu's call argument error: nu goes on to define the command, so the
-; statement is read as the call to def/extern, the error recorded as recovered, a
-; positional that does not parse as a value a garbage leaf the consumer reads by its span
-; (here: parse_def.rs::signature_error_call, parse_calls.rs::parse_definition_call)
+; A signature error is nu's call argument error: nu goes on to define the command.
 
 <def-body>        ::= <closure>
 ; def and export def both go through the `def` declaration (SyntaxShape::Closure):
@@ -1397,22 +1207,17 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; to `a:`). Because the signature takes every item but the last, `def foo [] {} extra`
 ; fails on `extra` as the body while `def foo [] {} {}` drops the first `{}`.
 ; `--wrapped` needs a `...rest` param that is untyped or typed `string`
-; (finish_def's check, the consumer's). An untyped
+; (parse_def's check). An untyped
 ; one gets the shape external_arg: the rest param is the signature's (the first
 ; item of the brackets in a param's place that starts with "...", not a word in a
 ; comment or a default value), and it is typed when some `...name` in the text,
 ; comments included, is followed by a `:`. A call to the command then takes
 ; <ext-arg>s: `f 'x'$` and `f 0b2` parse, from the predeclaration on and through an
-; alias of the command. Here every argument of such a call is an <ext-arg>; nu gives
-; the positionals before the rest their own shapes (consumer, 9.4).
+; alias of the command. nu gives the positionals before the rest their own shapes, which
+; needs the command's signature (9).
 ; nu: parse_calls.rs:1424-1449, 1467; parse_def.rs:25 rest_param_is_type_annotated,
 ;     52 parse_def_predecl, 585-628; parse_calls.rs:111 parse_unknown_arg;
 ;     nu-cmd-lang def.rs:21
-; here: src/winnow/syntax/parser/parse_def.rs::parse_def, parse_def_body (the `|x|` parameters are kept
-;       as Def::body_params), reads_as_call, parse_def_predecl and
-;       has_untyped_rest (DeclKind::Wrapped: the rest param from the lexed signature,
-;       its type from the text); src/winnow/syntax/parser/parse_calls.rs::parse_call_lenient (which
-;       records it as Call::wrapped)
 
 <extern>          ::= "extern" { <extern-flag> } <def-name> { <extern-flag> } <full-signature>
                     | "extern" <definition-call>    ; an unknown or short flag before
@@ -1425,15 +1230,13 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; reason `--strict`, like the flags of a def, comes before or after the name only:
 ; `extern foo [] --strict` is "colon (:) before type signature". For extern
 ; signatures a default-value token is not parsed at all (`extern foo [x = 0x]`
-; parses; the token is ignored text).
+; parses; nu ignores the token).
 ; `--strict=value` is strict when the value, evaluated as a constant, is true (6.3 def).
 ; `--strict` makes a call with a flag the signature doesn't declare an unknown flag
-; (the consumer's, 9.4: it needs the signature), except `--help`, a count (`-10`) and a
+; (this needs the command's signature, 9), except `--help`, a count (`-10`) and a
 ; flag spelled at run time (`-$x`, `--(expr)`).
 ; nu: parse_def.rs:388 parse_extern, 722 parse_extern_inner, 790 (`strict`), 841;
 ;     parse_calls.rs:135 strict_extern_forwards, 1151; parse_calls.rs:655
-; here: src/winnow/syntax/parser/parse_def.rs::parse_extern, parse_definition_flags (before or after
-;       the name), src/winnow/syntax/parser/parse_signatures.rs::parse_full_signature
 ```
 
 ### 6.4 alias, type
@@ -1448,27 +1251,22 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; refused: a `|` or a redirection at the top level of the target (`alias x = ls | length`,
 ; `alias x = ls o> y`; a quoted one or one inside `( )` is part of a word) =>
 ; CantAliasExpression, after the check for an expression below and before the one for a
-; keyword (nu keeps the call to `alias`, the target read as words, and declares none: the
-; parser records it as recovered)
+; keyword (nu keeps the call to `alias`, the target read as words, and declares none)
 ; refused: a target whose first item is math-expression-like (`1 + 1`, `$x`, `(ls)`,
 ; `[1]`, `{ }`, `not ...`, `"ls"`, `-1`) => CantAliasExpression, except `if` and
-; `match` (nu keeps the call to `alias` and declares none: the parser records it as
-; recovered and leaves the target garbage, when no `|` or redirection is among its words); a target that is an unaliasable keyword (`alias d = def`, `alias l = let`,
+; `match` (nu keeps the call to `alias` and declares none); a target that is an
+; unaliasable keyword (`alias d = def`, `alias l = let`,
 ; `alias e = export def`) => CantAliasKeyword; aliasable keywords and any external
 ; call (`^ls -l`, and `FOO=1 ls`, which parses as the external `FOO=1`) are fine.
-; nu reads an unaliasable keyword's target as a call and declares no alias
-; (finish_alias), the alias call kept: so does the parser for a target that is the
-; keyword alone, the error recorded as recovered (with arguments nu's first reading
-; of the target reads some keywords their own way, so the error stays).
+; nu reads an unaliasable keyword's target as a call and declares no alias, the alias
+; call kept.
+; nu reads an `if`, `match` or `try` target as a call, through the keyword's signature
+; (parse_call), not as a statement, so the signature's errors are the target's
+; (`alias i = try {} -- catch` lacks the argument of `catch`). When the first error in
+; the target is a MissingPositional, anywhere in it, nu drops all of the target's errors
+; (`alias x = overlay new`, `alias i = if if x y`, `alias i = if (if x) {}`). A `%(...)`
+; target is CantAliasKeyword (9).
 ; nu: parse_alias.rs:63 parse_alias, 186-250, 300-306
-; here: src/winnow/syntax/parser/parse_alias.rs::parse_alias (the same three checks; missing positionals
-;       of a keyword target are forgiven as in nu, `alias x = overlay new`)
-; DIFF 1: nu reads an `if`, `match` or `try` target through the keyword's signature
-;         (parse_call), this parser with the statement parser or as a call with flags:
-;         a missing positional nested in the target is not forgiven here
-;         (`alias i = if if x y`, 9.2) and some signature errors are missed
-;         (`alias i = try {} -- catch`, 9.1); a `%(...)` target is CantAliasKeyword in
-;         nu and accepted here (9.1)
 
 <type-alias>      ::= [ "export" ] "type" <type-alias-name> "=" <type-alias-type>
 <type-alias-name> ::= ( <a letter of any script> | "_" )
@@ -1483,19 +1281,15 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; item that is not "=" is TypeAliasMissingEquals; a built-in name is
 ; TypeAliasShadowsBuiltin; any other name that is not a <type-alias-name> is
 ; TypeAliasNameNotValid; nothing after "=" is MissingType; two types are ExtraTokens.
-; nu goes on past each: an item out of place gives garbage over the statement (the
-; parser records it as recovered and the statement is nu's call to `type`, which the
-; consumer reads as `type_alias_layout_error` does), a refused name garbage, and a missing
-; type or two types an alias of `any` (recorded as recovered, the alias's type `any` over
-; the type's items, a point after "=" when there are none);
+; nu goes on past each: an item out of place gives garbage over the statement, a refused
+; name garbage, and a missing type or two types an alias of `any` (its type spans the
+; type's items, or is a point after "=" when there are none);
 ; a "@completer" in the type is an error (a completer belongs to a parameter,
-; `c: Color@[red green]`). What the alias names, where it may be used and `hide` are the
-; consumer's: it is defined in order, as `alias` and `const` are, and the
+; `c: Color@[red green]`). What the alias names, where it may be used and `hide` need
+; the declarations in scope: it is defined in order, as `alias` and `const` are, and the
 ; predeclaration (6.1) records where it is.
 ; nu: parse_type_alias.rs parse_type_alias, is_valid_type_alias_name;
 ;     parse_shape_specs.rs BUILTIN_TYPE_NAMES
-; here: src/winnow/syntax/parser/parse_type_alias.rs::parse_type_alias,
-;       src/winnow/syntax/parser/parse_shape_specs.rs::{BUILTIN_TYPE_NAMES, is_valid_type_alias_name}
 ```
 
 ### 6.5 Modules
@@ -1504,8 +1298,6 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 <use>             ::= "use" <module-ref> <import-pattern-tail>        ; (7.5)
 <module-ref>      ::= <string> | "null" | <variable> | "(" <block-tokens> ")"   ; const-evaluated
 ; nu: parse_module.rs:1084 parse_use; parse_signatures.rs:20 parse_import_pattern
-; here: src/winnow/syntax/parser/parse_module.rs::parse_use, parse_import_pattern_member,
-;       parse_import_pattern_list
 
 <module>          ::= "module" <module-name> [ "{" <module-body> "}" [ "--" ] ]
                     | "module" <module-call>
@@ -1518,10 +1310,8 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; on with the item after the name as the body, whatever it is: `module x {} --foo` adds
 ; the module, `module x --foo {}` and `module x -- {}` are "expected block". The call's
 ; errors (UnknownFlag, ExtraPositional, UnexpectedSpreadArg, a name that is no string
-; literal, the block mismatch) are semantic: the consumer's
-; nu: parse_module.rs:904 parse_module, finish_module; parse_calls.rs:1474 FirstK
-; here: src/winnow/syntax/parser/parse_module.rs::parse_module, parse_module_name,
-;       parse_module_call (Argument::Unread for a garbage positional)
+; literal, the block mismatch) are semantic
+; nu: parse_module.rs:904 parse_module; parse_calls.rs:1474 FirstK
 
 <module-body>     ::= { <module-item> }         ; lexed as it is, with no brace probe (5.13):
                                                ; `module m { |def x [] {} }` has a leading pipe
@@ -1531,26 +1321,21 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; --help`): the keyword's parse function gives the call back as the statement;
 ; anything else (`let`, `mut`, a call, `if`, a pipeline of > 1 command) is
 ; ExpectedKeyword "def, const, extern, alias, use, module, export or export-env", which nu
-; reports at the statement's first item, reading nothing of it, and goes on: the parser
-; records it as recovered and the consumer makes the statement garbage
+; reports at the statement's first item, reading nothing of it, and goes on with the
+; statement as garbage
 ; nu: parse_module.rs:466 parse_module_block
-; here: src/winnow/syntax/parser/parse_module.rs::is_module_item
 
 <export>          ::= "export" ( <def> | <extern> | <alias> | <use> | <module> | <const> )
 ; anything else after "export" (nothing, `let`, `mut`) is an error, which nu reports after
 ; reading the statement as its call to `export` (UnexpectedKeyword, garbage) and goes on
-; past: recorded as recovered, the statement that call; `export def --env`
-; works (the flags belong to the def)
+; past; `export def --env` works (the flags belong to the def)
 ; nu: parse_module.rs:72 parse_export_in_block, 159 parse_export_in_module
-; here: src/winnow/syntax/parser/parse_module.rs::parse_export_in_block
 
 <export-env>      ::= "export-env" <block> { <item> }
 ; only the first argument is looked at: `export-env {} extra`, `export-env {} {}` and
 ; a redirection on it parse in nu, the rest dropped. A closure (`{|x| }`) or a record
 ; body is refused.
 ; nu: parse_module.rs:367 parse_export_env
-; here: src/winnow/syntax/parser/parse_module.rs::parse_export_env (the extra items and the redirection
-;       are ignored text)
 
 <hide>            ::= "hide" <string> [ <member> ]             ; module or single decl
 ; hide-env [--ignore-errors | -i] { <string> } is an ordinary command
@@ -1578,12 +1363,6 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; foo null` shows help).
 ; nu: parse_module.rs:1349 parse_hide, 1529/1572/1806 overlay_*; parse_source.rs:60
 ;     parse_source, 219 parse_run, 546 parse_plugin_use; nu-cmd-lang signatures
-; here: ordinary Call; the members of `hide` (an import pattern, unless the call shows
-;       help) and the keyword argument `as` (the positional after the module, followed by
-;       any item: `as --prefix` names the overlay; a flag, "-1" and a spread are no
-;       positionals): src/winnow/syntax/parser/parse_calls.rs::check_call; flags and their
-;       values, short-flag batches, positional counts, the types of the values, the
-;       const-evaluation and resolution of the names: consumer
 ```
 
 ### 6.6 Control flow
@@ -1601,15 +1380,12 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; MissingType and a name nu refuses (`for x.y: in [] {}`) is Expected: nu goes on past
 ; those too, with its call.
 ; nu: parse_def.rs:166 parse_for; nu-cmd-lang for_.rs; parse_calls.rs:680, 876
-; here: src/winnow/syntax/parser/parse_def.rs::parse_for
 
 <while>           ::= "while" <math-expression> <block>
 <loop>            ::= "loop" <block>
 ; the condition is every item before the last; a record body is a type error
 ; unless nu types it any (5.13 <block>)
 ; nu: nu-cmd-lang while_.rs, loop_.rs (parsed by parse_call)
-; here: src/winnow/syntax/parser/parse_control_flow.rs::parse_while, parse_loop,
-;       src/winnow/syntax/parser/parse_keywords.rs::parse_block_argument
 
 <if>              ::= "if" <math-expression> <block> [ "else" <else-body> ]
 <else-body>       ::= <block> | <expression>         ; OneOf(Block, Expression)
@@ -1619,10 +1395,8 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; a closure) parse, except after a "{" item without parameters, which Block takes
 ; alone: what follows it is an extra argument of `if` (`else {} * 3`, `else {} else
 ; {}` are errors) or a flag; a record then-block is a type error. An error in the
-; condition or the then-block nu's call reports and goes on past: recorded as recovered,
-; the statement that call (and so for `while`)
+; condition or the then-block nu's call reports and goes on past (and so for `while`)
 ; nu: nu-cmd-lang if_.rs; parse_calls.rs:782 (Keyword + OneOf)
-; here: src/winnow/syntax/parser/parse_control_flow.rs::parse_if, parse_block_or_value
 
 <match>           ::= "match" <value> <match-block>
                     | "match" <value> ( <closure> | <record> | <variable> | "(" <block-tokens> ")" )
@@ -1630,8 +1404,7 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; the arms should be: the MatchBlock shape lets the brace probe (5.13) and the "$"/"("
 ; dispatch through, the value type-checks as Any, and the match fails at run time.
 ; `match 1 [a]` and `match 1 foo` are errors, and so is an error in the arms; nu goes on
-; past both, so the parser records the error as recovered and keeps the item as a garbage
-; value, which the consumer reads with nu's value parser for the `match-block` shape.
+; past both.
 <match-block>     ::= "{" { <arm-sep> } { <match-arm> { <arm-sep> } } "}"
 <arm-sep>         ::= <whitespace> | "," | <eol> | "|" | <comment>
 <match-arm>       ::= <pattern> { "|" <pattern> } [ "if" <math-expression> ] "=>" <arm-body>
@@ -1642,9 +1415,6 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; whitespace to the lexer (so `1 => 2 | 3 => 4` fails only type checking).
 ; nu: parse_expressions.rs:472 parse_match_block_expression, 848 parse_value;
 ;     nu-cmd-lang match_.rs
-; here: src/winnow/syntax/parser/parse_control_flow.rs::parse_match (the second form is kept as
-;       Match::value_block),
-;       src/winnow/syntax/parser/parse_expressions.rs::parse_match_block_expression, parse_match_arm
 
 <try>             ::= "try" <block> [ <handler> ] [ <handler> ]
 <handler>         ::= ( "catch" | "finally" ) <closure-value>
@@ -1653,10 +1423,8 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; `catch {} catch {}` parse; a third handler is ExtraPositional (semantic: the statement
 ; is nu's call); an item that is neither keyword, a keyword without a value, a bare word
 ; or a record whose keys are all plain strings (5.13 <block>) is an error of nu's call,
-; which goes on past it: recorded as recovered, the statement that call
+; which goes on past it
 ; nu: nu-cmd-lang try_.rs (OneOf(Keyword catch, Keyword finally) twice)
-; here: src/winnow/syntax/parser/parse_control_flow.rs::parse_try, parse_try_handler (the closure type
-;       of a variable or subexpression: consumer)
 
 <return>          ::= "return" [ <value> ]
 <break>           ::= "break"
@@ -1665,15 +1433,11 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; positionals; `return -1` is "doesn't have flag -1"); break/continue take nothing;
 ; both errors are the call's (semantic): the statement is nu's call
 ; nu: nu-cmd-lang return_.rs, break_.rs, continue_.rs
-; here: src/winnow/syntax/parser/parse_control_flow.rs::parse_return, parse_break_or_continue,
-;       src/winnow/syntax/parser/parse_keywords.rs::KeywordCall (call_flags, end)
 
 <where>           ::= "where" <row-condition>                 ; (7.7)
 ; nu: parse_source.rs:527 parse_where, 472 parse_where_expr
-; here: src/winnow/syntax/parser/parse_source.rs::parse_where
 
 ; collect [<closure>] [--keep-env] is an ordinary command; nu marks it a keyword only for `$in` handling
-; here: ordinary Call
 ```
 
 ### 6.7 Attributes
@@ -1683,22 +1447,18 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 <attribute>       ::= "@" <attr-name> <args> ( <eol> | ";" )        ; lite rules in 2
 <attr-name>       ::= <word> { " " <word> }      ; resolved as the command `attr <name>`
 <annotated>       ::= <def> | <extern> | "export" ( <def> | <extern> )
-; `@` alone or `@ name` gives an empty name (UnknownCommand, the consumer's); the name must resolve
-; to a declaration `attr <name>`; the definition must be on the very next line;
+; `@` alone or `@ name` gives an empty name (UnknownCommand); the name must resolve to a
+; declaration `attr <name>`, which needs the declarations in scope (a `use`d module may
+; bring it); the definition must be on the very next line;
 ; anything else (`export alias`, `export const`, `export module`, `export use`,
 ; `let`, a call) is AttributeRequiresDefinition, which nu reports at the last attribute,
-; keeping the command (or the point after the last attribute) as garbage: so does the
-; parser, the error recorded as recovered (before an `export` of no definition too, which
-; nu's `warp_export_call` then reports); a blank line after the attributes ends the
+; keeping the command (or the point after the last attribute) as garbage (before an
+; `export` of no definition too, which nu's `warp_export_call` then reports); a blank
+; line after the attributes ends the
 ; command there, while after a comment line (which nu gives the next command) the error
 ; stays
 ; nu: parse_calls.rs:2022 parse_attribute; parse_def.rs:278 parse_attribute_block;
 ;     parse_module.rs:110, 203
-; here: src/winnow/syntax/parser/lite_parser.rs::LiteBlock,
-;       src/winnow/syntax/parser/parse_pipelines.rs::parse_pipeline_element,
-;       src/winnow/syntax/parser/parse_calls.rs::parse_attribute (the empty name is the consumer's; whether
-;       `attr <name>` exists is the consumer's, it may come from a `use`d module; the
-;       arguments of the built-in attributes, as any call's, are the consumer's too)
 ```
 
 ## 7. Signatures, types, patterns, import patterns, row conditions
@@ -1709,13 +1469,11 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 <params>          ::= { <param-separator> } { <param> { <param-separator> } }
 ; lexed with "\n\r" as whitespace, ":" "=" "," special and in_signature, comments kept
 ; nu: parse_signatures.rs:578 parse_signature_helper
-; here: src/winnow/syntax/parser/parse_signatures.rs::parse_parameters (LexOptions::SIGNATURE)
 
 <param-separator> ::= "," | <eol> | "|" | "||" | ";" | <redirection-op>
 ; every non-item token is ignored; "," twice, or "," followed by ":" / "=" / "(-x)",
 ; is "expected parameter or flag"
 ; nu: parse_signatures.rs:680, 1206
-; here: src/winnow/syntax/parser/parse_signatures.rs::parse_parameters (every non-item token skipped)
 
 <param>           ::= <param-head> [ ":" <param-type> ] [ "=" <default> ] { <description-comment> }
 ; mode machine Arg -> (":") Type -> AfterType -> ("=") DefaultValue -> Arg. ":" or "="
@@ -1726,9 +1484,6 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; string "1", and `[x = 1..=5]`, which lexes as `x = 1.. = 5`, is an error); a second
 ; ":" is an error; ":" or "=" with no parameter before them is silently skipped
 ; nu: parse_signatures.rs:641-694
-; here: src/winnow/syntax/parser/parse_signatures.rs::parse_parameters (same modes and skips; a later
-;       default without a declared type is parsed as any value; every default is kept,
-;       the earlier ones in Parameter::earlier_defaults: their types are the consumer's)
 
 <param-head>      ::= <positional-param> | <optional-param> | <rest-param>
                     | <long-flag-param> | <short-flag-param> | <short-alias>
@@ -1746,9 +1501,7 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
                                                         ; a short form, or with no preceding flag
 <flag-name>       ::= 1*( <identifier-byte> | "-" )
 <decl-name>       ::= [ "$" ] 1*<identifier-byte>       ; digits, "?", ":", "@", "#" are allowed
-; nu: parse_signatures.rs parse_signature_helper, assemble_signature; parse_helpers.rs is_variable
-; here: src/winnow/syntax/parser/parse_signatures.rs::parse_parameter, parse_parameters,
-;       check_parameters, check_unique_name
+; nu: parse_signatures.rs parse_signature_helper; parse_helpers.rs is_variable
 
 <param-type>      ::= <shape> [ "@" <completer> ]
 ; split at the FIRST "@" in the token regardless of "<" ">" nesting (so
@@ -1756,41 +1509,31 @@ Vocabulary: `<expression>` is a `<pipeline-element>` (3.1); `<block>` is a
 ; "bool" on a flag is "Type annotations are not allowed for boolean switches"; a
 ; rest param's type becomes list<shape>
 ; nu: parse_signatures.rs:984
-; here: src/winnow/syntax/parser/parse_shape_specs.rs::parse_shape_name
 <completer>       ::= <value>
 ; parsed with OneOf(list<string>, string) and const-evaluated: a string must name an
 ; existing command, a list is a static list; a "(..)" or "{..}" is an error
 ; nu: parse_shape_specs.rs:77 parse_completer
-; here: src/winnow/syntax/parser/parse_shape_specs.rs::parse_completer (a string or a list); whether the
-;       command exists (it may come from a `use`d module) and the const-evaluation:
-;       consumer
 <default>         ::= <value>
 ; parsed with the DECLARED shape (`x: int = abc`, `x: int = "a"`, `x: bool = 1`,
 ; `x: list<int> = 1` are parse errors; `x: string = 1` is the string "1"), then
 ; const-evaluated; an untyped flag with a default takes the default's type
 ; nu: parse_signatures.rs:1085; parse_expressions.rs:848 parse_value
-; here: src/winnow/syntax/parser/parse_signatures.rs::parse_parameters via
-;       parse_value(ExpectedShape::Declared(shape)),
-;       src/winnow/syntax/parser/parse_expressions.rs::parse_value_for_shape; the const-evaluation:
-;       consumer
 <description-comment> ::= <comment>
 ; attaches to the most recent parameter; several are joined with "\n"
 ; nu: parse_signatures.rs:1172
-; here: src/winnow/syntax/parser/parse_signatures.rs::parse_parameters (Parameter::description keeps
-;       them all)
 ```
 
-Post-parse checks nu applies: RequiredAfterOptional and MultipleRestParams
-(`parse_signatures::check_parameters`); outside an `extern`, which only describes
-another program's arguments, a positional parameter after the rest parameter
-(PositionalAfterRest) and two parameters or flags with one variable name (`a` and
-`$a`, `foo_bar` and `--foo-bar`, `-x` and `x`) or two flags with one short letter
-(DuplicateParameter; a positional `_` may repeat, `check_unique_name`); the reserved names `in`, `nu`, `env`, `ans`
-(skipped for `extern`; `parse_signatures::ensure_not_reserved_variable_name`) and the boolean-switch
-type rule (`parse_params`) are applied here; NonConstantDefaultValue needs
-constant evaluation and is the consumer's, as is a `--help` flag of a `def` that is
-not `--wrapped` ("The `--help` flag is reserved", `finish_def`'s check). Closure parameters (5.13) get the same
-checks as a `def`'s.
+Post-parse checks nu applies in `parse_signature_helper`: RequiredAfterOptional and
+MultipleRestParams; outside an `extern`, which only describes another program's
+arguments, a positional parameter after the rest parameter (PositionalAfterRest) and
+two parameters or flags with one variable name (`a` and `$a`, `foo_bar` and
+`--foo-bar`, `-x` and `x`) or two flags with one short letter (DuplicateParameter; a
+positional `_` may repeat); the reserved names `in`, `nu`, `env`, `ans` (skipped for
+`extern`; `parse_signatures::ensure_not_reserved_variable_name`); and the
+boolean-switch type rule. NonConstantDefaultValue needs constant evaluation. A
+`--help` flag of a `def` that is not `--wrapped` is refused by `parse_def` ("The
+`--help` flag is reserved"), which needs the value of `--wrapped` (6.3). Closure
+parameters (5.13) get the same checks as a `def`'s.
 
 ### 7.2 Type annotations (shapes)
 
@@ -1805,26 +1548,22 @@ checks as a `def`'s.
                     | "oneof"  [ "<" <shape-list> ">" ]
                     | <type-alias-name>                         ; (6.4)
 ; "block" is the explicit error "Use 'closure' instead of 'block'"; a generic is one
-; of the four names before any "<" ("listing" is no list); any other word is a type
-; alias's, which the consumer looks up (an unknown one is UnknownType, one used above
+; of the four names before any "<" ("listing" is no list); any other word names a type
+; alias, which nu looks up in scope (an unknown one is UnknownType, one used above
 ; its `type` statement TypeAliasUsedBeforeDefinition, one with "<...>"
 ; TypeAliasWithParams, one with "@" a LabeledError, then UnknownType: semantic errors,
 ; after which nu goes on with `any`). Types: path/directory -> string, glob -> glob, datetime -> date,
 ; external_arg -> any.
 ; nu: parse_shape_specs.rs parse_shape_name, type_name, expand_type_alias, parse_type
-; here: src/winnow/syntax/parser/parse_shape_specs.rs::parse_type, parse_generic_shape (same list, same
-;       error; SyntaxShape::TypeAlias)
 
 ; The "<" ... ">" of a generic type is split at the FIRST "<"; the token must END with ">" (a ">" elsewhere is "Extra
 ; characters", none is Unclosed ">")
 ; nu: parse_shape_specs.rs:209 split_generic_params
-; here: src/winnow/syntax/parser/parse_shape_specs.rs::parse_generic_shape
 
 <shape-list>      ::= { "," } [ <shape> { { "," } <shape> } { "," } ]
 ; "," tokens are skipped wherever they occur; list<> with more than one shape is
 ; "expected a single type parameter"; `list` / `list<>` is list<any>
 ; nu: parse_shape_specs.rs:331 parse_type_params
-; here: src/winnow/syntax/parser/parse_shape_specs.rs::parse_type_params
 
 <named-shapes>    ::= { "," } { <named-shape> { "," } }
 <named-shape>     ::= <field-name> [ ":" <shape> ]      ; no ":" means any
@@ -1832,8 +1571,6 @@ checks as a `def`'s.
 ; "," tokens are skipped anywhere (",," and a leading "," are fine); ":" as the last
 ; token is "expected type after colon"
 ; nu: parse_shape_specs.rs:246 parse_named_type_params, 283
-; here: src/winnow/syntax/parser/parse_shape_specs.rs::parse_named_type_params (the same skips; a
-;       non-item token or a non-string key such as "true" is "annotation key not string")
 ```
 
 ### 7.3 Input/output types
@@ -1846,7 +1583,6 @@ checks as a `def`'s.
 ; "\n\r," as whitespace, comments skipped, in_signature; an empty list is fine;
 ; a missing "->" is Expected "arrow (->)"; a missing output shape is MissingType
 ; nu: parse_signatures.rs:324 parse_input_output_types, 353-384
-; here: src/winnow/syntax/parser/parse_signatures.rs::parse_input_output_types
 ```
 
 ### 7.4 Variable declarations with an optional type
@@ -1865,10 +1601,6 @@ checks as a `def`'s.
 ; 1` are UnknownType("int --help"). Reserved names are NameIsBuiltinVar.
 ; nu: parse_signatures.rs:168 parse_var_with_opt_type, 196, 279; parse_bindings.rs:78;
 ;     parse_calls.rs:680 calculate_end_span
-; here: src/winnow/syntax/parser/parse_signatures.rs::parse_var_with_opt_type, parse_type_after_var,
-;       src/winnow/syntax/parser/parse_def.rs::parse_for,
-;       src/winnow/syntax/parser/parse_signatures.rs::ensure_not_reserved_variable_name (the reserved
-;       names)
 ```
 
 ### 7.5 Import patterns
@@ -1884,14 +1616,10 @@ checks as a `def`'s.
 ; "[..]" is "... member can be only at the end of an import pattern"; a cell path
 ; on a list member (`[math].x`) is ignored
 ; nu reports each of these errors and goes on with the import (a wrong member
-; dropped, the pattern ending before a misplaced one): recorded as recovered, every
-; member kept, the pattern read by the consumer with nu's parse_import_pattern
+; dropped, the pattern ending before a misplaced one)
 ; After `use null` (a no-op) the members are parsed and then never looked at.
 ; Flags are looked for up to the first "--"; every item after it is a member.
 ; nu: parse_signatures.rs:20 parse_import_pattern, 69, 115; parse_module.rs:1163
-; here: src/winnow/syntax/parser/parse_module.rs::parse_import_pattern_member (an ignored member is
-;       ImportPatternMemberKind::Ignored; dropped list items and cell paths are ignored
-;       text), parse_import_pattern_list
 ```
 
 ### 7.6 Match patterns
@@ -1903,21 +1631,17 @@ checks as a `def`'s.
                     | <list-pattern>
                     | <value-pattern>
 ; dispatch on the first byte ("$", "{", "[") or the exact word "_"
-; nu's parse_pattern reports a pattern's errors and gives a pattern still: the parser
-; records such an error as recovered and gives a garbage pattern over the item, which the
-; consumer reads with nu's parse_pattern.
+; nu's parse_pattern reports a pattern's errors and gives a pattern still.
 ; nu: parse_patterns.rs:22 parse_pattern
-; here: src/winnow/syntax/parser/parse_patterns.rs::parse_pattern, pattern (the recovery)
 
 <variable-pattern> ::= "$" 1*<identifier-byte>       ; reserved names are NameIsBuiltinVar
-; nu: parse_patterns.rs:91    here: src/winnow/syntax/parser/parse_patterns.rs::parse_variable_pattern
+; nu: parse_patterns.rs:91
 
 <value-pattern>   ::= <value>
 ; parse_value(Any) then eval_constant: literals, ranges, lists and records of
 ; constants, "(const subexpression)"; a non-constant is a PARSE error. "..foo" is a
 ; plain string value pattern.
 ; nu: parse_patterns.rs:52
-; here: src/winnow/syntax/parser/parse_patterns.rs::parse_pattern (the constant check: consumer)
 
 <list-pattern>    ::= "[" { <list-pattern-item> } "]"
 ; lexed with "\n\r," as whitespace, then LITE-PARSED: ";" is an explicit error, "|"
@@ -1931,8 +1655,6 @@ checks as a `def`'s.
 ; a redirection token is dropped as in a list (5.14); an assignment-op item is a
 ; string pattern and, as in every lite parse, so is everything after it
 ; nu: parse_patterns.rs:104, 140-195
-; here: src/winnow/syntax/parser/parse_patterns.rs::parse_list_pattern over
-;       lite_parser::lite_parse_parts
 
 <record-pattern>  ::= "{" { <record-pattern-item> } "}"
 <record-pattern-item> ::= "$" 1*<identifier-byte>          ; shorthand: field bound to $name
@@ -1942,7 +1664,6 @@ checks as a `def`'s.
 ; the field ";" is followed by `b`, while `{; : 1}` parses); the field text is taken
 ; VERBATIM (quotes are not stripped: `{"a": $x}` never matches a field `a`)
 ; nu: parse_patterns.rs:199, 232-256
-; here: src/winnow/syntax/parser/parse_patterns.rs::parse_record_pattern
 ```
 
 ### 7.7 Row conditions
@@ -1961,253 +1682,142 @@ checks as a `def`'s.
 ; flags are flags.
 ; nu: parse_signatures.rs parse_row_condition, expand_to_cell_path;
 ;     parse_expressions.rs expand_row_condition_operands; nu-command filters/where_.rs
-; here: src/winnow/syntax/parser/parse_source.rs::parse_where,
-;       src/winnow/syntax/parser/parse_expressions.rs::parse_row_condition, expand_row_condition,
-;       expand_to_cell_path (bool typing: consumer)
 ```
 
-## 8. Coverage summary
+## 8. Shape-directed rules
 
-Every nonterminal above maps to code in this parser except the ones annotated
-`consumer`. The table lists what a consumer with a command table must add to
-get nu-parser's full behaviour; none of it is decidable from the text alone.
+The rules in this table are decided by nu-parser with information the text does
+not carry. The keyword commands (6) have fixed signatures, which their rules spell
+out, so the table concerns ordinary commands and what needs more than a signature.
+Checks marked semantic in the rules above (types, mutability, existence) need such
+information too.
 
-| shape-directed rule | what nu-parser needs | where the consumer hooks in |
-| --- | --- | --- |
-| positional argument shapes (`<positional>`) of ordinary commands | the command's signature | with a lookup, and for a command without a known signature, every `Argument::Positional` is a `ExpectedShape::Any` value; without one the built-ins' and the text's own definitions' are read by shape here; the keyword commands (6.5) and the built-in attributes are checked here |
-| `--flag value` binding, unknown flags, short-flag batches, `-1` as flag or number, for ordinary commands | signature | `Argument::Named` (`equals` tells `--flag value` from `--flag=value`), `Argument::Positional`; bound here when the signature is known as above, unknown flags the consumer's; the keyword commands are checked here |
-| spread validity (rest param, named flags) | signature | `Argument::Spread` |
-| glob vs string vs filepath for bare words | signature | `Expr::String` with `Quote::Bare` |
-| alias expansion and alias-subcommand heads | declarations | `Call` heads |
-| `%name` must be a built-in; `^` required in an assignment rhs | built-in table | `ParseConfig` (both checked when a table is configured) |
-| constant-ness of default values, completers, match value patterns, `use` heads, `source` paths; whether a completer's or attribute's command exists | const-eval, declarations | `Parameter::default`, `Parameter::completer`, `Pattern::Expression`, `Use::module`, `Attribute::name` |
-| `where` bool typing, `try` handler types, column-name types, the type of an assignment or a typed `let` | types | `Where`, `Handler`, `Table`, `Assignment`, `Binding` |
-| module, file, overlay and plugin resolution; variable existence | files, module table, scope | `Call` heads, `Var` |
-| the commands a `use`d module brings into scope (`use std/log; log info`) | module resolution | `ParseConfig::add_commands`; without them such a head is an `ExternalCall` |
+| shape-directed rule | what nu-parser needs |
+| --- | --- |
+| positional argument shapes (`<positional>`) of ordinary commands | the command's signature |
+| `--flag value` binding, unknown flags, short-flag batches, `-1` as flag or number, for ordinary commands | the command's signature |
+| spread validity (rest param, named flags) | the command's signature |
+| glob vs string vs filepath for bare words (5.7) | the command's signature |
+| the arguments of a `--wrapped` command (6.3) | the command's signature |
+| alias expansion and alias-subcommand heads (2.1, 4) | the alias declarations in scope |
+| whether a head is an external call (`<unknown-head>`, 4); `^` required before an unknown command in an assignment rhs (3.3); `%name` must name a built-in | the declarations in scope and the built-in commands |
+| type alias names (7.2) | the type aliases in scope |
+| constant-ness of default values, completers, match value patterns, `use` heads, `source` paths; the value of a `def` or `extern` flag; whether a completer's or attribute's command exists | constant evaluation, declarations |
+| `where` bool typing, `try` handler types, column-name types, negation operand types, the type of an assignment or a typed `let` | types |
+| module, file, overlay and plugin resolution; variable existence | files, the module table, the scope |
+| the commands a `use`d module brings into scope (`use std/log; log info`) | module resolution |
 
-## 9. Verified differences between nu-parser and this parser: 5 open
+## 9. What the text alone does not decide
 
-Last verified on 2026-09-26 against nushell `7de074cfe` and `nu` 0.115.2; the
-rows found on 2026-10-26 were verified against nushell `706259d6f` with the
-harness.
-
-| section | kind of difference | closed | open |
-| --- | --- | --- | --- |
-| 9.1 | nu-parser rejects, this parser accepts | 34 | **1** |
-| 9.2 | nu-parser accepts, this parser rejects | 39 | **4** |
-| 9.3 | both accept, but the parse differs | 11 | **0** |
-| 9.4 | needs a signature, a declaration, const-eval, a type or a file | | not a grammar difference: the consumer's checks, listed below |
-
-Of the 84 closed rows, 40 were closed on 2026-09-24, 31 on 2026-09-25 and
-2026-09-26, 12 on 2026-10-26, and 1 on 2026-11-03. Each is pinned by a fixture under
-`tests/winnow/fixtures/accept` or `tests/winnow/fixtures/reject`; the git log has the details.
-
-Method: every input was run through `nu-check` on the PATH `nu` 0.115.2
-(and, for the syntactic cases, through `nu-parser-check` built from nushell
-`main` in `winnow/tools/nushell-harness`) and through `cargo run --example winnow_parse`.
-The harness's nu-parser runs in the `nu` binary's engine (the commands of
-nushell's `command_context.rs`, with its default features), and this parser's
-command table is generated from that engine (`winnow/tools/scripts/gen-builtin-commands.nu`),
-so both know the same commands. The harness keeps no list of tolerated
-differences; every disagreement it finds is counted and printed. Over the
-fixtures, the corpus, nu-std, nushell's own tests, nu_scripts, the command
-examples and the book it finds no syntactic disagreement. The mutants (seed 1)
-move whenever the inputs do. An error nu reports inside another file than the
-input (a module file a `use` names) counts as needing a file (9.4): on a machine
-with a plugin installed, a mutant `use ~/.cargo/bin/nu_plugin_query` makes nu parse
-the binary. Two generated sets reach what the mutants do not (their generators and
-results are in `~/src/nushell-dev-tools/winnow-parser/`): every keyword statement
-with a help flag or a flag value in each slot, and the fixed-signature commands with
-switch values and short-flag batches (`flag-values/gen_sweep.py`, 2,720 inputs; the
-four rows left are the second open row of 9.2), and every one-line fixture and each
-prefix of its words as an alias target (`alias-missing-positional/targets.json`,
-7,172 inputs; its 14 disagreements are the alias rows of 9.1 and 9.2 and the `%`
-alias target and a leading range of 9.4), and range items whose bound is a group or a raw string with text after
-it, as a statement, an argument and a value (`range-bounds/gen.py`, 900 inputs; its
-nine disagreements are the range rows of 9.1 and 9.2). Differences that nu reports
-only through type checking, constant
-evaluation, signatures or module resolution are in 9.4, not counted as grammar
-gaps.
-
-### 9.1 nu-parser rejects, this parser accepts: 1 open
-
-An `if`, `match` or `try` alias target that nu rejects through the keyword's
-signature (DIFF 1): `alias zz = if --help if` and `alias zz = if if --help`
-(expected expression), `alias zz = match 1 --help :{}` (expected match-block),
-`alias zz = try {} -- catch` and `alias zz = try {} --help catch` (missing argument
-to `catch`), `alias zz = try {} --help x` and `alias zz = try {} -- catch {} --`
-(expected keyword). nu parses an alias target with `parse_call`, which reads these
-keywords by their signatures (`if`: a math-expression condition, a block, `else`
-and a block or an expression), not with their statement parsers; this parser parses
-a complete target with the statement parser and a target with a flag as an
-ordinary call, so it misses the errors. Closing it needs the signatures' positional
-allocation for these three keywords, the same work as the alias row of 9.2. Found
-with the alias-target set; no real script is known to hit it.
-
-### 9.2 nu-parser accepts, this parser rejects: 4 open
-
-An alias target whose first error is a missing positional nested inside it
-(`alias i = if if x y`, `alias i = if (if x) {}`, `alias i = if 1 + if x y`), or
-that nu reads through the keyword's signature where this parser's statement parser
-fails (`alias i = if else { }`: a condition `else` and a block, DIFF 1).
-nu parses the target, and when the first of its errors is a
-MissingPositional, anywhere in it, drops them all; here that is the inner
-`if`'s missing block. This parser stops at its first error, which carries no
-missing-positional kind (the "missing" errors are `expected ...` diagnostics
-from about 25 places, some split differently from nu's positional
-allocation),
-and it has no node for a target that nu accepts but that does not parse.
-Closing it needs both: an `ErrorKind::MissingPositional` at those places and
-a garbage target in `Alias`, or the signatures' positional allocation of 9.1's
-alias row, which would decide both. The top-level case is handled
-(`parse_aliased_keyword`: `alias i = if x`). Found by mutation fuzzing and the
-alias-target set; no real script is known to hit it.
-
-An `alias` or `type` help call with an argument this parser cannot parse
-(`type --help= t = int`, `alias x --help=`). nu parses the items of these two
-statements as a call only to see whether it asks for help and drops that call's
-errors; this parser parses the help call as any other and reports "expected value
-after `=`". Found with the flag sweep; no real script is known to hit it.
-
-An argument that is a range whose bound is a subexpression followed by a broken
-cell path (`echo 5..(1)!`, `echo 5..(1).(2)`, `echo 1..(1)!..5`): nu's value parser
-gives up on the range and reads the word as a string; this parser commits to the
-range and reports the cell path. As a statement head both read an external command
-(3.1). Found with the range-bound set; no real script is known to hit it.
-
-A `match` call for help with arms (`match 1 --help { 1 => 2, _ => 3 }`): nu reads
-`match`'s second positional with the `match_block` shape, arms included, and shows
-the help; this parser reads a call for help's arguments as values, so the `{ ... }`
-is a closure whose body `1 => 2, _ => 3` does not parse. Where the body happens to
-parse (`match --help 1 { _ => 2 }`), the front end hands the statement to nu-parser
-(a closure where `match_block` wants arms). `parse_match` has the arms when it
-finds the `--help`; closing it needs a node for a match block as a call's argument.
-Found with the help-call set; no real script is known to hit it, so it is left open.
-
-### 9.3 Both accept, but the parse differs: 0 open
-
-None known outside 9.4.
-
-### 9.4 Differences that need signatures, declarations, const-eval or files (consumer by design)
-
-All verified with 0.115.2; nu rejects and this parser accepts unless noted. The
-keyword commands (6.5) and the built-in attributes have fixed signatures and are
-checked here; everything below concerns ordinary commands or needs more than the
-text. The mutation fuzzer (`differential --mutants 3 --seed N`) keeps finding
-rows of these classes that nu-parser reports as syntax errors, because the
-variant is syntactic although the decision needs more than the text: `use eggs
-foo    foo` after inline `module spam { export const foo = 3 }` and `module eggs
-{ export use spam foo }` (WrongImportPattern: `foo` is a constant, not a
-submodule), and `2 | skip 0x[01 23 45 67]` (InvalidLiteral: `skip` takes an
+nu-parser accepts or rejects the inputs below depending on information the text
+does not carry: a command's signature, the declarations in scope, constant
+evaluation, types or files. The grammar's syntactic rules do not decide them;
+each entry says what nu does and what it needs. All were verified with `nu`
+0.115.2, and nu rejects each example unless noted. Some of these nu reports as
+syntax errors although the decision needs more than the text: after inline
+`module spam { export const foo = 3 }` and `module eggs { export use spam foo }`,
+`use eggs foo    foo` is WrongImportPattern (`foo` is a constant, not a
+submodule), and `2 | skip 0x[01 23 45 67]` is InvalidLiteral (`skip` takes an
 `int`).
 
-- Positional counts and shapes of ordinary commands: `str foo`, `collect 1`, `def f
-  [x] {}; f 1 2`, `f 1.0` for an `int` parameter, `f true` / `f null` for a `string`
-  one, `f 0x[ff]`, `f 1..2`, `f $.a` for `int`, `2b | last 0x[01 23 45]`. The
-  other way round, `f 0xzz` for a `string` parameter is accepted by nu (a string
-  shape never tries the int parser) and rejected here, and so are `f [a]]` for a
-  `string` parameter and `ls []]*` (a glob): read as a list, as a value of any shape
-  is, the word has a `]` that closes nothing (5.14).
-- Type aliases: what a type name means. Any word an alias could have is a type alias
-  here (`def f [x: Pointt]`); nu reports an unknown one as UnknownType, one used above
-  its `type` statement as TypeAliasUsedBeforeDefinition, one inside its own
-  definition as TypeAliasSelfReference, and `Point<int>` for an alias as
-  TypeAliasWithParams (an unknown generic-looking name is the consumer's too). A name
-  no alias has is still a type in nu when some command declares it as an input or
-  output type: a custom value type such as `semver` or a plugin's `polars_dataframe`
-  (`find_custom_type`).
-- Negating a value that holds no number: `let s = 'a'; -$s` is OperatorUnsupportedType
-  in nu, a negation here (5.1).
-- Flags of ordinary commands: unknown long or short flags (`foo --unknown`, `ls
-  -lx`, `ls ---all`, `ls --=a`), also those of an `extern --strict` command (6.3);
-  `--flag` without its value; `--switch=5`; `--switch 1`; a non-last short flag
-  taking a value.
-- Negative numbers: `echo -1`, `echo -.5`, `echo -1kb`, `echo -..3`, `ls -1`, `f -1`
-  for a `string`/`any` parameter are "doesn't have flag" in nu; `-<digit>` after an
-  ordinary command is a number here. `f -1` for `int`/`number` is accepted by both,
-  and after a keyword (`return -1`) it is an error in both.
-- Spreads without a rest parameter or named flags; `...$x` with an undefined `$x`;
-  any undefined variable.
+- Positional counts and shapes of ordinary commands (the signature): `str foo`,
+  `collect 1`, `def f [x] {}; f 1 2`, `f 1.0` for an `int` parameter, `f true` /
+  `f null` for a `string` one, `f 0x[ff]`, `f 1..2`, `f $.a` for `int`,
+  `2b | last 0x[01 23 45]`. nu accepts `f 0xzz` and `f [a]]` for a `string`
+  parameter and `ls []]*` (a glob): a string or glob shape never tries the int or
+  list parser, while as values of shape any the first is a number with invalid
+  digits (5.2) and the others are lists with a `]` that closes nothing (5.14).
+- Type aliases (the type aliases in scope): what a type name means. nu reports an
+  unknown one as UnknownType (`def f [x: Pointt]`), one used above its `type`
+  statement as TypeAliasUsedBeforeDefinition, one inside its own definition as
+  TypeAliasSelfReference, and `Point<int>` for an alias as TypeAliasWithParams. A
+  name no alias has is still a type when some command declares it as an input or
+  output type: a custom value type such as `semver` or a plugin's
+  `polars_dataframe` (`find_custom_type`).
+- Negating a value that holds no number (types): `let s = 'a'; -$s` is
+  OperatorUnsupportedType (5.1).
+- Flags of ordinary commands (the signature): unknown long or short flags
+  (`foo --unknown`, `ls -lx`, `ls ---all`, `ls --=a`), also those of an
+  `extern --strict` command (6.3); `--flag` without its value; `--switch=5`;
+  `--switch 1`; a non-last short flag taking a value.
+- Negative numbers (the signature): `echo -1`, `echo -.5`, `echo -1kb`,
+  `echo -..3`, `ls -1`, `f -1` for a `string`/`any` parameter are "doesn't have
+  flag"; `f -1` for an `int`/`number` parameter is a number, which nu accepts.
+  After a keyword (`return -1`) it is an error (6.1).
+- Spreads (the signature, the scope): a spread without a rest parameter or named
+  flags; `...$x` with an undefined `$x`; any undefined variable.
 - Constant evaluation: non-constant defaults (`[x = (random int)]`) and completers
   (`x: string@(1 + 1)`), non-constant match value patterns (`match 1 { (random int)
   => 1 }`), non-constant `use`/`source` arguments (`use $x`, `source $x`), `const x
   = ls`. A flag of `def` or `extern` whose value is not `true` or `false` (`def
-  --wrapped=$c`, `--env=(1 == 1)`): nu evaluates it, and with it the checks that
-  depend on `--wrapped` (`const c = true; def --wrapped=$c f [...r: int] {}` is
-  nu's type error; here neither the rest-type check nor the reserved `--help` check
-  runs).
-- Existence: a completer's command (`x: string@"unknown cmd"`) and an attribute's
-  `attr <name>` command (`@nonexistent 1`), both of which may come from a `use`d
-  module.
-- Type checks: `where 5`, `where [1]`, `where 1 + 1`, `where -- 1`; `let x: int =
-  "a"`; `$x ++= [1]` on an int; io-type mismatches; `try {} catch (ls)`; a column
-  name that is a variable of the wrong type; `ls | overlay list`; `module -- {}`;
-  the value of a keyword command's flag (`overlay hide --keep-env=1 o`, `overlay
-  hide -ke o`, where `o` is the value) and a record where a Boolean is wanted
-  (`def f [] {} --help={a: 1}`).
-- Module, file, overlay and plugin resolution: `module m` with no file, `use ''`,
-  `use std a *` where `a` is not a submodule, `use eggs foo foo` where `foo` is not
-  a module, `use -- x`, `hide std *`, `overlay hide zero`, `plugin use x` with no
-  such plugin, `source x.nu` with no such file.
-- The command table: whether a head is an external command (4), with what
-  follows from it (`^` required in an assignment rhs, external arguments,
-  `cmd [a].0` unclosed), and whether `%name` is a built-in are decided only when
-  a table is configured (`ParseConfig`; `ParseConfig::new()` has the commands
-  of a fresh `nu`).
-- The commands a `use`d module brings into scope: after `use std/log` or
-  `module m { export def f [] {} }; use m`, nu resolves `log info` and `m f`
-  as calls; without them in the `ParseConfig` (`add_commands`), such a head
-  is an `ExternalCall` here (both accept; the tree differs).
-- Variable existence decides a leading range: nu reads `..$x` as a range when
-  `$x` exists and as an external command when it does not; here it is always
-  a range (`..$$ a` and `..$x# a` go the other way: nu accepts them as
-  externals when the variable does not exist). The same decides an alias
-  target: `alias zz = 0..$x.len` names an external command for nu when `$x` does
-  not exist and is CantAliasExpression when it does; here it is always the
-  expression. The same decides an env
-  shorthand: `FOO=$1` alone is an external command for nu when `$1` does not
-  exist, and a shorthand without a command here.
-- Commands a `use`d module brings into scope, when nu checks their arguments by
-  signature: `use std/log; log info "x"=`, `use std/assert; assert equal
-  'a'"a"`. And import patterns that need the module's contents: `use eggs foo
-  foo` after inline modules, `use std/math PI PI`, `use m "sub cmd" "sub cmd"`.
-- A `use` of a file that is not a module: nu opens and parses it (`use
-  ~/.cargo/bin/nu_plugin_query` reads a binary).
-- The other way round, and so not something a consumer can add: a positional
-  of an ordinary command whose signature wants a glob or a string takes any
-  word in nu, so `ls 0b2` and `ls [a-d]:1` are accepted by nu and rejected
-  here (`echo 0b2` and `echo [a-d]:1`, whose positional is `any`, are
-  rejected by both), like `f 0xzz` for a `string` parameter above. The
-  mutation fuzzer finds more of these for built-in shapes: `glob
-  "[!cCbMs]*"#`, `glob "**/*.txt": --follow-symlinks`, `glob "[A-Z]*"..`,
-  `bytes split 0x$[20]`, `bytes split 0x[$20]`,
-  `run-external "echo"..`; and the int shape the other way (`skip`, `first`,
-  `last`, `take`, `drop`, `chunks` with `0x[..]`, `bytes add --index 0x[AA
-  BB]`, `bits shr 0x[4f f4]`, `bytes at ..-4 ..-4`), cell-path shapes (`get
-  home!] path!`, `group-by foo?$`) and `into sqlite [[name]; ...]`. The same
-  goes for custom commands of the file: `def f [x: int] {}; f "a"`, `f {a: 1}`
-  where a string is wanted, an extra positional, and a positional before the
-  rest of a wrapped command (`def --wrapped f [x = "a", ...r] {}; f 'x'$`, where
-  nu parses `'x'$` with the shape of `x` and this parser as an external argument;
-  in `[...r string]` the `string` is such a positional).
-  `do {a: 1}` is the built-in form of this: a record where a closure is wanted.
-- A `%` alias target with a computed name (`alias zz = %(1 + 1)`, `alias zz = %
-  ('echo') x`): nu makes a dynamic `%` call a placeholder call to declaration 0,
-  in `nu`'s engine `alias`, so `finish_alias` reports CantAliasKeyword for an alias
-  of `alias`; this parser reads a dynamic call and accepts it, and the front end,
-  which lowers it to the same placeholder call, reports the same error. `alias zz =
-  %ls` is accepted by both.
-- A record spread whose variable nu has typed as a record keeps the record's
-  type (`let r = {b: 2}; if true { a: 1, ...$r }` is a type error in nu); here a
-  spread of a variable is typed `any` (5.13 <block>).
+  --wrapped=$c`, `--env=(1 == 1)`): nu evaluates it, and the checks of the rest
+  parameter's type and of a `--help` flag depend on the value of `--wrapped` (6.3,
+  7.1): `const c = true; def --wrapped=$c f [...r: int] {}` is a type error.
+- Existence (the declarations): a completer's command (`x: string@"unknown cmd"`)
+  and an attribute's `attr <name>` command (`@nonexistent 1`), both of which may
+  come from a `use`d module.
+- Type checks (types): `where 5`, `where [1]`, `where 1 + 1`, `where -- 1`;
+  `let x: int = "a"`; `$x ++= [1]` on an int; io-type mismatches;
+  `try {} catch (ls)`; a column name that is a variable of the wrong type;
+  `ls | overlay list`; `module -- {}`; the value of a keyword command's flag
+  (`overlay hide --keep-env=1 o`, `overlay hide -ke o`, where `o` is the value) and
+  a record where a Boolean is wanted (`def f [] {} --help={a: 1}`).
+- Module, file, overlay and plugin resolution (files): `module m` with no file,
+  `use ''`, `use std a *` where `a` is not a submodule, `use eggs foo foo` where
+  `foo` is not a module, `use -- x`, `hide std *`, `overlay hide zero`,
+  `plugin use x` with no such plugin, `source x.nu` with no such file. nu opens and
+  parses the file a `use` names, whatever it is, and reports the errors inside it
+  (`use ~/.cargo/bin/nu_plugin_query` reads a binary).
+- The commands in scope (the declarations and the built-in commands): whether a
+  head is an external command (4), with what follows from it (`^` required in an
+  assignment rhs, external arguments, `cmd [a].0` unclosed), and whether `%name`
+  is a built-in.
+- The commands a `use`d module brings into scope (module resolution): after
+  `use std/log` or `module m { export def f [] {} }; use m`, nu resolves
+  `log info` and `m f` as calls (without the `use` they are external commands)
+  and checks their arguments by signature: `use std/log; log info "x"=`,
+  `use std/assert; assert equal 'a'"a"`. Import patterns that need the module's
+  contents: `use eggs foo foo` after inline modules, `use std/math PI PI`,
+  `use m "sub cmd" "sub cmd"`.
+- Variable existence (the scope) decides a leading range: nu reads `..$x` as a
+  range when `$x` exists and as an external command when it does not, so it
+  accepts `..$$ a` and `..$x# a` as external commands when the variable does not
+  exist. The same decides an alias target: `alias zz = 0..$x.len` names an
+  external command when `$x` does not exist and is CantAliasExpression when it
+  does. And an env shorthand: `FOO=$1` alone is an external command when `$1`
+  does not exist.
+- Words that a glob or string shape takes (the signature): a positional of an
+  ordinary command whose signature wants a glob or a string takes any word, so nu
+  accepts `ls 0b2` and `ls [a-d]:1` (`echo 0b2` and `echo [a-d]:1`, whose
+  positional is `any`, are rejected), and likewise `glob "[!cCbMs]*"#`,
+  `glob "**/*.txt": --follow-symlinks`, `glob "[A-Z]*"..`, `bytes split 0x$[20]`,
+  `bytes split 0x[$20]` and `run-external "echo"..`. The other way round, nu
+  rejects what an int shape refuses (`skip`, `first`, `last`, `take`, `drop`,
+  `chunks` with `0x[..]`, `bytes add --index 0x[AA BB]`, `bits shr 0x[4f f4]`,
+  `bytes at ..-4 ..-4`) and what a cell-path shape refuses (`get home!] path!`,
+  `group-by foo?$`). The same goes
+  for custom commands of the file: `def f [x: int] {}; f "a"`, `f {a: 1}` where a
+  string is wanted, an extra positional, and a positional before the rest of a
+  wrapped command (`def --wrapped f [x = "a", ...r] {}; f 'x'$`, where nu parses
+  `'x'$` with the shape of `x`; in `[...r string]` the `string` is such a
+  positional). `do {a: 1}` is the built-in form of this: a record where a closure
+  is wanted.
+- A `%` alias target with a computed name (the engine's declarations):
+  `alias zz = %(1 + 1)`, `alias zz = % ('echo') x`. nu makes a dynamic `%` call a
+  placeholder call to declaration 0, which in `nu`'s engine is `alias`, so
+  `parse_alias` reports CantAliasKeyword for an alias of `alias`. nu accepts
+  `alias zz = %ls`.
+- A record spread whose variable nu has typed as a record (types) keeps the
+  record's type, so `let r = {b: 2}; if true { a: 1, ...$r }` is a type error
+  (5.13 <block>).
 
-### 9.5 Cross-check against two independent grammars
+### 9.1 Cross-check against two independent grammars
 
-`~/src/grammar/nushell.pest` and `~/src/tree-sitter-nu/grammar.js` were read as
-a second opinion on what constructs exist. Every construct they define that
-nu-parser actually accepts is covered above and implemented here. Constructs
-they define that nu-parser does **not** accept (verified with 0.115.2; this
-crate agrees with nu on each): pest's `def-env`, `let-env`, `d"..."` dates,
+The pest grammar in this repository (`pest/nushell.pest`) and the tree-sitter
+grammar (`grammar.js` of `nushell/tree-sitter-nu`) were read as a second opinion
+on what constructs exist. Every construct they define that nu-parser actually
+accepts is covered above. Constructs they define that nu-parser does **not**
+accept (verified with 0.115.2): pest's `def-env`, `let-env`, `d"..."` dates,
 `[expr]` indexing, `||`/`&&` operators, `\uXXXX` escapes, `zb`/`month`/`yr`/`dec`
 units and `foo(1, 2)` calls; tree-sitter's twelve extra type names (`decimal`,
 `cond`, `expr`, `one-of`, ...), `1...` ranges, compact `±hhmm` offsets,
@@ -2218,17 +1828,35 @@ sigil calls, `..=`, `has`/`not-has`, raw strings, the `external_arg` type,
 
 ## 10. Keeping this file true
 
-- Re-verify a row of section 9 by writing the input to a file and running
-  `open --raw f | nu-check` and `cargo run --example winnow_parse -- --summary f`.
-- When a rule changes upstream, `tests/winnow/traceability.rs` fails on new
-  `SyntaxShape`/`FlatShape`/`TokenContents`/`ParseError` variants, keyword
-  commands and `parse_*` functions (`src/winnow/docs/11-traceability.md`); update the
-  affected rule here and its `; nu:` line at the same time.
-- A new difference goes into 9.1, 9.2 or 9.3 with a `; DIFF n` marker on its
-  rule, and its open count in the table at the top of section 9 goes up. When
-  it is fixed it becomes a fixture under `tests/winnow/fixtures/{accept,reject}`, its
-  entry and the marker go away, the open count goes down and the closed count
-  up, and the date is updated. The git log keeps the details, not this file.
+The corpus in this repository checks the grammar against nu-parser:
+
+- `corpus/` holds Nushell inputs. `corpus/fixtures/{accept,reject}/<area>/<name>.nu`
+  are small inputs: an accept fixture is one the grammar's syntactic rules
+  accept, a reject fixture one they do not. `corpus/files/` holds real files
+  (std modules, the default config, `kitchen_sink.nu`, ...), `corpus/snippets/`
+  the command examples and the book's code blocks (regenerated by
+  `tools/extract-corpus.nu`), and `corpus/generated/` generated input sets (flag
+  values, alias targets, range bounds). `corpus/expected/` records nu-parser's
+  verdict for every input.
+- `harness/` is a Rust crate pinned to a nushell git rev in `harness/Cargo.toml`.
+  `cargo test` in `harness/` parses every corpus input with nu-parser, in the `nu`
+  binary's engine, and compares the verdicts with `corpus/expected/`;
+  `UPDATE_EXPECTED=1 cargo test` rewrites the expectations.
+
+To keep this file true:
+
+- Re-verify a single rule by writing an input to a file and running
+  `open --raw f | nu-check`.
+- When nushell moves, bump the rev in `harness/Cargo.toml`, run the harness and
+  review every changed verdict. Update the affected rules and their `; nu:` lines,
+  and the commit and date in the first paragraph of this file, from which the
+  generated files take theirs.
+- Add a corpus input for each new construct and each fixed behaviour.
+- After changing this file, regenerate the derived files: `nu tools/gen-grammar.nu`
+  writes `grammar.bnf` and `grammar.ebnf`, `ebnf2railroad --lint grammar.ebnf
+  --no-target` checks the EBNF, and `ebnf2railroad --title "Nushell Grammar"
+  grammar.ebnf -o grammar.html` renders the diagrams. `nu tools/gen-grammar.nu
+  --check` tells whether the generated files are stale.
 
 ## Appendix A. Character classes and shared vocabulary
 
@@ -2274,7 +1902,7 @@ Names used by several sections, defined once here (after the grammar so that
 ; Names used across sections.
 <expression>      ::= <pipeline-element>                      ; parse_expression (3.1)
 <expression-of-one-item> ::= <expression>                     ; restricted to exactly one item
-<value-of-shape>  ::= <value>                                 ; parsed with the SyntaxShape of its argument position (consumer)
+<value-of-shape>  ::= <value>                                 ; parsed with the SyntaxShape of its argument position (needs the signature)
 <external-arg>    ::= <ext-arg>                               ; (4)
 <keyword-word>    ::= <the keyword a SyntaxShape::Keyword names: "in", "else", "catch", "finally", "as">
 <builtin-head>    ::= <call-head>                             ; must name a built-in command

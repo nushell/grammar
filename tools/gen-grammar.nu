@@ -59,15 +59,14 @@ def bnf-text [blocks: list, prov: record]: nothing -> string {
     let header = [
         $"; The Nushell grammar as nu-parser accepts it \(nushell main ($prov.commit), ($prov.date))."
         "; Generated from grammar.md (the fences, in order) by tools/gen-grammar.nu."
-        "; grammar.md carries the discussion, the coverage analysis and the meaning of"
+        "; grammar.md carries the discussion, the shape-directed rules and the meaning of"
         "; the annotations; this file is the same grammar in one piece. Regenerate it"
         "; from grammar.md rather than editing it directly."
         ";"
         "; Notation: <name> ::= alt | alt ; terminals in double quotes ; [ x ] optional ;"
         "; { x } zero or more ; ( x ) grouping ; 1*x one or more ; N*x exactly N ;"
         "; <words with spaces> is a class described in words, not a nonterminal ;"
-        "; a line starting with ; is a comment. `; nu:` gives nu-parser's source,"
-        "; `; here:` the winnow parser's implementation."
+        "; a line starting with ; is a comment. `; nu:` gives nu-parser's source."
     ]
     let body = $blocks | each {|b|
         let lines = if ($b.heading | str starts-with "0.") {
@@ -412,7 +411,7 @@ def ebnf-text [blocks: list, prov: record]: nothing -> string {
     let header = [
         $"\(* The Nushell grammar as nu-parser accepts it \(nushell main ($prov.commit), ($prov.date)). *)"
         "(* Generated from grammar.md (the fences, in order) by tools/gen-grammar.nu. *)"
-        "(* grammar.md carries the discussion, the coverage analysis and the meaning of *)"
+        "(* grammar.md carries the discussion, the shape-directed rules and the meaning of *)"
         "(* the annotations; this file is the same grammar in one piece. Regenerate it *)"
         "(* from grammar.md rather than editing it directly. *)"
         "(* *)"
@@ -420,7 +419,7 @@ def ebnf-text [blocks: list, prov: record]: nothing -> string {
         "(* [ x ] optional, { x } repetition, N * x exactly N, \"x\" / 'x' terminals, *)"
         "(* ? ... ? special sequences for rules stated in prose; comments are bracketed *)"
         "(* by a paren-star pair, as in Pascal. *)"
-        "(* `nu:` names the nu-parser source, `here:` the implementation in this parser. *)"
+        "(* `nu:` names the nu-parser source. *)"
     ]
     let body = $blocks | each {|b|
         let lines = if ($b.heading | str starts-with "0.") {
